@@ -5,13 +5,13 @@ namespace SWD_ICQS.Entity
 {
     public class Categories
     {
-        // Completed entity
+        // Completed entity.
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         // Relationship
-        public ICollection<Constructs> Constructs { get; set; }
+        public ICollection<Constructs>? Constructs { get; set; }
     }
 }

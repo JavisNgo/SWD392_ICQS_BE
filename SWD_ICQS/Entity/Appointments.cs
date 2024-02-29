@@ -5,19 +5,20 @@ namespace SWD_ICQS.Entity
 {
     public class Appointments
     {
-        // Completed entity
+        // Completed entity.
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int CustomerId { get; set; }
         public int ContractorId { get; set; }
-        public int ContractId { get; set; }
-        public DateTime MeetingDate { get; set; }
-        public bool? Status { get; set; }
+        public int RequestId { get; set; }
+        public DateTime? MeetingDate { get; set; }
+        public int? Status { get; set; }
 
         // Relationship
-        public Customers Customer { get; set; }
-        public Contractors Contractor { get; set; }
-        public Contracts Contract { get; set; }
+        public Contractors? Contractor { get; set; }
+        public Customers? Customer { get; set; }
+        public Requests? Request { get; set; }
+        public Contracts? Contract { get; set; }
     }
 }

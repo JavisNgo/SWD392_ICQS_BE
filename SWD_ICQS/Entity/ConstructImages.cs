@@ -5,7 +5,7 @@ namespace SWD_ICQS.Entity
 {
     public class ConstructImages
     {
-        // Completed entity
+        // Completed entity.
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -13,6 +13,6 @@ namespace SWD_ICQS.Entity
         public byte[]? ImageBin { get; set; }
 
         // Relationship
-        public Constructs Construct { get; set; }
+        public Constructs? Construct { get; set; }
     }
 }

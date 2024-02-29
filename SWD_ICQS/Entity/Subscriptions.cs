@@ -5,18 +5,18 @@ namespace SWD_ICQS.Entity
 {
     public class Subscriptions
     {
-        // Completed entity
+        // Completed entity.
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public string? Description { get; set; }
-        public double Price { get; set; }
+        public double? Price { get; set; }
         public int? Duration { get; set; }
-        public bool Status { get; set; }
+        public bool? Status { get; set; }
 
         // Relationship
-        public ICollection<Contractors> Contractors { get; set; }
-        public Orders Order { get; set; }
+        public ICollection<Orders>? Orders { get; set; }
+        public ICollection<Contractors>? Contractors { get; set; }
     }
 }

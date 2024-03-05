@@ -7,6 +7,10 @@ namespace SWD_ICQS.Repository
 {
     public class ApplicationDbContext : DbContext
     {
+        public ApplicationDbContext()
+        {
+
+        }
         private readonly IConfiguration _configuration;
         public DbSet<Accounts>? Accounts { get; set; }
         public DbSet<Appointments>? Appointments { get; set; }

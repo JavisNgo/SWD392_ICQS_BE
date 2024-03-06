@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD_ICQS.Interfaces;
 using SWD_ICQS.Repository;
+using SWD_ICQS.Repository.Interfaces;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace PizzaWebApp.Asm2.Repo.DAL
+namespace SWD_ICQS.Repository.Implements
 {
-    public class GenericRepository<TEntity>: IGenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         internal ApplicationDbContext context;
         internal DbSet<TEntity> dbSet;
@@ -14,7 +14,7 @@ namespace PizzaWebApp.Asm2.Repo.DAL
         public GenericRepository(ApplicationDbContext context)
         {
             this.context = context;
-            this.dbSet = context.Set<TEntity>();
+            dbSet = context.Set<TEntity>();
         }
 
         public virtual IEnumerable<TEntity> Get(

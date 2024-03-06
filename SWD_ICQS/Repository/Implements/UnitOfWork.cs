@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD_ICQS.Interfaces;
-using SWD_ICQS.Entity;
-using PizzaWebApp.Asm2.Repo.DAL;
+using SWD_ICQS.Entities;
+using SWD_ICQS.Repository.Interfaces;
 
-namespace SWD_ICQS.Repository
+namespace SWD_ICQS.Repository.Implements
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
@@ -15,7 +14,7 @@ namespace SWD_ICQS.Repository
             this.context = context;
         }
 
-        
+
 
         public void Save()
         {
@@ -36,9 +35,9 @@ namespace SWD_ICQS.Repository
         {
             get
             {
-                if(this.categoryRepository == null)
+                if (categoryRepository == null)
                 {
-                    this.categoryRepository = new GenericRepository<Categories>(context);
+                    categoryRepository = new GenericRepository<Categories>(context);
                 }
                 return categoryRepository;
             }
@@ -72,14 +71,14 @@ namespace SWD_ICQS.Repository
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
                     context.Dispose();
                 }
             }
-            this.disposed = true;
+            disposed = true;
         }
 
         public void Dispose()

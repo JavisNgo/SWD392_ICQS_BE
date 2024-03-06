@@ -1,11 +1,11 @@
-﻿using SWD_ICQS.Entity;
+﻿using SWD_ICQS.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD_ICQS.Interfaces
+namespace SWD_ICQS.Repository.Interfaces
 {
     public interface IUnitOfWork
     {

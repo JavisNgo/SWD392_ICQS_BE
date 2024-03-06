@@ -1,23 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SWD_ICQS.Entity
+namespace SWD_ICQS.Entities
 {
-    public class Constructs
+    public class Blogs
     {
         // Completed entity.
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int ContractorId { get; set; }
-        public int CategoryId { get; set; }
-        public double? EstimatedPrice { get; set; }
+        public string? Content { get; set; }
+        public DateTime? PostTime { get; set; }
+        public DateTime? EditTime { get; set; }
         public bool? Status { get; set; }
-        
+
         // Relationship
         public Contractors? Contractor { get; set; }
-        public ICollection<ConstructProducts>? ConstructProducts { get; set; }
-        public ICollection<ConstructImages>? ConstructImages { get; set; }
-        public Categories? Category { get; set; }
+        public ICollection<BlogImages>? BlogImages { get; set; }
     }
 }

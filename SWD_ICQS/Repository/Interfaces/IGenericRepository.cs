@@ -1,12 +1,11 @@
-﻿using PizzaWebApp.Asm2.Repo.DAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD_ICQS.Interfaces
+namespace SWD_ICQS.Repository.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {

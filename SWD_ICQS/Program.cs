@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using SWD_ICQS.Interfaces;
 using SWD_ICQS.Repository;
+using SWD_ICQS.Repository.Implements;
+using SWD_ICQS.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

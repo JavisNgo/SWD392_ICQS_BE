@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SWD_ICQS.Entity
+namespace SWD_ICQS.Entities
 {
-    public class Messages
+    public class Appointments
     {
         // Completed entity.
         [Key]
@@ -11,13 +11,14 @@ namespace SWD_ICQS.Entity
         public int Id { get; set; }
         public int CustomerId { get; set; }
         public int ContractorId { get; set; }
-        public string? Content { get; set; }
-        public DateTime? SendAt { get; set; }
-        public bool? Status { get; set; }
-        public byte[]? ImageBin { get; set; }
+        public int RequestId { get; set; }
+        public DateTime? MeetingDate { get; set; }
+        public int? Status { get; set; }
 
         // Relationship
         public Contractors? Contractor { get; set; }
         public Customers? Customer { get; set; }
+        public Requests? Request { get; set; }
+        public Contracts? Contract { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SWD_ICQS.Entity;
+using SWD_ICQS.Entities;
 using System.Security.Principal;
 
 namespace SWD_ICQS.Repository

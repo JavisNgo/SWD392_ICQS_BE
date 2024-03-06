@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SWD_ICQS.Interfaces;
+using SWD_ICQS.Repository.Interfaces;
 
 namespace SWD_ICQS.Controllers
 {

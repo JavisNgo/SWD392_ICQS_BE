@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SWD_ICQS.Entity
+namespace SWD_ICQS.Entities
 {
     public class Customers
     {

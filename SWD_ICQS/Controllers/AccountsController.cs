@@ -8,19 +8,20 @@ using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SWD_ICQS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class AccountsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public LoginController(IConfiguration configuration, IUnitOfWork unitOfWork, IMapper mapper)
+        public AccountsController(IConfiguration configuration, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
@@ -29,8 +30,9 @@ namespace SWD_ICQS.Controllers
 
         private Accounts AuthenticateUser(AccountsView loginInfo)
         {
-            Accounts? _account = null;
-            Accounts? account = _unitOfWork.AccountRepository.Find(a => a.Username == loginInfo.Username && a.Password == loginInfo.Password).FirstOrDefault();
+            Accounts _account = null;
+            string hashedPassword = HashPassword(loginInfo.Password);
+            Accounts? account = _unitOfWork.AccountRepository.Find(a => a.Username == loginInfo.Username && a.Password == hashedPassword).FirstOrDefault();
             if (account != null)
             {
                 switch (account.Role)
@@ -69,6 +71,24 @@ namespace SWD_ICQS.Controllers
             return _account;
         }
 
+        private string HashPassword(string password)
+        {
+            using (SHA512 sha512 = SHA512.Create())
+            {
+                // Compute hash from the password bytes
+                byte[] hashBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                // Convert the byte array to a hexadecimal string
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    stringBuilder.Append(hashBytes[i].ToString("x2"));
+                }
+
+                return stringBuilder.ToString();
+            }
+        }
+
         private string GenerateToken(Accounts account)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -85,7 +105,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/api/v1/login")]
+        [HttpPost("/api/v1/accounts/login")]
         public IActionResult Login([FromBody] AccountsView loginInfo)
         {
             IActionResult response = Unauthorized();
@@ -108,6 +128,6 @@ namespace SWD_ICQS.Controllers
             }
             return response;
         }
-
     }
+
 }

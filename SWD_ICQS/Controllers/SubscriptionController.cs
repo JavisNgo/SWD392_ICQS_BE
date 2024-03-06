@@ -19,7 +19,7 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [Authorize(Policy = "RequireAdminOrContractorRole")]
+        //[Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpGet("/Subscriptions")]
         public async Task<IActionResult> getAllSubscriptions()
         {

@@ -11,9 +11,13 @@ namespace SWD_ICQS.Mapper
             CreateMap<Accounts, AccountsView>().ReverseMap();
             CreateMap<Contractors, ContractorsView>().ReverseMap();
             CreateMap<Customers, CustomersView>().ReverseMap();
-
             CreateMap<Categories, CategoriesView>().ReverseMap();
             CreateMap<Subscriptions, SubscriptionsView>().ReverseMap();
+            CreateMap<Blogs, BlogsView>().ReverseMap();
+            CreateMap<BlogImages, BlogImagesView>().ReverseMap();
+           
+
+
 
         }
     }

@@ -12,6 +12,8 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Customers> _customersRepository;
         private GenericRepository<Categories> categoryRepository;
         private GenericRepository<Subscriptions> subscriptionRepository;
+        private GenericRepository<Blogs> blogRepository;
+        private GenericRepository<BlogImages> blogImageRepository;
 
 
         public UnitOfWork(ApplicationDbContext context)
@@ -31,10 +33,6 @@ namespace SWD_ICQS.Repository.Implements
         public IGenericRepository<Accounts> AccountRepository => _accountRepository ??= new GenericRepository<Accounts>(context);
 
         public IGenericRepository<Appointments> AppointmentRepository => throw new NotImplementedException();
-
-        public IGenericRepository<BlogImages> BlogImageRepository => throw new NotImplementedException();
-
-        public IGenericRepository<Blogs> BlogRepository => throw new NotImplementedException();
 
         public IGenericRepository<ConstructImages> ConstructImageRepository => throw new NotImplementedException();
 
@@ -60,7 +58,28 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Requests> RequestRepository => throw new NotImplementedException();
 
-
+        public IGenericRepository<BlogImages> BlogImageRepository
+        {
+            get
+            {
+                if (blogImageRepository == null)
+                {
+                    blogImageRepository = new GenericRepository<BlogImages>(context);
+                }
+                return blogImageRepository;
+            }
+        }
+        public IGenericRepository<Blogs> BlogRepository
+        {
+            get
+            {
+                if (blogRepository == null)
+                {
+                    blogRepository = new GenericRepository<Blogs>(context);
+                }
+                return blogRepository;
+            }
+        }
         public IGenericRepository<Categories> CategoryRepository
         {
             get

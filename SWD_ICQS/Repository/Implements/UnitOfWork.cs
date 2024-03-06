@@ -8,6 +8,8 @@ namespace SWD_ICQS.Repository.Implements
     {
         private ApplicationDbContext context = new ApplicationDbContext();
         private GenericRepository<Categories> categoryRepository;
+        private GenericRepository<Subscriptions> subscriptionRepository;
+
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -30,18 +32,6 @@ namespace SWD_ICQS.Repository.Implements
         public IGenericRepository<BlogImages> BlogImageRepository => throw new NotImplementedException();
 
         public IGenericRepository<Blogs> BlogRepository => throw new NotImplementedException();
-
-        public IGenericRepository<Categories> CategoryRepository
-        {
-            get
-            {
-                if (categoryRepository == null)
-                {
-                    categoryRepository = new GenericRepository<Categories>(context);
-                }
-                return categoryRepository;
-            }
-        }
 
         public IGenericRepository<ConstructImages> ConstructImageRepository => throw new NotImplementedException();
 
@@ -67,7 +57,29 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Requests> RequestRepository => throw new NotImplementedException();
 
-        public IGenericRepository<Subscriptions> SubscriptionRepository => throw new NotImplementedException();
+
+        public IGenericRepository<Categories> CategoryRepository
+        {
+            get
+            {
+                if (categoryRepository == null)
+                {
+                    categoryRepository = new GenericRepository<Categories>(context);
+                }
+                return categoryRepository;
+            }
+        }
+        public IGenericRepository<Subscriptions> SubscriptionRepository
+        {
+            get
+            {
+                if (subscriptionRepository == null)
+                {
+                    subscriptionRepository = new GenericRepository<Subscriptions>(context);
+                }
+                return subscriptionRepository;
+            }
+        }
 
         protected virtual void Dispose(bool disposing)
         {

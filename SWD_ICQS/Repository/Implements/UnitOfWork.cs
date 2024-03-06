@@ -7,6 +7,9 @@ namespace SWD_ICQS.Repository.Implements
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private ApplicationDbContext context = new ApplicationDbContext();
+        private GenericRepository<Accounts> _accountRepository;
+        private GenericRepository<Contractors> _contractorsRepository;
+        private GenericRepository<Customers> _customersRepository;
         private GenericRepository<Categories> categoryRepository;
         private GenericRepository<Subscriptions> subscriptionRepository;
 
@@ -25,7 +28,7 @@ namespace SWD_ICQS.Repository.Implements
 
         private bool disposed = false;
 
-        public IGenericRepository<Accounts> AccountRepository => throw new NotImplementedException();
+        public IGenericRepository<Accounts> AccountRepository => _accountRepository ??= new GenericRepository<Accounts>(context);
 
         public IGenericRepository<Appointments> AppointmentRepository => throw new NotImplementedException();
 
@@ -39,11 +42,11 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Constructs> ConstructRepository => throw new NotImplementedException();
 
-        public IGenericRepository<Contractors> ContractorRepository => throw new NotImplementedException();
+        public IGenericRepository<Contractors> ContractorRepository => _contractorsRepository ??= new GenericRepository<Contractors>(context);
 
         public IGenericRepository<Contracts> ContractRepository => throw new NotImplementedException();
 
-        public IGenericRepository<Customers> CustomerRepository => throw new NotImplementedException();
+        public IGenericRepository<Customers> CustomerRepository => _customersRepository ??= new GenericRepository<Customers>(context);
 
         public IGenericRepository<Messages> MessageRepository => throw new NotImplementedException();
 

@@ -1,10 +1,29 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SWD_ICQS.Mapper;
 using SWD_ICQS.Repository;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 // Add connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -16,6 +35,16 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("1"));
+    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("2"));
+    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("3"));
+    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("1", "2"));
+    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("1", "3"));
+    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("2", "3"));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,6 +55,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

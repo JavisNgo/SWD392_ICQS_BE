@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
@@ -18,6 +19,7 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpGet("/Subscriptions")]
         public async Task<IActionResult> getAllSubscriptions()
         {
@@ -31,6 +33,7 @@ namespace SWD_ICQS.Controllers
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
+        [Authorize]
         [HttpGet("/Subscriptions/{id}")]
         public IActionResult GetSubscriptionById(int id)
         {
@@ -50,7 +53,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while getting the subscription. Error message: {ex.Message}");
             }
         }
-
+        [Authorize]
         [HttpPost("/Subscriptions")]
         public IActionResult AddSubscription([FromBody] SubscriptionsView subscriptionsView)
         {
@@ -85,6 +88,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the subscription. Error message: {ex.Message}");
             }
         }
+        [Authorize]
         [HttpPut("/Subscriptions/{id}")]
         public IActionResult UpdateSubscription(int id, [FromBody] SubscriptionsView subscriptionsView)
         {
@@ -129,7 +133,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while updating the subscription. Error message: {ex.Message}");
             }
         }
-
+        [Authorize]
         [HttpDelete("/Subscriptions/{id}")]
         public IActionResult DeleteSubscription(int id)
         {

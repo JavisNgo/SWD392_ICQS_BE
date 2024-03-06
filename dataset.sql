@@ -5,16 +5,16 @@ GO
 INSERT INTO Accounts (Username, Password, Role, Status)
 VALUES
 	('admin', '1', 1, 1),
-	('contractor', '1', 1, 2),
-	('customer', '1', 1, 3),
-    ('contractor2', '1', 1, 2),
-    ('contractor3', '1', 2, 2),
-    ('contractor4', '1', 3, 2),
-    ('contractor5', '1', 1, 2),
-    ('customer2', '1', 2, 3),
-    ('customer3', '1', 3, 3),
-    ('customer4', '1', 1, 3),
-    ('customer5', '1', 3, 3);
+	('contractor', '1', 2, 1),
+	('customer', '1', 3, 1),
+    ('contractor2', '1', 2, 1),
+    ('contractor3', '1', 2, 1),
+    ('contractor4', '1', 2, 1),
+    ('contractor5', '1', 2, 0),
+    ('customer2', '1', 3, 1),
+    ('customer3', '1', 3, 1),
+    ('customer4', '1', 3, 1),
+    ('customer5', '1', 3, 0);
 GO
 
 -- Subscriptions

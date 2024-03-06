@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
@@ -19,6 +20,7 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        [Authorize]
         [HttpGet("/Categories")]
         public async Task<IActionResult> getAllCategories()
         {
@@ -32,7 +34,7 @@ namespace SWD_ICQS.Controllers
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
-
+        [Authorize]
         [HttpGet("/Categories/{id}")]
         public IActionResult GetCategoryById(int id)
         {
@@ -52,7 +54,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while getting the category. Error message: {ex.Message}");
             }
         }
-
+        [Authorize]
         [HttpPost("/Categories")]
         public IActionResult AddCategory([FromBody] CategoriesView categoryView)
         {
@@ -74,7 +76,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the category. Error message: {ex.Message}");
             }
         }
-
+        [Authorize]
         [HttpPut("/Categories/{id}")]
         public IActionResult UpdateCategory(int id, [FromBody] CategoriesView updatedCategoryView)
         {
@@ -109,7 +111,7 @@ namespace SWD_ICQS.Controllers
         }
 
 
-
+        [Authorize]
         [HttpDelete("/Categories/{id}")]
         public IActionResult DeleteCategory(int id)
         {

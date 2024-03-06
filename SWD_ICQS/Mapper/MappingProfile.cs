@@ -8,6 +8,7 @@ namespace SWD_ICQS.Mapper
     {
         public MappingProfile()
         {
+            CreateMap<Accounts, AccountsView>().ReverseMap();
             CreateMap<Categories, CategoriesView>().ReverseMap();
             CreateMap<Subscriptions, SubscriptionsView>().ReverseMap();
 

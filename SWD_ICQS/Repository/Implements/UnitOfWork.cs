@@ -15,6 +15,7 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Blogs> blogRepository;
         private GenericRepository<BlogImages> blogImageRepository;
         private GenericRepository<Messages> messagesRepository;
+        private GenericRepository<Products> productsRepository;
 
 
         public UnitOfWork(ApplicationDbContext context)
@@ -63,7 +64,17 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<ProductImages> ProductImageRepository => throw new NotImplementedException();
 
-        public IGenericRepository<Products> ProductRepository => throw new NotImplementedException();
+        public IGenericRepository<Products> ProductRepository
+        {
+            get
+            {
+                if(productsRepository == null)
+                {
+                    this.productsRepository = new GenericRepository<Products>(context);
+                }
+                return productsRepository;
+            }
+        }
 
         public IGenericRepository<RequestDetails> RequestDetailRepository => throw new NotImplementedException();
 

@@ -26,7 +26,7 @@ namespace SWD_ICQS.Repository
         public DbSet<Messages>? Messages { get; set; }
         public DbSet<Orders>? Orders { get; set; }
         public DbSet<ProductImages>? ProductImages { get; set; }
-        public DbSet<Products>? ProductProducts { get; set; }
+        public DbSet<Products>? Products { get; set; }
         public DbSet<Requests>? Requests { get; set; }
         public DbSet<RequestDetails>? RequestDetails { get; set; }
         public DbSet<Subscriptions>? Subscriptions { get; set; }

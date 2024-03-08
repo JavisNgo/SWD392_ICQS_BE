@@ -56,6 +56,16 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
+                var checkContractorID = unitOfWork.ContractorRepository.GetByID(messagesView.ContractorId);
+                var checkCustomerID = unitOfWork.CustomerRepository.GetByID(messagesView.CustomerId);
+                if(checkContractorID == null)
+                {
+                    return NotFound("Contractor not found");
+                }
+                if(checkCustomerID == null)
+                {
+                    return NotFound("Customer not found");
+                }
                 Messages message = _mapper.Map<Messages>(messagesView);
                 
                 message.SendAt = DateTime.Now;
@@ -90,7 +100,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         public IActionResult AddImageForMessage(int id, IFormFile formFile)
         {
             try

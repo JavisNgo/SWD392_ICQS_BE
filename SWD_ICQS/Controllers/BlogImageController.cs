@@ -73,27 +73,35 @@ namespace SWD_ICQS.Controllers
 
         [AllowAnonymous]
         [HttpPut("/BlogImages/{id}")]
-        public IActionResult UpdateBlogImage(int id, [FromBody] BlogImagesView updatedBlogImageView)
+        public IActionResult AddImageToBlog(int id, IFormFile formFile)
         {
             try
             {
-                var existingBlogImage = unitOfWork.BlogImageRepository.GetByID(id);
-
-                if (existingBlogImage == null)
+                var existingBlog = unitOfWork.BlogImageRepository.GetByID(id);
+                if (existingBlog == null)
                 {
-                    return NotFound($"BlogImage with ID {id} not found.");
+                    return NotFound($"BLog with ID {id} not found.");
                 }
 
-                _mapper.Map(updatedBlogImageView, existingBlogImage);
+                // Check if a file is uploaded
+                if (formFile != null && formFile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        formFile.CopyTo(memoryStream);
+                        existingBlog.ImageBin = memoryStream.ToArray();
+                    }
+                }
 
-                unitOfWork.BlogImageRepository.Update(existingBlogImage);
+
+                // Insert the new product into the database
+                unitOfWork.BlogImageRepository.Update(existingBlog);
                 unitOfWork.Save();
-
-                return Ok(existingBlogImage);
+                return Ok("Add Image Successfully");
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while updating the blog image. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while save the blog. Error message: {ex.Message}");
             }
         }
 
@@ -120,6 +128,5 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while deleting the blog image. Error message: {ex.Message}");
             }
         }
-
     }
 }

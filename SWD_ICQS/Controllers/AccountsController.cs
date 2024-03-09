@@ -155,7 +155,7 @@ namespace SWD_ICQS.Controllers
                                 PhoneNumber = registerInfo.PhoneNumber,
                                 Address = registerInfo.Address,
                                 SubscriptionId = 1,
-                                ExpiredDate = DateTime.ParseExact("209912310 23:59", "yyyyMMdd HH:mm", null)
+                                ExpiredDate = DateTime.ParseExact("20991231 23:59", "yyyyMMdd HH:mm", null)
                         };
                             _unitOfWork.ContractorRepository.Insert(contractor);
                             _unitOfWork.Save();

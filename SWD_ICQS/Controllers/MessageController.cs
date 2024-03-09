@@ -100,7 +100,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("/Message/{id}")]
         public IActionResult AddImageForMessage(int id, IFormFile formFile)
         {
             try

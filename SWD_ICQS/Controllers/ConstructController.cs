@@ -20,8 +20,8 @@ namespace SWD_ICQS.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("/messages")]
-        public IActionResult GetAllConstruct()
+        [HttpGet("/api/messages")]
+        public async Task<IActionResult> GetAllConstruct()
         {
             try
             {
@@ -33,7 +33,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/messages/{id}")]
+        [HttpGet("/api/messages/{id}")]
         public IActionResult GetConstructByID(int id)
         {
             try

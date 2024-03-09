@@ -128,6 +128,67 @@ namespace SWD_ICQS.Controllers
             }
             return response;
         }
-    }
 
+        [AllowAnonymous]
+        [HttpPost("/api/v1/accounts/register")]
+        public IActionResult Register([FromBody] AccountsView registerInfo)
+        {
+            var account_ = _unitOfWork.AccountRepository.Find(a => a.Username == registerInfo.Username).FirstOrDefault();
+            if (account_ == null) {
+                try
+                {
+                    registerInfo.Password = HashPassword(registerInfo.Password);
+                    registerInfo.Status = true;
+                    var account = _mapper.Map<Accounts>(registerInfo);
+                    _unitOfWork.AccountRepository.Insert(account);
+                    _unitOfWork.Save();
+                    var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == registerInfo.Username).FirstOrDefault();
+                    if (insertedAccount != null)
+                    {
+                        if (registerInfo.Role == 2)
+                        {
+                            var contractor = new Contractors
+                            {
+                                AccountId = insertedAccount.Id,
+                                Name = registerInfo.Name,
+                                Email = registerInfo.Email,
+                                PhoneNumber = registerInfo.PhoneNumber,
+                                Address = registerInfo.Address,
+                                SubscriptionId = 1,
+                                ExpiredDate = DateTime.ParseExact("209912310 23:59", "yyyyMMdd HH:mm", null)
+                        };
+                            _unitOfWork.ContractorRepository.Insert(contractor);
+                            _unitOfWork.Save();
+                        }
+                        else if (registerInfo.Role == 3)
+                        {
+                            var customer = new Customers
+                            {
+                                AccountId = insertedAccount.Id,
+                                Name = registerInfo.Name,
+                                Email = registerInfo.Email,
+                                PhoneNumber = registerInfo.PhoneNumber,
+                                Address = registerInfo.Address
+                            };
+                            _unitOfWork.CustomerRepository.Insert(customer);
+                            _unitOfWork.Save();
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == registerInfo.Username).FirstOrDefault();
+                    if(insertedAccount != null)
+                    {
+                        _unitOfWork.AccountRepository.Delete(insertedAccount);
+                        _unitOfWork.Save();
+                    }
+                    return BadRequest(ex.Message);
+                }
+            } else
+            {
+                return BadRequest("Existed username");
+            }
+            return Ok("Create success");
+        }
+    }
 }

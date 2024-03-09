@@ -12,7 +12,7 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240309040534_InitialDB")]
+    [Migration("20240309043559_InitialDB")]
     partial class InitialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,9 @@ namespace SWD_ICQS.Migrations
 
                     b.Property<bool?>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

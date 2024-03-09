@@ -61,18 +61,18 @@ VALUES
 GO
 
 -- Blogs
-INSERT INTO Blogs (ContractorId, Content, PostTime, EditTime, Status)
+INSERT INTO Blogs (ContractorId, Title, Content, PostTime, EditTime, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 1', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 2', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 3', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 4', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 5', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 6', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 7', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 8', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 9', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 10', GETDATE(), GETDATE(), 1);
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 1', 'Content of Blog 1', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 2', 'Content of Blog 2', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 3', 'Content of Blog 3', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 4', 'Content of Blog 4', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 5', 'Content of Blog 5', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 6', 'Content of Blog 6', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 7', 'Content of Blog 7', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 8', 'Content of Blog 8', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 9', 'Content of Blog 9', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 10', 'Content of Blog 10', GETDATE(), GETDATE(), 1);
 GO
 
 -- Orders

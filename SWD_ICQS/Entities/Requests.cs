@@ -15,7 +15,14 @@ namespace SWD_ICQS.Entities
         public double? TotalPrice { get; set; }
         public DateTime? TimeIn { get; set; }
         public DateTime? TimeOut { get; set; }
-        public bool? Status { get; set; }
+        public RequestsStatusEnum? Status { get; set; }
+        public enum RequestsStatusEnum
+        {
+            PENDING = 1,
+            REJECTED = 2,
+            ACCEPTED = 3,
+            COMPLETED = 4
+        }
 
         // Relationship
         public ICollection<RequestDetails>? RequestDetails { get; set; }

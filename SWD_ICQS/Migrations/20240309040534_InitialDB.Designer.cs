@@ -12,8 +12,8 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240229160007_Initial")]
-    partial class Initial
+    [Migration("20240309040534_InitialDB")]
+    partial class InitialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace SWD_ICQS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Accounts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Accounts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Appointments", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,7 +83,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.BlogImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.BlogImages", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("BlogImages");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Blogs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Blogs", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Categories", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Categories", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -150,7 +150,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ConstructImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ConstructImages", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,7 +171,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("ConstructImages");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ConstructProducts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ConstructProducts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,7 +194,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("ConstructProducts");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Constructs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Constructs", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -223,7 +223,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Constructs");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Contractors", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Contractors", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,7 +265,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Contractors");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Contracts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Contracts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -296,7 +296,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Contracts");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Customers", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Customers", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -327,7 +327,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Messages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Messages", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -362,7 +362,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Orders", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Orders", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -397,7 +397,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ProductImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ProductImages", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -418,7 +418,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("ProductImages");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Products", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Products", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -445,10 +445,10 @@ namespace SWD_ICQS.Migrations
 
                     b.HasIndex("ContractorId");
 
-                    b.ToTable("ProductProducts");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.RequestDetails", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.RequestDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -471,7 +471,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("RequestDetails");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Requests", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Requests", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -488,8 +488,8 @@ namespace SWD_ICQS.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Status")
-                        .HasColumnType("bit");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("TimeIn")
                         .HasColumnType("datetime2");
@@ -509,7 +509,7 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Requests");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Subscriptions", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Subscriptions", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -537,21 +537,21 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Appointments", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Appointments")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Customers", "Customer")
+                    b.HasOne("SWD_ICQS.Entities.Customers", "Customer")
                         .WithMany("Appointments")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Requests", "Request")
+                    b.HasOne("SWD_ICQS.Entities.Requests", "Request")
                         .WithMany("Appointments")
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -564,9 +564,9 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.BlogImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.BlogImages", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Blogs", "Blog")
+                    b.HasOne("SWD_ICQS.Entities.Blogs", "Blog")
                         .WithMany("BlogImages")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -575,9 +575,9 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Blog");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Blogs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Blogs", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Blogs")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -586,9 +586,9 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Contractor");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ConstructImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ConstructImages", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Constructs", "Construct")
+                    b.HasOne("SWD_ICQS.Entities.Constructs", "Construct")
                         .WithMany("ConstructImages")
                         .HasForeignKey("ConstructId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -597,15 +597,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Construct");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ConstructProducts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ConstructProducts", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Constructs", "Construct")
+                    b.HasOne("SWD_ICQS.Entities.Constructs", "Construct")
                         .WithMany("ConstructProducts")
                         .HasForeignKey("ConstructId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Products", "Product")
+                    b.HasOne("SWD_ICQS.Entities.Products", "Product")
                         .WithMany("ConstructProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -616,15 +616,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Constructs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Constructs", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Categories", "Category")
+                    b.HasOne("SWD_ICQS.Entities.Categories", "Category")
                         .WithMany("Constructs")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Constructs")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -635,15 +635,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Contractor");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Contractors", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Contractors", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Accounts", "Account")
+                    b.HasOne("SWD_ICQS.Entities.Accounts", "Account")
                         .WithOne("Contractor")
-                        .HasForeignKey("SWD_ICQS.Entity.Contractors", "AccountId")
+                        .HasForeignKey("SWD_ICQS.Entities.Contractors", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Subscriptions", "Subscription")
+                    b.HasOne("SWD_ICQS.Entities.Subscriptions", "Subscription")
                         .WithMany("Contractors")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -654,37 +654,37 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Contracts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Contracts", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Appointments", "Appointment")
+                    b.HasOne("SWD_ICQS.Entities.Appointments", "Appointment")
                         .WithOne("Contract")
-                        .HasForeignKey("SWD_ICQS.Entity.Contracts", "AppointmentId")
+                        .HasForeignKey("SWD_ICQS.Entities.Contracts", "AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Appointment");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Customers", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Customers", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Accounts", "Account")
+                    b.HasOne("SWD_ICQS.Entities.Accounts", "Account")
                         .WithOne("Customer")
-                        .HasForeignKey("SWD_ICQS.Entity.Customers", "AccountId")
+                        .HasForeignKey("SWD_ICQS.Entities.Customers", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Messages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Messages", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Messages")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Customers", "Customer")
+                    b.HasOne("SWD_ICQS.Entities.Customers", "Customer")
                         .WithMany("Messages")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -695,15 +695,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Orders", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Orders", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Orders")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Subscriptions", "Subscription")
+                    b.HasOne("SWD_ICQS.Entities.Subscriptions", "Subscription")
                         .WithMany("Orders")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -714,9 +714,9 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.ProductImages", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.ProductImages", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Products", "Product")
+                    b.HasOne("SWD_ICQS.Entities.Products", "Product")
                         .WithMany("ProductImages")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -725,9 +725,9 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Products", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Products", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Products")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -736,15 +736,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Contractor");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.RequestDetails", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.RequestDetails", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Products", "Product")
+                    b.HasOne("SWD_ICQS.Entities.Products", "Product")
                         .WithMany("RequestDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Requests", "Request")
+                    b.HasOne("SWD_ICQS.Entities.Requests", "Request")
                         .WithMany("RequestDetails")
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -755,15 +755,15 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Requests", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Requests", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entity.Contractors", "Contractor")
+                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
                         .WithMany("Requests")
                         .HasForeignKey("ContractorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entity.Customers", "Customer")
+                    b.HasOne("SWD_ICQS.Entities.Customers", "Customer")
                         .WithMany("Requests")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -774,36 +774,36 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Accounts", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Accounts", b =>
                 {
                     b.Navigation("Contractor");
 
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Appointments", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
                 {
                     b.Navigation("Contract");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Blogs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Blogs", b =>
                 {
                     b.Navigation("BlogImages");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Categories", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Categories", b =>
                 {
                     b.Navigation("Constructs");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Constructs", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Constructs", b =>
                 {
                     b.Navigation("ConstructImages");
 
                     b.Navigation("ConstructProducts");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Contractors", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Contractors", b =>
                 {
                     b.Navigation("Appointments");
 
@@ -820,7 +820,7 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Requests");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Customers", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Customers", b =>
                 {
                     b.Navigation("Appointments");
 
@@ -829,7 +829,7 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Requests");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Products", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Products", b =>
                 {
                     b.Navigation("ConstructProducts");
 
@@ -838,14 +838,14 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("RequestDetails");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Requests", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Requests", b =>
                 {
                     b.Navigation("Appointments");
 
                     b.Navigation("RequestDetails");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entity.Subscriptions", b =>
+            modelBuilder.Entity("SWD_ICQS.Entities.Subscriptions", b =>
                 {
                     b.Navigation("Contractors");
 

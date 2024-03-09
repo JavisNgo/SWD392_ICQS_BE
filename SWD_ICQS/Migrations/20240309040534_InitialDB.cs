@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SWD_ICQS.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -256,7 +256,7 @@ namespace SWD_ICQS.Migrations
                     TotalPrice = table.Column<double>(type: "float", nullable: true),
                     TimeIn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TimeOut = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

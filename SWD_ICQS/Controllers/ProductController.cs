@@ -21,7 +21,7 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [HttpGet("/products")]
+        [HttpGet("/Products")]
         public async Task<IActionResult> getAllProducts()
         {
             try
@@ -35,7 +35,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/products/{id}")]
+        [HttpGet("/Products/{id}")]
         public IActionResult getProductByID(int id)
         {
             try
@@ -53,7 +53,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPost("/products")]
+        [HttpPost("/Products")]
         public IActionResult AddProduct([FromBody] ProductsView productsView)
         {
             try
@@ -63,10 +63,10 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound("Contractor not found");
                 }
-                //if (!IsValidName(productsView.Name))
-                //{
-                //    return BadRequest("Invalid name. It should only contain letters and spaces.");
-                //}
+                if (!IsValidName(productsView.Name))
+                {
+                    return BadRequest("Invalid name. It should only contain letters and number.");
+                }
 
                 // Validate the Price
                 if (productsView.Price.HasValue && productsView.Price < 0)
@@ -85,7 +85,7 @@ namespace SWD_ICQS.Controllers
             }
         }
         [HttpPut("/Products/{id}")]
-        public IActionResult UpdateCategory(int id, [FromBody] ProductsView productsView)
+        public IActionResult UpdateProduct(int id, [FromBody] ProductsView productsView)
         {
             try
             {
@@ -102,10 +102,10 @@ namespace SWD_ICQS.Controllers
                 }
                 if (!IsValidName(productsView.Name))
                 {
-                    return BadRequest("Invalid name. It should only contain letters and spaces.");
+                    return BadRequest("Invalid name. It should only contain letters and number.");
                 }
 
-                
+
                 if (productsView.Price.HasValue && productsView.Price < 0)
                 {
                     return BadRequest("Invalid Price. It should be a non-negative number.");
@@ -118,7 +118,7 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.ProductRepository.Update(existingProduct);
                 unitOfWork.Save();
 
-                return Ok(existingProduct); 
+                return Ok(productsView); 
             }
             catch (Exception ex)
             {
@@ -126,7 +126,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpDelete("/product/{id}")]
+        [HttpDelete("/Product/{id}")]
         public IActionResult DeleteProduct(int id)
         {
             try
@@ -148,12 +148,13 @@ namespace SWD_ICQS.Controllers
 
         private bool IsValidName(string name)
         {
-            // Use a regular expression to check if the name contains only letters and spaces
-            return !string.IsNullOrWhiteSpace(name) && System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-Z\s]+$");
+            // Use a regular expression to check if the name contains letters, spaces, and numbers
+            return !string.IsNullOrWhiteSpace(name) && System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-Z0-9\s]+$");
         }
+
     }
 
-    
+
 
 }
 

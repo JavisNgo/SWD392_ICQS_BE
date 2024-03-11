@@ -59,7 +59,6 @@ namespace SWD_ICQS.Controllers
             try
             {
                 var blogImage = _mapper.Map<BlogImages>(blogImageView);
-
                 unitOfWork.BlogImageRepository.Insert(blogImage);
                 unitOfWork.Save();
 

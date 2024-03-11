@@ -37,14 +37,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
+// CORS
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("1"));
-    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("2"));
-    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("3"));
-    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("1", "2"));
-    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("1", "3"));
-    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("2", "3"));
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("0"));
+    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("1"));
+    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("2"));
+    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("0", "1"));
+    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("0", "2"));
+    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("1", "2"));
 });
 var app = builder.Build();
 

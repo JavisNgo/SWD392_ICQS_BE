@@ -13,7 +13,14 @@ namespace SWD_ICQS.Entities
         public int ContractorId { get; set; }
         public int RequestId { get; set; }
         public DateTime? MeetingDate { get; set; }
-        public int? Status { get; set; }
+        public AppointmentsStatusEnum? Status { get; set; }
+        public enum AppointmentsStatusEnum
+        {
+            PENDING,
+            CANCELLED,
+            COMPLETED,
+            SIGNED
+        }
 
         // Relationship
         public Contractors? Contractor { get; set; }

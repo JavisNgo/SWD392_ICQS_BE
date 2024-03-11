@@ -37,14 +37,14 @@ namespace SWD_ICQS.Controllers
             {
                 switch (account.Role)
                 {
-                    case 1:
+                    case Accounts.AccountsRoleEnum.ADMIN:
                         _account = new Accounts();
                         _account.Id = account.Id;
                         _account.Username = account.Username;
                         _account.Status = account.Status;
                         _account.Role = account.Role;
                         break;
-                    case 2:
+                    case Accounts.AccountsRoleEnum.CONTRACTOR:
                         _account = new Accounts();
                         Contractors? contractor = _unitOfWork.ContractorRepository.Find(c => c.Account.Id == account.Id).FirstOrDefault();
                         _account.Id = account.Id;
@@ -55,7 +55,7 @@ namespace SWD_ICQS.Controllers
                         _account.Contractor.Id = contractor.Id;
                         _account.Contractor.Name = contractor.Name;
                         break;
-                    case 3:
+                    case Accounts.AccountsRoleEnum.CUSTOMER:
                         _account = new Accounts();
                         Customers? customer = _unitOfWork.CustomerRepository.Find(c => c.Account.Id == account.Id).FirstOrDefault();
                         _account.Id = account.Id;
@@ -145,7 +145,7 @@ namespace SWD_ICQS.Controllers
                     var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == registerInfo.Username).FirstOrDefault();
                     if (insertedAccount != null)
                     {
-                        if (registerInfo.Role == 2)
+                        if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), registerInfo.Role).Equals(Accounts.AccountsRoleEnum.CONTRACTOR))
                         {
                             var contractor = new Contractors
                             {
@@ -160,7 +160,7 @@ namespace SWD_ICQS.Controllers
                             _unitOfWork.ContractorRepository.Insert(contractor);
                             _unitOfWork.Save();
                         }
-                        else if (registerInfo.Role == 3)
+                        else if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), registerInfo.Role).Equals(Accounts.AccountsRoleEnum.CUSTOMER))
                         {
                             var customer = new Customers
                             {

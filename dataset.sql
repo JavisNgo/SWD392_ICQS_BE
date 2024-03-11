@@ -4,17 +4,17 @@ GO
 -- Accounts
 INSERT INTO Accounts (Username, Password, Role, Status)
 VALUES
-	('admin', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 1),
-	('contractor', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
-	('customer', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 3, 1),
-    ('contractor2', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
-    ('contractor3', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
-    ('contractor4', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
-    ('contractor5', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 0),
-    ('customer2', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 3, 1),
-    ('customer3', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 3, 1),
-    ('customer4', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 3, 1),
-    ('customer5', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 3, 0);
+	('admin', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 0, 1),
+	('contractor', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 1),
+	('customer', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
+    ('contractor2', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 1),
+    ('contractor3', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 1),
+    ('contractor4', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 1),
+    ('contractor5', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 1, 0),
+    ('customer2', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
+    ('customer3', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
+    ('customer4', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 1),
+    ('customer5', '4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a', 2, 0);
 GO
 
 -- Subscriptions
@@ -61,18 +61,18 @@ VALUES
 GO
 
 -- Blogs
-INSERT INTO Blogs (ContractorId, Content, PostTime, EditTime, Status)
+INSERT INTO Blogs (ContractorId, Title, Content, PostTime, EditTime, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 1', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 2', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 3', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 4', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 5', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 6', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 7', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 8', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 9', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Content of Blog 10', GETDATE(), GETDATE(), 1);
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 1', 'Content of Blog 1', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 2', 'Content of Blog 2', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 3', 'Content of Blog 3', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 4', 'Content of Blog 4', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 5', 'Content of Blog 5', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 6', 'Content of Blog 6', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 7', 'Content of Blog 7', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 8', 'Content of Blog 8', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 9', 'Content of Blog 9', GETDATE(), GETDATE(), 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 10', 'Content of Blog 10', GETDATE(), GETDATE(), 1);
 GO
 
 -- Orders

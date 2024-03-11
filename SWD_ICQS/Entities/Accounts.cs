@@ -12,7 +12,13 @@ namespace SWD_ICQS.Entities
         public string? Username { get; set; }
         public string? Password { get; set; }
         public bool? Status { get; set; }
-        public int? Role {  get; set; }
+        public AccountsRoleEnum? Role {  get; set; }
+        public enum AccountsRoleEnum
+        {
+            ADMIN,
+            CONTRACTOR,
+            CUSTOMER
+        }
 
         // Relationship
         public Contractors? Contractor { get; set; }

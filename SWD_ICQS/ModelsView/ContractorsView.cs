@@ -7,9 +7,9 @@
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
-        public byte[]? AvatarBin { get; set; }
+        public string? AvatarBin { get; set; }
         public int SubscriptionId { get; set; }
-        public DateTime ExpiredDate { get; set; }
+        public DateTime? ExpiredDate { get; set; }
         public int AccountId { get; set; }
     }
 }

@@ -60,7 +60,17 @@ namespace SWD_ICQS.Controllers
             {
                 return NotFound("No contractor found");
             }
-            ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
+            var contractorsView = new ContractorsView
+            {
+                Email = contractor.Email,
+                Name    = contractor.Name,
+                PhoneNumber = contractor.PhoneNumber,
+                Address = contractor.Address,
+                AvatarBin = Convert.ToBase64String(contractor.AvatarBin),
+                SubscriptionId = contractor.SubscriptionId,
+                ExpiredDate = contractor.ExpiredDate,
+                AccountId = contractor.AccountId
+            };
             return Ok(contractorsView);
         }
 
@@ -85,12 +95,15 @@ namespace SWD_ICQS.Controllers
                 return NotFound("No contractor found");
             }
             try
-            {  
+            {
+                // image string to bin
+                byte[] imageData = Convert.FromBase64String(contractorsView.AvatarBin);
+
                 contractor.Name = contractorsView.Name;
                 contractor.Email = contractorsView.Email;
                 contractor.PhoneNumber = contractorsView.PhoneNumber;
                 contractor.Address = contractorsView.Address;
-                contractor.AvatarBin = contractorsView.AvatarBin;
+                contractor.AvatarBin = imageData;
                 _unitOfWork.ContractorRepository.Update(contractor);
                 _unitOfWork.Save();
             } catch (Exception ex)

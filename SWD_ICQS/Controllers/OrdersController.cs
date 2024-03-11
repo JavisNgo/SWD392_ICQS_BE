@@ -64,7 +64,15 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                if(ordersView.OrderPrice < 0)
+                var checkContractorId = unitOfWork.OrderRepository.GetByID(ordersView.ContractorId);
+                var checkSubscriptionId = unitOfWork.OrderRepository.GetByID(ordersView.SubscriptionId);
+
+                if (checkContractorId == null || checkSubscriptionId == null)
+                {
+                    return NotFound("ContractorId or SubscriptionId not found");
+                }
+
+                if (ordersView.OrderPrice < 0)
                 {
                     return BadRequest("Price must be larger than 0");
                 }
@@ -92,7 +100,13 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Order with ID {id} not found.");
                 }
+                var checkContractorId = unitOfWork.OrderRepository.GetByID(ordersView.ContractorId);
+                var checkSubscriptionId = unitOfWork.OrderRepository.GetByID(ordersView.SubscriptionId);
 
+                if (checkContractorId == null || checkSubscriptionId == null)
+                {
+                    return NotFound("ContractorId or SubscriptionId not found");
+                }
                 if (ordersView.OrderPrice < 0)
                 {
                     return BadRequest("Price must be larger than 0");
@@ -114,8 +128,9 @@ namespace SWD_ICQS.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpDelete("/Orders/{id}")]
-        public IActionResult DeleteOrders(int id)
+        public IActionResult DeleteOrder(int id)
         {
             try
             {
@@ -125,11 +140,14 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Order with ID {id} not found.");
                 }
-                unitOfWork.OrderRepository.Delete(id);
+
+                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+                order.Status = false;
+
+                unitOfWork.OrderRepository.Update(order);
                 unitOfWork.Save();
 
-                // You can return a custom response message 
-                return Ok(new { Message = $"Order with ID {id} has been successfully deleted." });
+                return Ok("Set status to false successfully.");
             }
             catch (Exception ex)
             {

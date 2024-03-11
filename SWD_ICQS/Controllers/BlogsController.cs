@@ -63,8 +63,13 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
+                var checkingContractorID = unitOfWork.ContractorRepository.GetByID(blogView.ContractorId);
+                if (checkingContractorID == null)
+                {
+                    return NotFound("ContractorID not found");
+                }
 
-               Blogs blog = _mapper.Map<Blogs>(blogView);
+                Blogs blog = _mapper.Map<Blogs>(blogView);
                 blog.PostTime = DateTime.Now;
                 unitOfWork.BlogRepository.Insert(blog);
                 unitOfWork.Save();

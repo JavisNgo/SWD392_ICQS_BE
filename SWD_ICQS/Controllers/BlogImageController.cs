@@ -58,6 +58,11 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
+                var checkingBlogId = unitOfWork.BlogImageRepository.GetByID(blogImageView.BlogId);
+                if (checkingBlogId == null)
+                {
+                    return NotFound("BlogId not found");
+                }
                 var blogImage = _mapper.Map<BlogImages>(blogImageView);
                 unitOfWork.BlogImageRepository.Insert(blogImage);
                 unitOfWork.Save();

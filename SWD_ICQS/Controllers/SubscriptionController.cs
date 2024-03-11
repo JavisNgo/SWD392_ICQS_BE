@@ -135,26 +135,28 @@ namespace SWD_ICQS.Controllers
         }
         [Authorize]
         [HttpDelete("/Subscriptions/{id}")]
-        public IActionResult DeleteSubscription(int id)
+        public IActionResult DeleteSubscriptions(int id)
         {
             try
             {
-                var subscriptions = unitOfWork.SubscriptionRepository.GetByID(id);
+                var subscription = unitOfWork.SubscriptionRepository.GetByID(id);
 
-                if (subscriptions == null)
+                if (subscription == null)
                 {
                     return NotFound($"Subscription with ID {id} not found.");
                 }
 
-                unitOfWork.SubscriptionRepository.Delete(id);
+                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+                subscription.Status = false;
+
+                unitOfWork.SubscriptionRepository.Update(subscription);
                 unitOfWork.Save();
 
-                // You can return a custom response message 
-                return Ok(new { Message = $"Subscription with ID {id} has been successfully deleted." });
+                return Ok("Set Status to false successfully.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the subscription. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while deleting the Subscriptions. Error message: {ex.Message}");
             }
         }
 

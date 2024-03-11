@@ -21,7 +21,7 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [HttpGet("/products")]
+        [HttpGet("/Products")]
         public async Task<IActionResult> getAllProducts()
         {
             try
@@ -35,7 +35,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/products/{id}")]
+        [HttpGet("/Products/{id}")]
         public IActionResult getProductByID(int id)
         {
             try
@@ -53,7 +53,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPost("/products")]
+        [HttpPost("/Products")]
         public IActionResult AddProduct([FromBody] ProductsView productsView)
         {
             try
@@ -126,7 +126,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpDelete("/product/{id}")]
+        [HttpDelete("/Product/{id}")]
         public IActionResult DeleteProduct(int id)
         {
             try

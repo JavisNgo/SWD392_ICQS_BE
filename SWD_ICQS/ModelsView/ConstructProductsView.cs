@@ -1,8 +1,8 @@
 ﻿namespace SWD_ICQS.ModelsView
 {
-    public class ConstructsImageView
+    public class ConstructProductsView
     {
+        public int ProductId { get; set; }
         public int ConstructId { get; set; }
-        public byte[]? ImageBin { get; set; }
     }
 }

@@ -20,8 +20,9 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Constructs> constructsRepository;
 
         private GenericRepository<Orders> ordersRepository;
-
-
+        private GenericRepository<ConstructProducts> constructProductsRepository;
+        public GenericRepository<ConstructImages> constructImagesRepository;
+        public GenericRepository<ProductImages> productImagesRepository;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -41,10 +42,28 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Appointments> AppointmentRepository => throw new NotImplementedException();
 
-        public IGenericRepository<ConstructImages> ConstructImageRepository => throw new NotImplementedException();
-
-        public IGenericRepository<ConstructProducts> ConstructProductRepository => throw new NotImplementedException();
-
+        public IGenericRepository<ConstructImages> ConstructImageRepository
+        {
+            get
+            {
+                if (constructImagesRepository == null)
+                {
+                    this.constructImagesRepository = new GenericRepository<ConstructImages>(context);
+                }
+                return constructImagesRepository;
+            }
+        }
+        public IGenericRepository<ConstructProducts> ConstructProductRepository
+        {
+            get
+            {
+                if(constructProductsRepository == null)
+                {
+                    this.constructProductsRepository = new GenericRepository<ConstructProducts>(context);
+                }
+                return constructProductsRepository;
+            }
+        }
         public IGenericRepository<Constructs> ConstructRepository
         {
             get
@@ -89,7 +108,18 @@ namespace SWD_ICQS.Repository.Implements
         }
 
 
-        public IGenericRepository<ProductImages> ProductImageRepository => throw new NotImplementedException();
+        public IGenericRepository<ProductImages> ProductImageRepository
+        {
+            get
+            {
+                if(productImagesRepository == null)
+                {
+                    this.productImagesRepository = new GenericRepository<ProductImages>(context);
+                }
+                return productImagesRepository;
+            } 
+                
+        }
 
         public IGenericRepository<Products> ProductRepository
         {

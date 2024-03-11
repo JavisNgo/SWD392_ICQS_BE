@@ -118,7 +118,7 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.ProductRepository.Update(existingProduct);
                 unitOfWork.Save();
 
-                return Ok(existingProduct); 
+                return Ok(productsView); 
             }
             catch (Exception ex)
             {

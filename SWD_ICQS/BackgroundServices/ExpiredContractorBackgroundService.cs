@@ -39,7 +39,7 @@ namespace SWD_ICQS.BackgroundServices
                 }
 
                 // Sleep for a day before checking again
-                await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
         }
     }

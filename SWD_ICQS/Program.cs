@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SWD_ICQS.BackgroundServices;
 using SWD_ICQS.Mapper;
 using SWD_ICQS.Repository;
 using SWD_ICQS.Repository.Implements;
@@ -35,6 +36,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Background process
+builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

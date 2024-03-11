@@ -52,7 +52,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPost("api/constructProducts")]
+        [HttpPost("/api/constructProducts")]
         public IActionResult AddConstructProduct([FromBody] ConstructProductsView constructProductsView)
         {
             try
@@ -80,7 +80,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the constructProduct. Error message: {ex.Message}");
             }
         }
-        [HttpPut("api/constructProducts")]
+        [HttpPut("/api/constructProducts/{id}")]
         public IActionResult UpdateConstructProduct(int id, [FromBody] ConstructProductsView constructProductsView)
         {
             try
@@ -110,7 +110,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while updating the constructProduct. Error message: {ex.Message}");
             }
         }
-        [HttpDelete("api/constructProducts/{id}")]
+        [HttpDelete("/api/constructProducts/{id}")]
         public IActionResult DeleteConstructProduct(int id)
         {
             try

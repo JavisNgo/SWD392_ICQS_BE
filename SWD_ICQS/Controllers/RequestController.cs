@@ -73,6 +73,7 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Price must be larger than 0");
                 }
                 Requests request = _mapper.Map<Requests>(requestView);
+                request.Status = 0;
                 request.TimeIn = DateTime.Now;
                 if (request.TimeIn.HasValue)
                 {
@@ -120,5 +121,36 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [HttpPut("/RequestAccepted/{id}")]
+        public IActionResult AcceptRequest(int id)
+        {
+            try
+            {
+                var existingRequest = unitOfWork.RequestRepository.GetByID(id);
+                if (existingRequest == null)
+                {
+                    return NotFound($"Request with ID : {id} not found");
+                }
+                existingRequest.Status = (Requests.RequestsStatusEnum?)2;
+                existingRequest.TimeOut = DateTime.Now.AddDays(14);
+                unitOfWork.RequestRepository.Update(existingRequest);
+                unitOfWork.Save();
+                var appointment = new Appointments
+                {
+                    CustomerId = existingRequest.CustomerId,
+                    ContractorId = existingRequest.ContractorId,
+                    RequestId = existingRequest.Id,
+                    MeetingDate = DateTime.Now.AddDays(7),
+                    Status = (Appointments.AppointmentsStatusEnum?)0
+                };
+                unitOfWork.AppointmentRepository.Insert(appointment);
+                unitOfWork.Save();
+                return Ok();
+            }catch(Exception ex)
+            {
+                return BadRequest($"An error occurred while accept request flow. Error message: {ex.Message}");
+            }
+            
+        }
     }
 }

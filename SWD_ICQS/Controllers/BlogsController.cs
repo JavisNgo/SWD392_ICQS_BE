@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Reflection.Metadata;
+using System.Text;
 
 namespace SWD_ICQS.Controllers
 {
@@ -14,21 +17,42 @@ namespace SWD_ICQS.Controllers
     {
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly string _imagesDirectory;
 
-        public BlogsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public BlogsController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "blogImage");
         }
 
         [AllowAnonymous]
-        [HttpGet("/Blogs")]
+        [HttpGet("/api/v1/blogs")]
         public async Task<IActionResult> getAllBlogs()
         {
             try
             {
+                List<BlogsView> blogsViews = new List<BlogsView>();
                 var blogsList = unitOfWork.BlogRepository.Get();
-                return Ok(blogsList);
+
+                foreach (var blog in blogsList)
+                {
+                    var blogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == blog.Id).ToList();
+                    var blogsView = _mapper.Map<BlogsView>(blog);
+
+                    if (blogImages.Any())
+                    {
+                        blogsView.blogImagesViews = new List<BlogImagesView>();
+                        foreach (var image in blogImages)
+                        {
+                            image.ImageBin = $"https://localhost:7233/img/blogImage/{image.ImageBin}";
+                            blogsView.blogImagesViews.Add(_mapper.Map<BlogImagesView>(image));
+                        }
+                    }
+                    blogsViews.Add(blogsView);
+                }
+
+                return Ok(blogsViews);
             }
             catch (Exception ex)
             {
@@ -37,7 +61,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/Blogs/{id}")]
+        [HttpGet("/api/v1/blogs/id={id}")]
         public IActionResult GetBlogById(int id)
         {
             try
@@ -49,7 +73,21 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Blog with ID {id} not found.");
                 }
 
-                return Ok(blog);
+                var blogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == blog.Id).ToList();
+
+                var blogsView = _mapper.Map<BlogsView>(blog);
+
+                if (blogImages.Any())
+                {
+                    blogsView.blogImagesViews = new List<BlogImagesView>();
+                    foreach (var image in blogImages)
+                    {
+                        image.ImageBin = $"https://localhost:7233/img/blogImage/{image.ImageBin}";
+                        blogsView.blogImagesViews.Add(_mapper.Map<BlogImagesView>(image));
+                    }
+                }
+
+                return Ok(blogsView);
             }
             catch (Exception ex)
             {
@@ -58,7 +96,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("/Blogs")]
+        [HttpPost("/api/v1/blogs/post")]
         public IActionResult AddBlog([FromBody] BlogsView blogView)
         {
             try
@@ -70,11 +108,36 @@ namespace SWD_ICQS.Controllers
                 }
 
                 Blogs blog = _mapper.Map<Blogs>(blogView);
-                blog.PostTime = DateTime.Now;
+                DateTime postTime = DateTime.Now;
+                blog.PostTime = postTime;
                 unitOfWork.BlogRepository.Insert(blog);
                 unitOfWork.Save();
 
-                return Ok(blogView);
+                var blogCreated = unitOfWork.BlogRepository.Find(b => b.ContractorId == blogView.ContractorId && b.Content == blogView.Content && b.Title == blogView.Title && b.PostTime == postTime).FirstOrDefault();
+
+                if(blogView.blogImagesViews.Any())
+                {
+                    foreach (var item in blogView.blogImagesViews)
+                    {
+                        if (!String.IsNullOrEmpty(item.ImageBin))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(item.ImageBin);
+                            string filename = $"BlogImage-{blogCreated.Id}-{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var blogImage = new BlogImages
+                            {
+                                BlogId = blogCreated.Id,
+                                ImageBin = filename
+                            };
+                            unitOfWork.BlogImageRepository.Insert(blogImage);
+                            unitOfWork.Save();
+                        }
+                    }
+                }
+
+                return Ok("Posted successfully");
             }
             catch (Exception ex)
             {
@@ -82,9 +145,23 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        public static string GenerateRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
 
         [AllowAnonymous]
-        [HttpPut("/Blogs/{id}")]
+        [HttpPut("/api/v1/blogs/update/id={id}")]
         public IActionResult UpdateBlog(int id, [FromBody] BlogsView blogView)
         {
             try
@@ -99,10 +176,98 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound("ContractorID not found");
                 }
-                _mapper.Map(blogView, existingBlog);
+
+                var currentBlogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == id).ToList();
+
+                existingBlog.ContractorId = blogView.ContractorId;
+                existingBlog.Title = blogView.Title;
+                existingBlog.Content = blogView.Content;
+                existingBlog.PostTime = blogView.PostTime;
+                existingBlog.EditTime = DateTime.Now;
+                existingBlog.Status = blogView.Status;
+
                 unitOfWork.BlogRepository.Update(existingBlog);
                 unitOfWork.Save();
-                return Ok(blogView);
+
+                int countUrl = 0;
+                foreach (var image in blogView.blogImagesViews)
+                {
+                    if (!String.IsNullOrEmpty(image.ImageBin))
+                    {
+                        if (image.ImageBin.Contains("https://localhost:7233/img/blogImage/")) {
+                            countUrl++;
+                        }
+                    }
+                }
+
+                if(countUrl == currentBlogImages.Count)
+                {
+                    foreach (var image in blogView.blogImagesViews)
+                    {
+                        if (!image.ImageBin.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageBin))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
+                            string filename = $"BlogImage-{id}-{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var blogImage = new BlogImages
+                            {
+                                BlogId = id,
+                                ImageBin = filename
+                            };
+                            unitOfWork.BlogImageRepository.Insert(blogImage);
+                            unitOfWork.Save();
+                        }
+                    }
+                } else if(countUrl < currentBlogImages.Count)
+                {
+                    List<BlogImages> tempList = currentBlogImages;
+                    foreach (var image in blogView.blogImagesViews)
+                    {
+                        if (!image.ImageBin.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageBin))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
+                            string filename = $"BlogImage-{id}-{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var blogImage = new BlogImages
+                            {
+                                BlogId = id,
+                                ImageBin = filename
+                            };
+                            unitOfWork.BlogImageRepository.Insert(blogImage);
+                            unitOfWork.Save();
+                        }
+                        else if (image.ImageBin.Contains("https://localhost:7233/img/blogImage/"))
+                        {
+                            for (int i = tempList.Count - 1; i >= 0; i--)
+                            {
+                                string url = $"https://localhost:7233/img/blogImage/{tempList[i].ImageBin}";
+                                if (url.Equals(image.ImageBin))
+                                {
+                                    tempList.RemoveAt(i);
+                                }
+                            }
+                        }
+                    }
+                    foreach (var temp in tempList)
+                    {
+                        unitOfWork.BlogImageRepository.Delete(temp);
+                        unitOfWork.Save();
+                        if (!String.IsNullOrEmpty(temp.ImageBin))
+                        {
+                            string imagePath = Path.Combine(_imagesDirectory, temp.ImageBin);
+                            if (System.IO.File.Exists(imagePath))
+                            {
+                                System.IO.File.Delete(imagePath);
+                            }
+                        }
+                    }
+                }
+                
+                return Ok("Update successfully");
             }
             catch (Exception ex)
             {
@@ -111,7 +276,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("/BlogStatus/{id}")]
+        [HttpPut("/api/v1/blogs/status/id={id}")]
         public IActionResult ChangeStatusBlog(int id)
         {
             try
@@ -123,13 +288,19 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Blog with ID {id} not found.");
                 }
 
-                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                blog.Status = false;
+                if(blog.Status == true)
+                {
+                    blog.Status = false;
+                    unitOfWork.BlogRepository.Update(blog);
+                    unitOfWork.Save();
+                    return Ok("Set Status to false successfully.");
+                } else { 
+                    blog.Status = true;
+                    unitOfWork.BlogRepository.Update(blog);
+                    unitOfWork.Save();
 
-                unitOfWork.BlogRepository.Update(blog);
-                unitOfWork.Save();
-
-                return Ok("Set Status to false successfully.");
+                    return Ok("Set Status to true successfully.");
+                }            
             }
             catch (Exception ex)
             {
@@ -138,7 +309,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("/Blogs/{id}")]
+        [HttpDelete("/api/v1/blogs/delete/id={id}")]
         public IActionResult DeleteBlog(int id)
         {
             try
@@ -149,9 +320,6 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Blog with ID {id} not found.");
                 }
-
-                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                
 
                 unitOfWork.BlogRepository.Delete(id);
                 unitOfWork.Save();

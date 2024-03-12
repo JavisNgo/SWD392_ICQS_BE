@@ -134,8 +134,8 @@ namespace SWD_ICQS.Controllers
             }
         }
         [Authorize]
-        [HttpDelete("/Subscriptions/{id}")]
-        public IActionResult DeleteSubscriptions(int id)
+        [HttpPut("/SubscriptionStatus/{id}")]
+        public IActionResult ChangeStatusSubscriptions(int id)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace SWD_ICQS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the Subscriptions. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while changing status the Subscriptions. Error message: {ex.Message}");
             }
         }
 

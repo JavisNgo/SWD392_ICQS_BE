@@ -90,7 +90,7 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Construct with ID : {id} not found");
                 }
-                var checkingContractor = unitOfWork.ConstructRepository.GetByID(constructsView.ContractorId);
+                var checkingContractor = unitOfWork.ContractorRepository.GetByID(constructsView.ContractorId);
                 if (checkingContractor == null)
                 {
                     return NotFound("Contractor not found");

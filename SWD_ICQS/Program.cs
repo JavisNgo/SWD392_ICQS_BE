@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen();
 
 // Background process
 builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
+builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

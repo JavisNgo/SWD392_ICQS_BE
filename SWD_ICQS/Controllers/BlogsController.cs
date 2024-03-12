@@ -85,29 +85,28 @@ namespace SWD_ICQS.Controllers
 
         [AllowAnonymous]
         [HttpPut("/Blogs/{id}")]
-        public IActionResult UpdateBlog(int id, [FromBody] BlogsView updatedBlogView)
+        public IActionResult UpdateBlog(int id, [FromBody] BlogsView blogView)
         {
             try
             {
                 var existingBlog = unitOfWork.BlogRepository.GetByID(id);
-
                 if (existingBlog == null)
                 {
-                    return NotFound($"Blog with ID {id} not found.");
+                    return NotFound($"BLog with ID : {id} not found");
                 }
-
-                // Update only the properties that can be modified
-                existingBlog.Content = updatedBlogView.Content;
-                existingBlog.EditTime = DateTime.Now; // Set EditTime to current UTC time
-
+                var checkingContractorID = unitOfWork.ContractorRepository.GetByID(blogView.ContractorId);
+                if (checkingContractorID == null)
+                {
+                    return NotFound("ContractorID not found");
+                }
+                _mapper.Map(blogView, existingBlog);
                 unitOfWork.BlogRepository.Update(existingBlog);
                 unitOfWork.Save();
-
-                return Ok(_mapper.Map<BlogsView>(existingBlog)); // Return the updated blog
+                return Ok(blogView);
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while updating the blog. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while updating the Blog. Error message: {ex.Message}");
             }
         }
 

@@ -64,8 +64,8 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var checkContractorId = unitOfWork.OrderRepository.GetByID(ordersView.ContractorId);
-                var checkSubscriptionId = unitOfWork.OrderRepository.GetByID(ordersView.SubscriptionId);
+                var checkContractorId = unitOfWork.ContractorRepository.GetByID(ordersView.ContractorId);
+                var checkSubscriptionId = unitOfWork.SubscriptionRepository.GetByID(ordersView.SubscriptionId);
 
                 if (checkContractorId == null || checkSubscriptionId == null)
                 {
@@ -100,8 +100,8 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Order with ID {id} not found.");
                 }
-                var checkContractorId = unitOfWork.OrderRepository.GetByID(ordersView.ContractorId);
-                var checkSubscriptionId = unitOfWork.OrderRepository.GetByID(ordersView.SubscriptionId);
+                var checkContractorId = unitOfWork.ContractorRepository.GetByID(ordersView.ContractorId);
+                var checkSubscriptionId = unitOfWork.SubscriptionRepository.GetByID(ordersView.SubscriptionId);
 
                 if (checkContractorId == null || checkSubscriptionId == null)
                 {
@@ -119,7 +119,7 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.OrderRepository.Update(existingOrders);
                 unitOfWork.Save();
 
-                return Ok(existingOrders); // Return 
+                return Ok(ordersView); // Return 
             }
             catch (Exception ex)
             {

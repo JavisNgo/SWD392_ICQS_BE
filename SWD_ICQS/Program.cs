@@ -42,6 +42,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
 builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
 builder.Services.AddHostedService<DeleteStatusFalseMessageBackgroundService>();
+builder.Services.AddHostedService<ExpiredFirstMeetingDateBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

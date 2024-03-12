@@ -26,7 +26,7 @@ namespace SWD_ICQS.BackgroundServices
                     /// Update each expired contractor
                     foreach (var request in expiredRequest)
                     {
-                        request.Status = (Entities.Requests.RequestsStatusEnum?)4; // Set default subscription ID
+                        request.Status = (Entities.Requests.RequestsStatusEnum?)1; // Set default subscription ID
 
                         unitOfWork.RequestRepository.Update(request);
                     }

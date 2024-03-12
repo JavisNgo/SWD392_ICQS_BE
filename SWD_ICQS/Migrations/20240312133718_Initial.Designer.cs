@@ -12,8 +12,8 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240309043559_InitialDB")]
-    partial class InitialDB
+    [Migration("20240312133718_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -164,8 +164,8 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("ConstructId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("ImageBin")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -240,8 +240,8 @@ namespace SWD_ICQS.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("AvatarBin")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -347,8 +347,8 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("ImageBin")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("SendAt")
                         .HasColumnType("datetime2");
@@ -408,8 +408,8 @@ namespace SWD_ICQS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<byte[]>("ImageBin")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");

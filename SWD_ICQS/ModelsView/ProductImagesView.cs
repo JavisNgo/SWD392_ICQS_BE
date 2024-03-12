@@ -3,6 +3,6 @@
     public class ProductImagesView
     {
         public int ProductId { get; set; }
-        public byte[]? ImageBin { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

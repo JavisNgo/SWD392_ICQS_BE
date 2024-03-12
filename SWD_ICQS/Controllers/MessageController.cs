@@ -100,38 +100,38 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPut("/Message/{id}")]
-        public IActionResult AddImageForMessage(int id, IFormFile formFile)
-        {
-            try
-            {
-                var existingMessage = unitOfWork.MessageRepository.GetByID(id);
-                if(existingMessage == null)
-                {
-                    return NotFound($"Message with ID {id} not found.");
-                }
+        //[HttpPut("/Message/{id}")]
+        //public IActionResult AddImageForMessage(int id, IFormFile formFile)
+        //{
+        //    try
+        //    {
+        //        var existingMessage = unitOfWork.MessageRepository.GetByID(id);
+        //        if(existingMessage == null)
+        //        {
+        //            return NotFound($"Message with ID {id} not found.");
+        //        }
                 
-                // Check if a file is uploaded
-                if (formFile != null && formFile.Length > 0)
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        formFile.CopyTo(memoryStream);
-                        existingMessage.ImageBin = memoryStream.ToArray();
-                    }
-                }
+        //        // Check if a file is uploaded
+        //        if (formFile != null && formFile.Length > 0)
+        //        {
+        //            using (var memoryStream = new MemoryStream())
+        //            {
+        //                formFile.CopyTo(memoryStream);
+        //                existingMessage.ImageBin = memoryStream.ToArray();
+        //            }
+        //        }
                 
 
-                // Insert the new product into the database
-                unitOfWork.MessageRepository.Update(existingMessage);
-                unitOfWork.Save();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while save the message. Error message: {ex.Message}");
-            }
-        }
+        //        // Insert the new product into the database
+        //        unitOfWork.MessageRepository.Update(existingMessage);
+        //        unitOfWork.Save();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while save the message. Error message: {ex.Message}");
+        //    }
+        //}
 
 
 

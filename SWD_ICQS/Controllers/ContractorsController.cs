@@ -66,7 +66,6 @@ namespace SWD_ICQS.Controllers
                 Name    = contractor.Name,
                 PhoneNumber = contractor.PhoneNumber,
                 Address = contractor.Address,
-                AvatarBin = Convert.ToBase64String(contractor.AvatarBin),
                 SubscriptionId = contractor.SubscriptionId,
                 ExpiredDate = contractor.ExpiredDate,
                 AccountId = contractor.AccountId
@@ -103,7 +102,6 @@ namespace SWD_ICQS.Controllers
                 contractor.Email = contractorsView.Email;
                 contractor.PhoneNumber = contractorsView.PhoneNumber;
                 contractor.Address = contractorsView.Address;
-                contractor.AvatarBin = imageData;
                 _unitOfWork.ContractorRepository.Update(contractor);
                 _unitOfWork.Save();
             } catch (Exception ex)

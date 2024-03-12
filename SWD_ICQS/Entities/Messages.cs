@@ -14,7 +14,7 @@ namespace SWD_ICQS.Entities
         public string? Content { get; set; }
         public DateTime? SendAt { get; set; }
         public bool? Status { get; set; }
-        public byte[]? ImageBin { get; set; }
+        public string? ImageUrl { get; set; }
 
         // Relationship
         public Contractors? Contractor { get; set; }

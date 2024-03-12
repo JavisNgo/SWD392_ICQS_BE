@@ -126,8 +126,8 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpDelete("/Product/{id}")]
-        public IActionResult DeleteProduct(int id)
+        [HttpPut("/ProductStatus/{id}")]
+        public IActionResult ChangeStatusProduct(int id)
         {
             try
             {
@@ -136,13 +136,14 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Product with ID: {id} not found");
                 }
-                unitOfWork.ProductRepository.Delete(id);
+                product.Status = false;
+                unitOfWork.ProductRepository.Update(product);
                 unitOfWork.Save();
-                return Ok($"Product with ID {id} has been successfully deleted.");
+                return Ok($"Product with ID {id} set status to false successfully.");
             }
             catch(Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the product. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while changing status the product. Error message: {ex.Message}");
             }
         }
 

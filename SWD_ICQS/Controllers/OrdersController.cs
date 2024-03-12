@@ -129,8 +129,8 @@ namespace SWD_ICQS.Controllers
 
 
         [AllowAnonymous]
-        [HttpDelete("/Orders/{id}")]
-        public IActionResult DeleteOrder(int id)
+        [HttpPut("/OrderStatus/{id}")]
+        public IActionResult ChangeStatusOrder(int id)
         {
             try
             {
@@ -151,7 +151,7 @@ namespace SWD_ICQS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the order. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while changing status the order. Error message: {ex.Message}");
             }
         }
 

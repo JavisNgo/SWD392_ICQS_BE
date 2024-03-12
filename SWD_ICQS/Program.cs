@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SWD_ICQS.BackgroundServices;
 using SWD_ICQS.Mapper;
 using SWD_ICQS.Repository;
 using SWD_ICQS.Repository.Implements;
@@ -36,6 +37,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
+// Background process
+builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
+builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

@@ -112,8 +112,8 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("/Blogs/{id}")]
-        public IActionResult DeleteBlog(int id)
+        [HttpPut("/BlogStatus/{id}")]
+        public IActionResult ChangeStatusBlog(int id)
         {
             try
             {
@@ -131,6 +131,33 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.Save();
 
                 return Ok("Set Status to false successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred while changing status the blog. Error message: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpDelete("/Blogs/{id}")]
+        public IActionResult DeleteBlog(int id)
+        {
+            try
+            {
+                var blog = unitOfWork.BlogRepository.GetByID(id);
+
+                if (blog == null)
+                {
+                    return NotFound($"Blog with ID {id} not found.");
+                }
+
+                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+                
+
+                unitOfWork.BlogRepository.Delete(id);
+                unitOfWork.Save();
+
+                return Ok($"Blog with ID: {id} has been successfully deleted.");
             }
             catch (Exception ex)
             {

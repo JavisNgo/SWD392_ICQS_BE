@@ -28,47 +28,19 @@ namespace SWD_ICQS.Controllers
             _mapper = mapper;
         }
 
-        private Accounts AuthenticateUser(AccountsView loginInfo)
+        private AccountsView AuthenticateUser(AccountsView loginInfo)
         {
-            Accounts _account = null;
+            AccountsView accountsView = null;
             string hashedPassword = HashPassword(loginInfo.Password);
             Accounts? account = _unitOfWork.AccountRepository.Find(a => a.Username == loginInfo.Username && a.Password == hashedPassword).FirstOrDefault();
             if (account != null)
             {
-                switch (account.Role)
-                {
-                    case Accounts.AccountsRoleEnum.ADMIN:
-                        _account = new Accounts();
-                        _account.Id = account.Id;
-                        _account.Username = account.Username;
-                        _account.Status = account.Status;
-                        _account.Role = account.Role;
-                        break;
-                    case Accounts.AccountsRoleEnum.CONTRACTOR:
-                        _account = new Accounts();
-                        Contractors? contractor = _unitOfWork.ContractorRepository.Find(c => c.Account.Id == account.Id).FirstOrDefault();
-                        _account.Id = account.Id;
-                        _account.Username = account.Username;
-                        _account.Status = account.Status;
-                        _account.Role = account.Role;
-                        _account.Contractor = new Contractors();
-                        _account.Contractor.Id = contractor.Id;
-                        _account.Contractor.Name = contractor.Name;
-                        break;
-                    case Accounts.AccountsRoleEnum.CUSTOMER:
-                        _account = new Accounts();
-                        Customers? customer = _unitOfWork.CustomerRepository.Find(c => c.Account.Id == account.Id).FirstOrDefault();
-                        _account.Id = account.Id;
-                        _account.Username = account.Username;
-                        _account.Status = account.Status;
-                        _account.Role = account.Role;
-                        _account.Customer = new Customers();
-                        _account.Customer.Id = customer.Id;
-                        _account.Customer.Name = customer.Name;
-                        break;
-                }
+                accountsView = new AccountsView();
+                accountsView.Username = account.Username;
+                accountsView.Status = account.Status;
+                accountsView.Role = account.Role.ToString();
             }
-            return _account;
+            return accountsView;
         }
 
         private string HashPassword(string password)
@@ -89,7 +61,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        private string GenerateToken(Accounts account)
+        private string GenerateToken(AccountsView account)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -124,7 +96,7 @@ namespace SWD_ICQS.Controllers
             }
             else
             {
-                return BadRequest("No account found");
+                return NotFound("No account found");
             }
             return response;
         }
@@ -189,6 +161,49 @@ namespace SWD_ICQS.Controllers
                 return BadRequest("Existed username");
             }
             return Ok("Create success");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/api/v1/accounts/get/username={username}")]
+        public ActionResult GetAccountInfo(string username)
+        {
+            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+            if(account == null)
+            {
+                return NotFound("No account found in database");
+            }
+            if(account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
+            {
+                if (_unitOfWork.ContractorRepository.Get() == null)
+                {
+                    return NotFound("No contractor found in database");
+                }
+                var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+
+                if (contractor == null)
+                {
+                    return NotFound($"No contractor contains username = {username} in database");
+                }
+                ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
+                return Ok(contractorsView);
+            } else if(account.Role == Accounts.AccountsRoleEnum.CUSTOMER)
+            {
+                if(_unitOfWork.CustomerRepository.Get() == null)
+                {
+                    return NotFound("No customer found in database");
+                }
+                var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                if (customer == null)
+                {
+                    return NotFound($"No customer contains username = {username} in database");
+                }
+                CustomersView customersView = _mapper.Map<CustomersView>(customer);
+                return Ok(customersView);
+            } else if(account.Role == Accounts.AccountsRoleEnum.ADMIN)
+            {
+                return Ok("You are the administrator, no information to get");
+            }
+            return BadRequest("Something went wrong!");
         }
     }
 }

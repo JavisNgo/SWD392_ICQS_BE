@@ -79,8 +79,8 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the message. Error message: {ex.Message}");
             }
         }
-        [HttpDelete("/messages/{id}")]        
-        public IActionResult DeleteMessage(int id)
+        [HttpPut("/messageStatus/{id}")]        
+        public IActionResult ChangingStatusMessage(int id)
         {
             try
             {
@@ -89,14 +89,14 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Message with id {id} not found");
                 }
-                
-                    unitOfWork.MessageRepository.Delete(id);
+                    message.Status = false;
+                    unitOfWork.MessageRepository.Update(message);
                     unitOfWork.Save();
-                    return Ok(new { Message = $"Message with ID {id} has been successfully deleted." });
+                    return Ok(new { Message = $"Message with ID {id} set status to false successfully." });
                 
             }catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the message. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while changing status the message. Error message: {ex.Message}");
             }
         }
 

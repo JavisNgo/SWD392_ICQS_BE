@@ -92,8 +92,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("BlogId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("ImageBin")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("ImageBin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

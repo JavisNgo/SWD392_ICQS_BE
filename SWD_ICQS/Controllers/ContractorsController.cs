@@ -21,11 +21,13 @@ namespace SWD_ICQS.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly string _imagesDirectory;
 
-        public ContractorsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContractorsController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "contractorAvatar");
         }
 
         // GET: api/Contractors
@@ -95,13 +97,19 @@ namespace SWD_ICQS.Controllers
             }
             try
             {
-                // image string to bin
-                byte[] imageData = Convert.FromBase64String(contractorsView.AvatarBin);
-
+                string filename = null;
+                if (!String.IsNullOrEmpty(contractorsView.AvatarUrl))
+                {
+                    byte[] imageBytes = Convert.FromBase64String(contractorsView.AvatarUrl);
+                    filename = $"ContractorAvatar-{contractor.Id}.png";
+                    string imagePath = Path.Combine(_imagesDirectory, filename);
+                    System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                }
                 contractor.Name = contractorsView.Name;
                 contractor.Email = contractorsView.Email;
                 contractor.PhoneNumber = contractorsView.PhoneNumber;
                 contractor.Address = contractorsView.Address;
+                contractor.AvatarUrl = filename;
                 _unitOfWork.ContractorRepository.Update(contractor);
                 _unitOfWork.Save();
             } catch (Exception ex)

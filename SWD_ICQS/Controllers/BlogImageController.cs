@@ -75,39 +75,39 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpPut("/BlogImages/{id}")]
-        public IActionResult AddImageToBlog(int id, IFormFile formFile)
-        {
-            try
-            {
-                var existingBlog = unitOfWork.BlogImageRepository.GetByID(id);
-                if (existingBlog == null)
-                {
-                    return NotFound($"BLog with ID {id} not found.");
-                }
+        //[AllowAnonymous]
+        //[HttpPut("/BlogImages/{id}")]
+        //public IActionResult AddImageToBlog(int id, IFormFile formFile)
+        //{
+        //    try
+        //    {
+        //        var existingBlog = unitOfWork.BlogImageRepository.GetByID(id);
+        //        if (existingBlog == null)
+        //        {
+        //            return NotFound($"BLog with ID {id} not found.");
+        //        }
 
-                // Check if a file is uploaded
-                if (formFile != null && formFile.Length > 0)
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        formFile.CopyTo(memoryStream);
-                        existingBlog.ImageBin = memoryStream.ToArray();
-                    }
-                }
+        //        // Check if a file is uploaded
+        //        if (formFile != null && formFile.Length > 0)
+        //        {
+        //            using (var memoryStream = new MemoryStream())
+        //            {
+        //                formFile.CopyTo(memoryStream);
+        //                existingBlog.ImageBin = memoryStream.ToArray();
+        //            }
+        //        }
 
 
-                // Insert the new product into the database
-                unitOfWork.BlogImageRepository.Update(existingBlog);
-                unitOfWork.Save();
-                return Ok("Add Image Successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while save the blog. Error message: {ex.Message}");
-            }
-        }
+        //        // Insert the new product into the database
+        //        unitOfWork.BlogImageRepository.Update(existingBlog);
+        //        unitOfWork.Save();
+        //        return Ok("Add Image Successfully");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while save the blog. Error message: {ex.Message}");
+        //    }
+        //}
 
         [AllowAnonymous]
         [HttpDelete("/BlogImages/{id}")]

@@ -119,7 +119,7 @@ namespace SWD_ICQS.Controllers
                 if (!String.IsNullOrEmpty(contractorsView.AvatarUrl))
                 {
                     byte[] imageBytes = Convert.FromBase64String(contractorsView.AvatarUrl);
-                    filename = $"ContractorAvatar-{contractor.Id}.png";
+                    filename = $"ContractorAvatar_{contractor.Id}.png";
                     string imagePath = Path.Combine(_imagesDirectory, filename);
                     System.IO.File.WriteAllBytes(imagePath, imageBytes);
                 }

@@ -123,7 +123,7 @@ namespace SWD_ICQS.Controllers
                         {
                             string randomString = GenerateRandomString(15);
                             byte[] imageBytes = Convert.FromBase64String(item.ImageBin);
-                            string filename = $"BlogImage-{blogCreated.Id}-{randomString}.png";
+                            string filename = $"BlogImage_{blogCreated.Id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages
@@ -208,7 +208,7 @@ namespace SWD_ICQS.Controllers
                         {
                             string randomString = GenerateRandomString(15);
                             byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
-                            string filename = $"BlogImage-{id}-{randomString}.png";
+                            string filename = $"BlogImage_{id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages
@@ -229,7 +229,7 @@ namespace SWD_ICQS.Controllers
                         {
                             string randomString = GenerateRandomString(15);
                             byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
-                            string filename = $"BlogImage-{id}-{randomString}.png";
+                            string filename = $"BlogImage_{id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages

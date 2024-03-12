@@ -18,6 +18,7 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Products> productsRepository;
 
         private GenericRepository<Constructs> constructsRepository;
+        private GenericRepository<Contracts> contractsRepository;
 
         private GenericRepository<Orders> ordersRepository;
         private GenericRepository<ConstructProducts> constructProductsRepository;
@@ -41,7 +42,17 @@ namespace SWD_ICQS.Repository.Implements
         private bool disposed = false;
 
         public IGenericRepository<Accounts> AccountRepository => _accountRepository ??= new GenericRepository<Accounts>(context);
-
+        public IGenericRepository<Contracts> ContractRepository
+        {
+            get
+            {
+                if (contractsRepository == null)
+                {
+                    this.contractsRepository = new GenericRepository<Contracts>(context);
+                }
+                return contractsRepository;
+            }
+        }
         public IGenericRepository<Appointments> AppointmentRepository
         {
             get
@@ -91,7 +102,6 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Contractors> ContractorRepository => _contractorsRepository ??= new GenericRepository<Contractors>(context);
 
-        public IGenericRepository<Contracts> ContractRepository => throw new NotImplementedException();
 
         public IGenericRepository<Customers> CustomerRepository => _customersRepository ??= new GenericRepository<Customers>(context);
 

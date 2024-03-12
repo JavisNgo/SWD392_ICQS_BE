@@ -23,6 +23,9 @@ namespace SWD_ICQS.Mapper
             CreateMap<ConstructProducts, ConstructProductsView>().ReverseMap();
             CreateMap<ProductImages, ProductImagesView>().ReverseMap();
             CreateMap<ConstructImages, ConstructImagesView>().ReverseMap();
+            CreateMap<Requests, RequestView>().ReverseMap();
+            CreateMap<RequestDetails, RequestDetailView>().ReverseMap();
+
 
         }
     }

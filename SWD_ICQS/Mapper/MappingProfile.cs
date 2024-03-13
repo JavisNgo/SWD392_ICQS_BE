@@ -26,6 +26,7 @@ namespace SWD_ICQS.Mapper
             CreateMap<Requests, RequestView>().ReverseMap();
             CreateMap<RequestDetails, RequestDetailView>().ReverseMap();
 
+            CreateMap<Contracts, ContractsView>().ReverseMap();
 
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
+using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
 using System.Threading;
 
@@ -73,6 +74,7 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Price must be larger than 0");
                 }
                 Requests request = _mapper.Map<Requests>(requestView);
+                request.Status = 0;
                 request.TimeIn = DateTime.Now;
                 if (request.TimeIn.HasValue)
                 {
@@ -120,5 +122,106 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [HttpPut("/RequestAccepted/{id}")]
+        public IActionResult AcceptRequest(int id)
+        {
+            try
+            {
+                var existingRequest = unitOfWork.RequestRepository.GetByID(id);
+                if (existingRequest == null)
+                {
+                    return NotFound($"Request with ID : {id} not found");
+                }
+                existingRequest.Status = (Requests.RequestsStatusEnum?)2;
+                existingRequest.TimeOut = DateTime.Now.AddDays(14);
+                unitOfWork.RequestRepository.Update(existingRequest);
+                unitOfWork.Save();
+                var appointment = new Appointments
+                {
+                    CustomerId = existingRequest.CustomerId,
+                    ContractorId = existingRequest.ContractorId,
+                    RequestId = existingRequest.Id,
+                    MeetingDate = DateTime.Now.AddDays(7),
+                    Status = (Appointments.AppointmentsStatusEnum?)0
+                };
+                unitOfWork.AppointmentRepository.Insert(appointment);
+                unitOfWork.Save();
+                return Ok();
+            }catch(Exception ex)
+            {
+                return BadRequest($"An error occurred while accept request flow. Error message: {ex.Message}");
+            }
+
+        }
+
+        [HttpPut("/IsMeeting/{id}/")]
+        public IActionResult IsMeeting(int id)
+        {
+            try
+            {
+                var existingAppointment = unitOfWork.AppointmentRepository.GetByID(id);
+                if (existingAppointment == null)
+                {
+                    return NotFound($"Appointment with ID : {id} not found");
+                }
+                existingAppointment.Status = (Appointments.AppointmentsStatusEnum?)2;
+                unitOfWork.AppointmentRepository.Update(existingAppointment);
+                unitOfWork.Save();
+                var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
+                if(request == null)
+                {
+                    return NotFound("Request not found");
+                }
+                request.TimeOut = DateTime.Now.AddDays(14);
+                request.Status = (Requests.RequestsStatusEnum?)3;
+                unitOfWork.RequestRepository.Update(request);
+                unitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred while accept request flow. Error message: {ex.Message}");
+            }
+        }
+
+        //[HttpPut("/ContractsUploaded/{id}/")]
+        //public IActionResult ContractsUploaded(int id)
+        //{
+        //    try
+        //    {
+        //        var existingAppointment = unitOfWork.AppointmentRepository.GetByID(id);
+        //        if (existingAppointment == null)
+        //        {
+        //            return NotFound($"Appointment with ID : {id} not found");
+        //        }
+        //        existingAppointment.Status = (Appointments.AppointmentsStatusEnum?)3;
+
+        //        existingAppointment.Request.Status = (Requests.RequestsStatusEnum?)4;
+        //        if (existingAppointment.Status.Equals(0))
+        //        {
+
+        //        }
+
+
+        //        unitOfWork.AppointmentRepository.Update(existingAppointment);
+        //        unitOfWork.Save();
+        //        var contract = new Contracts
+        //        {
+        //            AppointmentId = existingAppointment.Id,
+        //            UploadDate = DateTime.Now,
+        //            Status = 1
+
+        //        };
+        //        unitOfWork.ContractRepository.Insert(contract);
+        //        unitOfWork.Save();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while accept request flow. Error message: {ex.Message}");
+        //    }
+        //}
+
     }
 }
+

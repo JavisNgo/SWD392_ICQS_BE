@@ -21,11 +21,13 @@ namespace SWD_ICQS.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly string _imagesDirectory;
 
-        public ContractorsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContractorsController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "contractorAvatar");
         }
 
         // GET: api/Contractors
@@ -33,45 +35,61 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/contractors")]
         public ActionResult<IEnumerable<ContractorsView>> GetContractors()
         {
-            if (_unitOfWork.ContractorRepository.Get() == null)
+            try
             {
-                return NotFound("No contractor found");
+                if (_unitOfWork.ContractorRepository.Get() == null)
+                {
+                    return NotFound("No contractor found");
+                }
+                List<Contractors> contractors = _unitOfWork.ContractorRepository.Get().ToList();
+                List<ContractorsView> contractorsViews = new List<ContractorsView>();
+                foreach (Contractors contractor in contractors)
+                {
+                    ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
+                    contractorsViews.Add(contractorsView);
+                }
+                return Ok(contractorsViews);
             }
-            List<Contractors> contractors = _unitOfWork.ContractorRepository.Get().ToList();
-            List<ContractorsView> contractorsViews = new List<ContractorsView>();
-            foreach(Contractors contractor in contractors)
+            catch (Exception ex)
             {
-                ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
-                contractorsViews.Add(contractorsView);
+                return StatusCode(500, ex.Message);
             }
-            return Ok(contractorsViews);
         }
 
         [AllowAnonymous]
         [HttpGet("/api/v1/contractors/id={id}")]
         public ActionResult<ContractorsView> GetContractor(int id)
         {
-            if (_unitOfWork.ContractorRepository.Get() == null)
+            try {
+                if (_unitOfWork.ContractorRepository.Get() == null)
+                {
+                    return NotFound("No contractor found");
+                }
+                var contractor = _unitOfWork.ContractorRepository.GetByID(id);
+                if (contractor == null)
+                {
+                    return NotFound("No contractor found");
+                }
+                string url = null;
+                if (!String.IsNullOrEmpty(contractor.AvatarUrl)) {
+                    url = $"https://localhost:7233/img/contractorAvatar/{contractor.AvatarUrl}";
+                }
+                var contractorsView = new ContractorsView
+                {
+                    Email = contractor.Email,
+                    Name = contractor.Name,
+                    PhoneNumber = contractor.PhoneNumber,
+                    Address = contractor.Address,
+                    SubscriptionId = contractor.SubscriptionId,
+                    ExpiredDate = contractor.ExpiredDate,
+                    AvatarUrl = url,
+                    AccountId = contractor.AccountId
+                };
+                return Ok(contractorsView);
+            } catch (Exception ex)
             {
-                return NotFound("No contractor found");
+                return StatusCode(500, ex.Message);
             }
-            var contractor = _unitOfWork.ContractorRepository.GetByID(id);
-            if (contractor == null)
-            {
-                return NotFound("No contractor found");
-            }
-            var contractorsView = new ContractorsView
-            {
-                Email = contractor.Email,
-                Name    = contractor.Name,
-                PhoneNumber = contractor.PhoneNumber,
-                Address = contractor.Address,
-                AvatarBin = Convert.ToBase64String(contractor.AvatarBin),
-                SubscriptionId = contractor.SubscriptionId,
-                ExpiredDate = contractor.ExpiredDate,
-                AccountId = contractor.AccountId
-            };
-            return Ok(contractorsView);
         }
 
         // PUT: api/Contractors/5
@@ -79,33 +97,47 @@ namespace SWD_ICQS.Controllers
         [AllowAnonymous]
         [HttpPut("/api/v1/contractors/username={username}")]
         public IActionResult UpdateContractor(string username, ContractorsView contractorsView)
-        {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            if (account == null)
-            {
-                return NotFound("No account found in database");
-            }
-            if (account.Id != contractorsView.AccountId)
-            {
-                return BadRequest("Your current loged in session is not valid, please log in right account to update");
-            }
-            var contractor = _unitOfWork.ContractorRepository.Find(a => a.AccountId == account.Id).FirstOrDefault();
-            if (contractor == null)
-            {
-                return NotFound("No contractor found");
-            }
+        { 
             try
             {
-                // image string to bin
-                byte[] imageData = Convert.FromBase64String(contractorsView.AvatarBin);
-
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                if (account == null)
+                {
+                    return NotFound("No account found in database");
+                }
+                if (account.Id != contractorsView.AccountId)
+                {
+                    return BadRequest("Your current loged in session is not valid, please log in right account to update");
+                }
+                var contractor = _unitOfWork.ContractorRepository.Find(a => a.AccountId == account.Id).FirstOrDefault();
+                if (contractor == null)
+                {
+                    return NotFound("No contractor found");
+                }
+                string filename = null;
+                string? tempString = contractor.AvatarUrl;
+                if (!String.IsNullOrEmpty(contractorsView.AvatarUrl))
+                {
+                    byte[] imageBytes = Convert.FromBase64String(contractorsView.AvatarUrl);
+                    filename = $"ContractorAvatar_{contractor.Id}.png";
+                    string imagePath = Path.Combine(_imagesDirectory, filename);
+                    System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                }
                 contractor.Name = contractorsView.Name;
                 contractor.Email = contractorsView.Email;
                 contractor.PhoneNumber = contractorsView.PhoneNumber;
                 contractor.Address = contractorsView.Address;
-                contractor.AvatarBin = imageData;
+                contractor.AvatarUrl = filename;
                 _unitOfWork.ContractorRepository.Update(contractor);
                 _unitOfWork.Save();
+                if(contractorsView.AvatarUrl == null && !String.IsNullOrEmpty(tempString))
+                {
+                    string imagePath = Path.Combine(_imagesDirectory, tempString);
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
             } catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -118,23 +150,23 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/contractors/status/id={id}")]
         public async Task<IActionResult> SetStatusContractor(int id)
         {
-            if(_unitOfWork.ContractorRepository.Get() == null)
-            {
-                return NotFound("No contractor in database to disable");
-            }
-            var contractor = _unitOfWork.ContractorRepository.GetByID(id);
-            if (contractor == null)
-            {
-                return NotFound("No contractor found");
-            }
-            var account = _unitOfWork.AccountRepository.Find(a => a.Id == contractor.AccountId).FirstOrDefault();
-            if(account == null)
-            {
-                return NotFound("No account found");
-            }
             try
             {
-                if(account.Status == true)
+                if (_unitOfWork.ContractorRepository.Get() == null)
+                {
+                    return NotFound("No contractor in database to disable");
+                }
+                var contractor = _unitOfWork.ContractorRepository.GetByID(id);
+                if (contractor == null)
+                {
+                    return NotFound("No contractor found");
+                }
+                var account = _unitOfWork.AccountRepository.Find(a => a.Id == contractor.AccountId).FirstOrDefault();
+                if (account == null)
+                {
+                    return NotFound("No account found");
+                }
+                if (account.Status == true)
                 {
                     account.Status = false;
                     _unitOfWork.AccountRepository.Update(account);
@@ -149,7 +181,7 @@ namespace SWD_ICQS.Controllers
                 }
             } catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, ex.Message);
             }
             return BadRequest("Something went wrong!");
         }

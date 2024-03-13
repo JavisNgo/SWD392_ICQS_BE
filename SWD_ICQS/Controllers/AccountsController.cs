@@ -167,43 +167,60 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            if(account == null)
+            try
             {
-                return NotFound("No account found in database");
-            }
-            if(account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
-            {
-                if (_unitOfWork.ContractorRepository.Get() == null)
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                if (account == null)
                 {
-                    return NotFound("No contractor found in database");
+                    return NotFound("No account found in database");
                 }
-                var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                if (account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
+                {
+                    if (_unitOfWork.ContractorRepository.Get() == null)
+                    {
+                        return NotFound("No contractor found in database");
+                    }
+                    var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
 
-                if (contractor == null)
-                {
-                    return NotFound($"No contractor contains username = {username} in database");
+                    if (contractor == null)
+                    {
+                        return NotFound($"No contractor contains username = {username} in database");
+                    }
+                    ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
+
+                    string url = null;
+                    if (!String.IsNullOrEmpty(contractor.AvatarUrl))
+                    {
+                        url = $"https://localhost:7233/img/contractorAvatar/{contractor.AvatarUrl}";
+                    }
+
+                    contractorsView.AvatarUrl = url;
+
+                    return Ok(contractorsView);
                 }
-                ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
-                return Ok(contractorsView);
-            } else if(account.Role == Accounts.AccountsRoleEnum.CUSTOMER)
+                else if (account.Role == Accounts.AccountsRoleEnum.CUSTOMER)
+                {
+                    if (_unitOfWork.CustomerRepository.Get() == null)
+                    {
+                        return NotFound("No customer found in database");
+                    }
+                    var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                    if (customer == null)
+                    {
+                        return NotFound($"No customer contains username = {username} in database");
+                    }
+                    CustomersView customersView = _mapper.Map<CustomersView>(customer);
+                    return Ok(customersView);
+                }
+                else if (account.Role == Accounts.AccountsRoleEnum.ADMIN)
+                {
+                    return Ok("You are the administrator, no information to get");
+                }
+                return BadRequest("Something went wrong!");
+            } catch (Exception ex)
             {
-                if(_unitOfWork.CustomerRepository.Get() == null)
-                {
-                    return NotFound("No customer found in database");
-                }
-                var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-                if (customer == null)
-                {
-                    return NotFound($"No customer contains username = {username} in database");
-                }
-                CustomersView customersView = _mapper.Map<CustomersView>(customer);
-                return Ok(customersView);
-            } else if(account.Role == Accounts.AccountsRoleEnum.ADMIN)
-            {
-                return Ok("You are the administrator, no information to get");
+                return StatusCode(500, ex.Message);
             }
-            return BadRequest("Something went wrong!");
         }
     }
 }

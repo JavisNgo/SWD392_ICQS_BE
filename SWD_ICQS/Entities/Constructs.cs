@@ -9,8 +9,10 @@ namespace SWD_ICQS.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        public string? Code { get; set; }
         public int ContractorId { get; set; }
         public int CategoryId { get; set; }
+        public string? Name { get; set; }
         public double? EstimatedPrice { get; set; }
         public bool? Status { get; set; }
         

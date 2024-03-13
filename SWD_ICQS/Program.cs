@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using SWD_ICQS.BackgroundServices;
 using SWD_ICQS.Mapper;
@@ -41,6 +42,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.Al
 // Background process
 builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
 builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
+builder.Services.AddHostedService<DeleteStatusFalseMessageBackgroundService>();
+builder.Services.AddHostedService<ExpiredFirstMeetingDateBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
@@ -63,7 +66,41 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors();
+// Access static file
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "img", "blogImage")),
+    RequestPath = "/img/blogImage"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "img", "constructImage")),
+    RequestPath = "/img/constructImage"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "img", "contractorAvatar")),
+    RequestPath = "/img/contractorAvatar"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "img", "messageImage")),
+    RequestPath = "/img/messageImage"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "img", "productImage")),
+    RequestPath = "/img/productImage"
+});
 
 app.UseHttpsRedirection();
 

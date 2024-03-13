@@ -10,7 +10,7 @@ namespace SWD_ICQS.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int ConstructId { get; set; }
-        public byte[]? ImageBin { get; set; }
+        public string? ImageUrl { get; set; }
 
         // Relationship
         public Constructs? Construct { get; set; }

@@ -25,6 +25,7 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/ConstructImages")]
         public async Task<IActionResult> getAllConstructImages()
         {
+            
             try
             {
                 var constructImages = unitOfWork.ConstructImageRepository.Get();

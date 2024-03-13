@@ -47,6 +47,10 @@ namespace SWD_ICQS.Controllers
                     // Kiểm tra xem thời hạn Timeout của yêu cầu còn hay không
                     if (checkingRequest.TimeOut.HasValue && checkingRequest.TimeOut > DateTime.Now)
                     {
+                        // Cập nhật trạng thái của yêu cầu thành SIGNED
+                        checkingRequest.Status = Requests.RequestsStatusEnum.SIGNED;
+                        unitOfWork.RequestRepository.Update(checkingRequest);
+
                         // Lấy và cập nhật appointment gần nhất thành SIGNED
                         var latestAppointment = unitOfWork.AppointmentRepository.Get(
                             filter: a => a.RequestId == checkingRequest.Id,

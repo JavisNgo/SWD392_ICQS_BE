@@ -30,23 +30,39 @@ namespace SWD_ICQS.BackgroundServices
                         appointment.Status = Appointments.AppointmentsStatusEnum.CANCELLED; // Set default subscription ID
 
                         unitOfWork.AppointmentRepository.Update(appointment);
+                        unitOfWork.Save();
+                        var countAppointment = unitOfWork.AppointmentRepository.Find(a => a.RequestId == appointment.RequestId);
+                        
                         var existingRequest = unitOfWork.RequestRepository.GetByID(appointment.RequestId);
-                        if (existingRequest != null)
+                        if (countAppointment.Count().Equals(1))
                         {
-                            var newAppointment = new Appointments
+                            if (existingRequest != null)
                             {
-                                ContractorId = appointment.ContractorId,
-                                CustomerId = appointment.CustomerId,
-                                RequestId = appointment.RequestId,
-                                MeetingDate = existingRequest.TimeOut,
-                                Status = 0
-                            };
-                            unitOfWork.AppointmentRepository.Insert(newAppointment);
+                                var newAppointment = new Appointments
+                                {
+                                    ContractorId = appointment.ContractorId,
+                                    CustomerId = appointment.CustomerId,
+                                    RequestId = appointment.RequestId,
+                                    MeetingDate = existingRequest.TimeOut,
+                                    Status = 0
+                                };
+                                unitOfWork.AppointmentRepository.Insert(newAppointment);
+                                unitOfWork.Save();
+                            }
+                        }
+                        if (countAppointment.Count().Equals(2))
+                        {
+                            if (existingRequest != null)
+                            {
+                                existingRequest.Status = Requests.RequestsStatusEnum.REJECTED;
+                                unitOfWork.RequestRepository.Update(existingRequest);
+                                unitOfWork.Save();
+                            }
                         }
                     }
 
-                    // Save changes to the database
-                    unitOfWork.Save();
+                    
+                    
                     
                 }
 

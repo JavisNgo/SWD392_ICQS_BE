@@ -100,18 +100,10 @@ namespace SWD_ICQS.Controllers
 
                 _mapper.Map(requestDetailView, existingrequestDetail);
 
-                // Mark the entity as modified
                 unitOfWork.RequestDetailRepository.Update(existingrequestDetail);
                 unitOfWork.Save();
 
-                // Manually serialize the object to avoid potential serialization issues
-                var resultJson = JsonConvert.SerializeObject(existingrequestDetail, new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                    // Add any other settings as needed
-                });
-
-                return Ok(resultJson);
+                return Ok(requestDetailView);
             }
             catch (Exception ex)
             {

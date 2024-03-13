@@ -79,5 +79,9 @@ namespace SWD_ICQS.Repository.Implements
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).State = EntityState.Modified;
         }
+        public bool Any(Expression<Func<TEntity, bool>> predicate)
+        {
+            return dbSet.Any(predicate);
+        }
     }
 }

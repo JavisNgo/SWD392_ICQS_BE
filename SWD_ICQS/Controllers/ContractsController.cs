@@ -33,39 +33,53 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Request with ID {contractView.RequestId} not found.");
                 }
 
-                // Kiểm tra xem thời hạn Timeout của yêu cầu còn hay không
-                if (checkingRequest.TimeOut.HasValue && checkingRequest.TimeOut > DateTime.Now)
+                var checkingAppointment = unitOfWork.AppointmentRepository.GetByID(contractView.AppointmentId);
+
+                if (checkingAppointment == null)
                 {
-                    // Nếu còn thời hạn, cập nhật trạng thái của yêu cầu thành SIGNED
-                    checkingRequest.Status = Requests.RequestsStatusEnum.SIGNED;
+                    return NotFound($"Appointment with ID {contractView.AppointmentId} not found.");
+                }
 
-                    // Cập nhật yêu cầu trong cơ sở dữ liệu
-                    unitOfWork.RequestRepository.Update(checkingRequest);
-
-                    // Lấy và cập nhật appointment gần nhất thành SIGNED
-                    var latestAppointment = unitOfWork.AppointmentRepository.GetByID(checkingRequest.Id);
-
-                    if (latestAppointment != null)
+                // Kiểm tra xem trạng thái của yêu cầu và cuộc hẹn có đúng không
+                if (checkingRequest.Status == Requests.RequestsStatusEnum.COMPLETED &&
+                    checkingAppointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
+                {
+                    // Kiểm tra xem thời hạn Timeout của yêu cầu còn hay không
+                    if (checkingRequest.TimeOut.HasValue && checkingRequest.TimeOut > DateTime.Now)
                     {
-                        latestAppointment.Status = Appointments.AppointmentsStatusEnum.SIGNED;
-                        unitOfWork.AppointmentRepository.Update(latestAppointment);
+                        // Lấy và cập nhật appointment gần nhất thành SIGNED
+                        var latestAppointment = unitOfWork.AppointmentRepository.Get(
+                            filter: a => a.RequestId == checkingRequest.Id,
+                            orderBy: q => q.OrderByDescending(a => a.MeetingDate),
+                            includeProperties: "Request"
+                        ).FirstOrDefault();
+
+                        if (latestAppointment != null)
+                        {
+                            latestAppointment.Status = Appointments.AppointmentsStatusEnum.SIGNED;
+                            unitOfWork.AppointmentRepository.Update(latestAppointment);
+                        }
+
+                        // Tạo một Contracts mới
+                        var newContract = _mapper.Map<Contracts>(contractView);
+                        newContract.UploadDate = DateTime.Now;
+
+                        // Thêm bản hợp đồng vào repository
+                        unitOfWork.ContractRepository.Insert(newContract);
+
+                        // Lưu các thay đổi vào cơ sở dữ liệu
+                        unitOfWork.Save();
+
+                        return Ok(contractView);
                     }
-
-                    // Tạo một Contracts mới
-                    var newContract = _mapper.Map<Contracts>(contractView);
-                    newContract.UploadDate = DateTime.Now;
-
-                    // Thêm bản hợp đồng vào repository
-                    unitOfWork.ContractRepository.Insert(newContract);
-
-                    // Lưu các thay đổi vào cơ sở dữ liệu
-                    unitOfWork.Save();
-
-                    return Ok(contractView);
+                    else
+                    {
+                        return BadRequest("The request has expired.");
+                    }
                 }
                 else
                 {
-                    return BadRequest("The request has expired.");
+                    return BadRequest("Both request and appointment must have status COMPLETED.");
                 }
             }
             catch (Exception ex)
@@ -73,6 +87,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the contract. Error message: {ex.Message}");
             }
         }
+
 
 
 
@@ -87,6 +102,12 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Contract with ID {id} not found.");
                 }
+                var checkingRequest = unitOfWork.RequestRepository.GetByID(contractsView.RequestId);
+
+                if (checkingRequest == null)
+                {
+                    return NotFound($"Request with ID {contractsView.RequestId} not found.");
+                }
                 var checkingAppointmentId = unitOfWork.AppointmentRepository.GetByID(id);
                 // Validate the name using a regular expression
                 if (checkingAppointmentId == null)
@@ -100,11 +121,11 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.ContractRepository.Update(existingContract);
                 unitOfWork.Save();
 
-                return Ok(contractsView); // Return the updated category
+                return Ok(contractsView); 
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while updating the category. Error message: {ex.Message}");
+                return BadRequest($"An error occurred while updating the contract. Error message: {ex.Message}");
             }
         }
     }

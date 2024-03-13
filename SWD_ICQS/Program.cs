@@ -102,6 +102,8 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/img/productImage"
 });
 
+app.UseCors();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

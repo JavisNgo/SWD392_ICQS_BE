@@ -106,11 +106,11 @@ VALUES ('Category 1'),
 GO
 
 -- Constructs
-INSERT INTO Constructs (ContractorId, CategoryId, EstimatedPrice, Status)
+INSERT INTO Constructs (ContractorId, CategoryId, Name, EstimatedPrice, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 1'), 500.00, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 2'), 750.00, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 3'), 1000.00, 1);
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 1'), 'Construct Name 2', 500.00, 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 2'), 'Construct Name 2', 750.00, 1),
+    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 3'), 'Construct Name 2', 1000.00, 1);
 GO
 
 -- ConstructProducts

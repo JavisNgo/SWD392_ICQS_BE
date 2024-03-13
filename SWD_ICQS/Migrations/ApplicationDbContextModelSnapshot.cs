@@ -213,6 +213,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<double?>("EstimatedPrice")
                         .HasColumnType("float");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("Status")
                         .HasColumnType("bit");
 

@@ -61,18 +61,18 @@ VALUES
 GO
 
 -- Blogs
-INSERT INTO Blogs (ContractorId, Title, Content, PostTime, EditTime, Status)
+INSERT INTO Blogs (Code, ContractorId, Title, Content, PostTime, EditTime, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 1', 'Content of Blog 1', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 2', 'Content of Blog 2', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 3', 'Content of Blog 3', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 4', 'Content of Blog 4', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 5', 'Content of Blog 5', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 6', 'Content of Blog 6', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 7', 'Content of Blog 7', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 8', 'Content of Blog 8', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 9', 'Content of Blog 9', GETDATE(), GETDATE(), 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 10', 'Content of Blog 10', GETDATE(), GETDATE(), 1);
+    ('B-1-2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 1', 'Content of Blog 1', GETDATE(), GETDATE(), 1),
+    ('B-1-1243524611', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 2', 'Content of Blog 2', GETDATE(), GETDATE(), 1),
+    ('B-1-5314132121', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 3', 'Content of Blog 3', GETDATE(), GETDATE(), 1),
+    ('B-1-7645374356', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 4', 'Content of Blog 4', GETDATE(), GETDATE(), 1),
+    ('B-1-6523454352', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 5', 'Content of Blog 5', GETDATE(), GETDATE(), 1),
+    ('B-1-8465725435', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 6', 'Content of Blog 6', GETDATE(), GETDATE(), 1),
+    ('B-1-2453253456', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 7', 'Content of Blog 7', GETDATE(), GETDATE(), 1),
+    ('B-1-9867567456', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 8', 'Content of Blog 8', GETDATE(), GETDATE(), 1),
+    ('B-1-9867567456', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 9', 'Content of Blog 9', GETDATE(), GETDATE(), 1),
+    ('B-1-4573645235', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Title of Blog 10', 'Content of Blog 10', GETDATE(), GETDATE(), 1);
 GO
 
 -- Orders
@@ -84,18 +84,18 @@ VALUES
 GO
 
 -- Products
-INSERT INTO Products (ContractorId, Name, Description, Price, Status)
+INSERT INTO Products (Code, ContractorId, Name, Description, Price, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 1', 'Description of Product 1', 10.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 2', 'Description of Product 2', 20.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 3', 'Description of Product 3', 30.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 4', 'Description of Product 4', 40.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 5', 'Description of Product 5', 50.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 6', 'Description of Product 6', 60.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 7', 'Description of Product 7', 70.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 8', 'Description of Product 8', 80.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 9', 'Description of Product 9', 90.99, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 10', 'Description of Product 10', 100.99, 1);
+    ('P-1-2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 1', 'Description of Product 1', 10.99, 1),
+    ('P-1-6435543132', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 2', 'Description of Product 2', 20.99, 1),
+    ('P-1-7354253654', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 3', 'Description of Product 3', 30.99, 1),
+    ('P-1-1545246355', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 4', 'Description of Product 4', 40.99, 1),
+    ('P-1-7542645441', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 5', 'Description of Product 5', 50.99, 1),
+    ('P-1-7532542435', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 6', 'Description of Product 6', 60.99, 1),
+    ('P-1-3754863221', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 7', 'Description of Product 7', 70.99, 1),
+    ('P-1-7633432662', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 8', 'Description of Product 8', 80.99, 1),
+    ('P-1-1752473554', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 9', 'Description of Product 9', 90.99, 1),
+    ('P-1-9746654622', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 10', 'Description of Product 10', 100.99, 1);
 GO
 
 -- Categories
@@ -106,11 +106,11 @@ VALUES ('Category 1'),
 GO
 
 -- Constructs
-INSERT INTO Constructs (ContractorId, CategoryId, Name, EstimatedPrice, Status)
+INSERT INTO Constructs (Code, ContractorId, CategoryId, Name, EstimatedPrice, Status)
 VALUES
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 1'), 'Construct Name 2', 500.00, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 2'), 'Construct Name 2', 750.00, 1),
-    ((SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 3'), 'Construct Name 2', 1000.00, 1);
+    ('C-1-2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 1'), 'Construct Name 2', 500.00, 1),
+    ('C-1-6875463452', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 2'), 'Construct Name 2', 750.00, 1),
+    ('C-1-6523454276', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 3'), 'Construct Name 2', 1000.00, 1);
 GO
 
 -- ConstructProducts

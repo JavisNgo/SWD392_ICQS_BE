@@ -15,19 +15,38 @@ namespace SWD_ICQS.Controllers
     {
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly string _imagesDirectory;
 
-        public ProductController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "blogImage");
         }
-        [HttpGet("/Products")]
+        [HttpGet("/api/v1/products/get")]
         public async Task<IActionResult> getAllProducts()
         {
             try
             {
-                var products = unitOfWork.ProductRepository.Get();
-                return Ok(products);
+                List<ProductsView> productsViews = new List<ProductsView>();
+                var productsList = unitOfWork.ProductRepository.Get();
+                foreach (var product in productsList)
+                {
+                    var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
+                    var productsView = _mapper.Map<ProductsView>(product);
+
+                    if (productImages.Any())
+                    {
+                        productsView.productImagesViews = new List<ProductImagesView>();
+                        foreach(var image in productImages)
+                        {
+                            image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
+                            productsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
+                        }
+                    }
+                    productsViews.Add(productsView);
+                }
+                return Ok(productsViews);
             }
             catch (Exception ex)
             {
@@ -35,7 +54,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/Products/{id}")]
+        [HttpGet("/api/v1/products/get/id={id}")]
         public IActionResult getProductByID(int id)
         {
             try
@@ -45,7 +64,22 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Product with ID: {id} not found");
                 }
-                return Ok(product);
+
+                var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
+
+                var productsView = _mapper.Map<ProductsView>(product);
+
+                if(productImages.Any())
+                {
+                    productsView.productImagesViews = new List<ProductImagesView>();
+                    foreach(var image in productImages)
+                    {
+                        image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
+                        productsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
+                    }
+                }
+
+                return Ok(productsView);
             }
             catch(Exception ex)
             {
@@ -53,7 +87,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPost("/Products")]
+        [HttpPost("/api/v1/products/post")]
         public IActionResult AddProduct([FromBody] ProductsView productsView)
         {
             try
@@ -73,10 +107,12 @@ namespace SWD_ICQS.Controllers
                 {
                     return BadRequest("Invalid Price. It should be a non-negative number.");
                 }
+
                 var product = _mapper.Map<Products>(productsView);
                 product.Status = true;
                 unitOfWork.ProductRepository.Insert(product);
                 unitOfWork.Save();
+
                 return Ok(productsView);
 
             }catch (Exception ex)
@@ -126,7 +162,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPut("/ProductStatus/{id}")]
+        [HttpPut("/api/v1/products/status/id={id}")]
         public IActionResult ChangeStatusProduct(int id)
         {
             try
@@ -136,7 +172,13 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Product with ID: {id} not found");
                 }
-                product.Status = false;
+                if(product.Status == true)
+                {
+                    product.Status = false;
+                } else if(product.Status == false)
+                {
+                    product.Status = true;
+                }
                 unitOfWork.ProductRepository.Update(product);
                 unitOfWork.Save();
                 return Ok($"Product with ID {id} set status to false successfully.");

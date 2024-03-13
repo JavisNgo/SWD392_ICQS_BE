@@ -2,6 +2,7 @@
 {
     public class BlogsView
     {
+        public string? Code { get; set; }
         public int ContractorId { get; set; }
         public string? Title { get; set; }
         public string? Content { get; set; }

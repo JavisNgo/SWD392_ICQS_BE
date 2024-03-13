@@ -5,7 +5,9 @@ using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 namespace SWD_ICQS.Controllers
 {
@@ -21,7 +23,7 @@ namespace SWD_ICQS.Controllers
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
-            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "blogImage");
+            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "productImage");
         }
         [HttpGet("/api/v1/products/get")]
         public async Task<IActionResult> getAllProducts()
@@ -54,15 +56,15 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/api/v1/products/get/id={id}")]
-        public IActionResult getProductByID(int id)
+        [HttpGet("/api/v1/products/get/code={code}")]
+        public IActionResult getProductByID(string? code)
         {
             try
             {
-                var product = unitOfWork.ProductRepository.GetByID(id);
+                var product = unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault();
                 if(product == null)
                 {
-                    return NotFound($"Product with ID: {id} not found");
+                    return NotFound($"Product with Code: {code} not found");
                 }
 
                 var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
@@ -109,17 +111,73 @@ namespace SWD_ICQS.Controllers
                 }
 
                 var product = _mapper.Map<Products>(productsView);
+
+                string code = $"P_{product.ContractorId}_{GenerateRandomCode(10)}";
+                product.Code = code;
                 product.Status = true;
                 unitOfWork.ProductRepository.Insert(product);
                 unitOfWork.Save();
 
-                return Ok(productsView);
+                var createdProduct = unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault();
+
+                if (productsView.productImagesViews.Any())
+                {
+                    foreach(var image in productsView.productImagesViews)
+                    {
+                        if (!String.IsNullOrEmpty(image.ImageUrl))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                            string filename = $"ProductImage_{createdProduct.Id}_{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var productImage = new ProductImages
+                            {
+                                ProductId = createdProduct.Id,
+                                ImageUrl = filename
+                            };
+                            unitOfWork.ProductImageRepository.Insert(productImage);
+                            unitOfWork.Save();
+                        }
+                    }
+                }
+
+                return Ok("Added successfully");
 
             }catch (Exception ex)
             {
                 return BadRequest($"An error occurred while adding the product. Error message: {ex.Message}");
             }
         }
+
+        public static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public static string GenerateRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
         [HttpPut("/Products/{id}")]
         public IActionResult UpdateProduct(int id, [FromBody] ProductsView productsView)
         {

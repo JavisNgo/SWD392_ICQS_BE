@@ -3,7 +3,7 @@
     public class BlogImagesView
     {
         public int BlogId { get; set; }
-        public string? ImageBin { get; set; }
+        public string? ImageUrl { get; set; }
 
     }
 }

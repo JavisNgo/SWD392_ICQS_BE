@@ -45,7 +45,7 @@ namespace SWD_ICQS.Controllers
                         blogsView.blogImagesViews = new List<BlogImagesView>();
                         foreach (var image in blogImages)
                         {
-                            image.ImageBin = $"https://localhost:7233/img/blogImage/{image.ImageBin}";
+                            image.ImageUrl = $"https://localhost:7233/img/blogImage/{image.ImageUrl}";
                             blogsView.blogImagesViews.Add(_mapper.Map<BlogImagesView>(image));
                         }
                     }
@@ -61,16 +61,16 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/api/v1/blogs/id={id}")]
-        public IActionResult GetBlogById(int id)
+        [HttpGet("/api/v1/blogs/code={code}")]
+        public IActionResult GetBlogById(string? code)
         {
             try
             {
-                var blog = unitOfWork.BlogRepository.GetByID(id);
+                var blog = unitOfWork.BlogRepository.Find(b => b.Code == code).FirstOrDefault();
 
                 if (blog == null)
                 {
-                    return NotFound($"Blog with ID {id} not found.");
+                    return NotFound($"Blog with Code: {code} not found.");
                 }
 
                 var blogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == blog.Id).ToList();
@@ -82,7 +82,7 @@ namespace SWD_ICQS.Controllers
                     blogsView.blogImagesViews = new List<BlogImagesView>();
                     foreach (var image in blogImages)
                     {
-                        image.ImageBin = $"https://localhost:7233/img/blogImage/{image.ImageBin}";
+                        image.ImageUrl = $"https://localhost:7233/img/blogImage/{image.ImageUrl}";
                         blogsView.blogImagesViews.Add(_mapper.Map<BlogImagesView>(image));
                     }
                 }
@@ -108,28 +108,31 @@ namespace SWD_ICQS.Controllers
                 }
 
                 Blogs blog = _mapper.Map<Blogs>(blogView);
+
+                string code = $"B_{blog.ContractorId}_{GenerateRandomCode(10)}";
+                blog.Code = code;
                 DateTime postTime = DateTime.Now;
                 blog.PostTime = postTime;
                 unitOfWork.BlogRepository.Insert(blog);
                 unitOfWork.Save();
 
-                var blogCreated = unitOfWork.BlogRepository.Find(b => b.ContractorId == blogView.ContractorId && b.Content == blogView.Content && b.Title == blogView.Title && b.PostTime == postTime).FirstOrDefault();
+                var blogCreated = unitOfWork.BlogRepository.Find(b => b.ContractorId == blogView.ContractorId && b.Content == blogView.Content && b.Title == blogView.Title && b.PostTime == postTime && b.Code == code).FirstOrDefault();
 
                 if(blogView.blogImagesViews.Any())
                 {
                     foreach (var item in blogView.blogImagesViews)
                     {
-                        if (!String.IsNullOrEmpty(item.ImageBin))
+                        if (!String.IsNullOrEmpty(item.ImageUrl))
                         {
                             string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(item.ImageBin);
+                            byte[] imageBytes = Convert.FromBase64String(item.ImageUrl);
                             string filename = $"BlogImage_{blogCreated.Id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages
                             {
                                 BlogId = blogCreated.Id,
-                                ImageBin = filename
+                                ImageUrl = filename
                             };
                             unitOfWork.BlogImageRepository.Insert(blogImage);
                             unitOfWork.Save();
@@ -143,6 +146,20 @@ namespace SWD_ICQS.Controllers
             {
                 return BadRequest($"An error occurred while adding the blog. Error message: {ex.Message}");
             }
+        }
+
+        public static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
         }
 
         public static string GenerateRandomString(int length)
@@ -161,15 +178,15 @@ namespace SWD_ICQS.Controllers
 
 
         [AllowAnonymous]
-        [HttpPut("/api/v1/blogs/update/id={id}")]
-        public IActionResult UpdateBlog(int id, [FromBody] BlogsView blogView)
+        [HttpPut("/api/v1/blogs/update/code={code}")]
+        public IActionResult UpdateBlog(string? code, [FromBody] BlogsView blogView)
         {
             try
             {
-                var existingBlog = unitOfWork.BlogRepository.GetByID(id);
+                var existingBlog = unitOfWork.BlogRepository.Find(b => b.Code == code).FirstOrDefault();
                 if (existingBlog == null)
                 {
-                    return NotFound($"BLog with ID : {id} not found");
+                    return NotFound($"BLog with Code : {code} not found");
                 }
                 var checkingContractorID = unitOfWork.ContractorRepository.GetByID(blogView.ContractorId);
                 if (checkingContractorID == null)
@@ -177,7 +194,7 @@ namespace SWD_ICQS.Controllers
                     return NotFound("ContractorID not found");
                 }
 
-                var currentBlogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == id).ToList();
+                var currentBlogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == existingBlog.Id).ToList();
 
                 existingBlog.ContractorId = blogView.ContractorId;
                 existingBlog.Title = blogView.Title;
@@ -192,9 +209,9 @@ namespace SWD_ICQS.Controllers
                 int countUrl = 0;
                 foreach (var image in blogView.blogImagesViews)
                 {
-                    if (!String.IsNullOrEmpty(image.ImageBin))
+                    if (!String.IsNullOrEmpty(image.ImageUrl))
                     {
-                        if (image.ImageBin.Contains("https://localhost:7233/img/blogImage/")) {
+                        if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/")) {
                             countUrl++;
                         }
                     }
@@ -204,17 +221,17 @@ namespace SWD_ICQS.Controllers
                 {
                     foreach (var image in blogView.blogImagesViews)
                     {
-                        if (!image.ImageBin.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageBin))
+                        if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
                         {
                             string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
-                            string filename = $"BlogImage_{id}_{randomString}.png";
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                            string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages
                             {
-                                BlogId = id,
-                                ImageBin = filename
+                                BlogId = existingBlog.Id,
+                                ImageUrl = filename
                             };
                             unitOfWork.BlogImageRepository.Insert(blogImage);
                             unitOfWork.Save();
@@ -225,27 +242,27 @@ namespace SWD_ICQS.Controllers
                     List<BlogImages> tempList = currentBlogImages;
                     foreach (var image in blogView.blogImagesViews)
                     {
-                        if (!image.ImageBin.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageBin))
+                        if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
                         {
                             string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageBin);
-                            string filename = $"BlogImage_{id}_{randomString}.png";
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                            string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
                             string imagePath = Path.Combine(_imagesDirectory, filename);
                             System.IO.File.WriteAllBytes(imagePath, imageBytes);
                             var blogImage = new BlogImages
                             {
-                                BlogId = id,
-                                ImageBin = filename
+                                BlogId = existingBlog.Id,
+                                ImageUrl = filename
                             };
                             unitOfWork.BlogImageRepository.Insert(blogImage);
                             unitOfWork.Save();
                         }
-                        else if (image.ImageBin.Contains("https://localhost:7233/img/blogImage/"))
+                        else if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/"))
                         {
                             for (int i = tempList.Count - 1; i >= 0; i--)
                             {
-                                string url = $"https://localhost:7233/img/blogImage/{tempList[i].ImageBin}";
-                                if (url.Equals(image.ImageBin))
+                                string url = $"https://localhost:7233/img/blogImage/{tempList[i].ImageUrl}";
+                                if (url.Equals(image.ImageUrl))
                                 {
                                     tempList.RemoveAt(i);
                                 }
@@ -256,9 +273,9 @@ namespace SWD_ICQS.Controllers
                     {
                         unitOfWork.BlogImageRepository.Delete(temp);
                         unitOfWork.Save();
-                        if (!String.IsNullOrEmpty(temp.ImageBin))
+                        if (!String.IsNullOrEmpty(temp.ImageUrl))
                         {
-                            string imagePath = Path.Combine(_imagesDirectory, temp.ImageBin);
+                            string imagePath = Path.Combine(_imagesDirectory, temp.ImageUrl);
                             if (System.IO.File.Exists(imagePath))
                             {
                                 System.IO.File.Delete(imagePath);

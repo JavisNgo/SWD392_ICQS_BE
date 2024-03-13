@@ -12,7 +12,7 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240313021957_Initial")]
+    [Migration("20240313043203_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,7 +94,7 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("BlogId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImageBin")
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

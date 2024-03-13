@@ -217,15 +217,15 @@ namespace SWD_ICQS.Controllers
 
 
         [AllowAnonymous]
-        [HttpPut("/api/v1/blogs/put/code={code}")]
-        public IActionResult UpdateBlog(string? code, [FromBody] BlogsView blogView)
+        [HttpPut("/api/v1/blogs/put")]
+        public IActionResult UpdateBlog([FromBody] BlogsView blogView)
         {
             try
             {
-                var existingBlog = unitOfWork.BlogRepository.Find(b => b.Code == code).FirstOrDefault();
+                var existingBlog = unitOfWork.BlogRepository.Find(b => b.Code == blogView.Code).FirstOrDefault();
                 if (existingBlog == null)
                 {
-                    return NotFound($"BLog with Code : {code} not found");
+                    return NotFound($"Blog with Code : {blogView.Code} not found");
                 }
 
                 var currentBlogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == existingBlog.Id).ToList();

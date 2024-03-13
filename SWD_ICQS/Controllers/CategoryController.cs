@@ -20,8 +20,8 @@ namespace SWD_ICQS.Controllers
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [Authorize]
-        [HttpGet("/Categories")]
+        [AllowAnonymous]
+        [HttpGet("/api/v1/categories/get")]
         public async Task<IActionResult> getAllCategories()
         {
             try
@@ -31,11 +31,12 @@ namespace SWD_ICQS.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
+                return StatusCode(500, ex.Message);
             }
         }
-        [Authorize]
-        [HttpGet("/Categories/{id}")]
+
+        [AllowAnonymous]
+        [HttpGet("/api/v1/categories/get/id={id}")]
         public IActionResult GetCategoryById(int id)
         {
             try
@@ -47,15 +48,38 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Category with ID {id} not found.");
                 }
 
-                return Ok(category);
+                var categoriesView = _mapper.Map<CategoriesView>(category);
+
+                var constructLists = unitOfWork.ConstructRepository.Find(c => c.CategoryId == id).ToList();
+
+                if(constructLists.Any())
+                {
+                    categoriesView.constructsViewList = new List<ConstructsView>();
+                    foreach (var construct in constructLists)
+                    {
+                        categoriesView.constructsViewList.Add(_mapper.Map<ConstructsView>(construct));
+                    }
+                    foreach (var construct in categoriesView.constructsViewList)
+                    {
+                        construct.constructImagesViews = new List<ConstructImagesView>();
+                        var imageLists = unitOfWork.ConstructImageRepository.Find(c => c.ConstructId == construct.Id).ToList();
+                        foreach (var image in imageLists)
+                        {
+                            image.ImageUrl = $"https://localhost:7233/img/constructImage/{image.ImageUrl}";
+                            construct.constructImagesViews.Add(_mapper.Map<ConstructImagesView>(image));
+                        }
+                    }
+                }
+
+                return Ok(categoriesView);
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while getting the category. Error message: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
-        [Authorize]
-        [HttpPost("/Categories")]
+        [AllowAnonymous]
+        [HttpPost("/api/v1/categories/post")]
         public IActionResult AddCategory([FromBody] CategoriesView categoryView)
         {
             try
@@ -69,15 +93,16 @@ namespace SWD_ICQS.Controllers
                 var category = _mapper.Map<Categories>(categoryView);
                 unitOfWork.CategoryRepository.Insert(category);
                 unitOfWork.Save();
-                return Ok(categoryView);
+                return Ok("Create successfully");
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while adding the category. Error message: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
-        [Authorize]
-        [HttpPut("/Categories/{id}")]
+
+        [AllowAnonymous]
+        [HttpPut("/api/v1/categories/put/id={id}")]
         public IActionResult UpdateCategory(int id, [FromBody] CategoriesView updatedCategoryView)
         {
             try
@@ -102,17 +127,17 @@ namespace SWD_ICQS.Controllers
                 unitOfWork.CategoryRepository.Update(existingCategory);
                 unitOfWork.Save();
 
-                return Ok(existingCategory); // Return the updated category
+                return Ok("Update successfully"); // Return the updated category
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while updating the category. Error message: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
 
 
-        [Authorize]
-        [HttpDelete("/Categories/{id}")]
+        [AllowAnonymous]
+        [HttpDelete("/api/v1/categories/delete/id={id}")]
         public IActionResult DeleteCategory(int id)
         {
             try
@@ -123,6 +148,12 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Category with ID {id} not found.");
                 }
+                
+                var existingConstruct = unitOfWork.ConstructRepository.Find(c => c.CategoryId == category.Id).ToList();
+                if (existingConstruct.Any())
+                {
+                    return BadRequest("Please delete or change category of construct that contain this category");
+                }
 
                 unitOfWork.CategoryRepository.Delete(id);
                 unitOfWork.Save();
@@ -132,7 +163,7 @@ namespace SWD_ICQS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the category. Error message: {ex.Message}");
+                return StatusCode(500, ex.Message);
             }
         }
 

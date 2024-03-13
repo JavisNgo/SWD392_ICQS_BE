@@ -63,6 +63,10 @@ namespace SWD_ICQS.Controllers
             try
             {
                 var productsList = unitOfWork.ProductRepository.Find(p => p.ContractorId == contractorid).ToList();
+                if (unitOfWork.ContractorRepository.GetByID(contractorid) == null)
+                {
+                    return NotFound($"Contractor with id {contractorid} doesn't exist");
+                }
                 if (productsList.Any())
                 {
                     List<ProductsView> productsViews = new List<ProductsView>();
@@ -222,16 +226,16 @@ namespace SWD_ICQS.Controllers
             return stringBuilder.ToString();
         }
 
-        [HttpPut("/api/v1/products/put/id={id}")]
-        public IActionResult UpdateProduct(int id, [FromBody] ProductsView productsView)
+        [HttpPut("/api/v1/products/put")]
+        public IActionResult UpdateProduct([FromBody] ProductsView productsView)
         {
             try
             {
-                var existingProduct = unitOfWork.ProductRepository.GetByID(id);
+                var existingProduct = unitOfWork.ProductRepository.GetByID(productsView.Id);
 
                 if (existingProduct == null)
                 {
-                    return NotFound($"Product with ID {id} not found.");
+                    return NotFound($"Product with ID {productsView.Id} not found.");
                 }
                 var checkingContractorID = unitOfWork.ContractorRepository.GetByID(productsView.ContractorId);
                 if (checkingContractorID == null)
@@ -359,13 +363,17 @@ namespace SWD_ICQS.Controllers
                 if(product.Status == true)
                 {
                     product.Status = false;
-                } else if(product.Status == false)
+                    unitOfWork.ProductRepository.Update(product);
+                    unitOfWork.Save();
+                    return Ok($"Product with ID {id} set status to false successfully.");
+                } else
                 {
                     product.Status = true;
+                    unitOfWork.ProductRepository.Update(product);
+                    unitOfWork.Save();
+                    return Ok($"Product with ID {id} set status to true successfully.");
                 }
-                unitOfWork.ProductRepository.Update(product);
-                unitOfWork.Save();
-                return Ok($"Product with ID {id} set status to false successfully.");
+                
             }
             catch(Exception ex)
             {

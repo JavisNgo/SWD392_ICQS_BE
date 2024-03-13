@@ -25,6 +25,7 @@ namespace SWD_ICQS.Controllers
             _mapper = mapper;
             _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "productImage");
         }
+
         [HttpGet("/api/v1/products/get")]
         public async Task<IActionResult> getAllProducts()
         {
@@ -56,15 +57,52 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpGet("/api/v1/products/get/code={code}")]
-        public IActionResult getProductByID(string? code)
+        [HttpGet("/api/v1/products/get/contractorid={contractorid}")]
+        public async Task<IActionResult> getAllProductsByContractorId(int contractorid)
         {
             try
             {
-                var product = unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault();
+                var productsList = unitOfWork.ProductRepository.Find(p => p.ContractorId == contractorid).ToList();
+                if (productsList.Any())
+                {
+                    List<ProductsView> productsViews = new List<ProductsView>();
+                    foreach (var product in productsList)
+                    {
+                        var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
+                        var productsView = _mapper.Map<ProductsView>(product);
+
+                        if (productImages.Any())
+                        {
+                            productsView.productImagesViews = new List<ProductImagesView>();
+                            foreach (var image in productImages)
+                            {
+                                image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
+                                productsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
+                            }
+                        }
+                        productsViews.Add(productsView);
+                    }
+                    return Ok(productsViews);
+                } else
+                {
+                    return NotFound("No product owned by this contractor");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
+            }
+        }
+
+        [HttpGet("/api/v1/products/get/id={id}")]
+        public IActionResult getProductByID(int id)
+        {
+            try
+            {
+                var product = unitOfWork.ProductRepository.GetByID(id);
                 if(product == null)
                 {
-                    return NotFound($"Product with Code: {code} not found");
+                    return NotFound($"Product with id: {id} not found");
                 }
 
                 var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
@@ -110,11 +148,17 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Invalid Price. It should be a non-negative number.");
                 }
 
-                var product = _mapper.Map<Products>(productsView);
+                string code = $"P_{productsView.ContractorId}_{GenerateRandomCode(10)}";
+                var product = new Products
+                {
+                    Code = code,
+                    ContractorId = productsView.ContractorId,
+                    Name = productsView.Name,
+                    Price = productsView.Price,
+                    Description = productsView.Description,
+                    Status = productsView.Status
+                };
 
-                string code = $"P_{product.ContractorId}_{GenerateRandomCode(10)}";
-                product.Code = code;
-                product.Status = true;
                 unitOfWork.ProductRepository.Insert(product);
                 unitOfWork.Save();
 
@@ -178,7 +222,7 @@ namespace SWD_ICQS.Controllers
             return stringBuilder.ToString();
         }
 
-        [HttpPut("/Products/{id}")]
+        [HttpPut("/api/v1/products/put/id={id}")]
         public IActionResult UpdateProduct(int id, [FromBody] ProductsView productsView)
         {
             try
@@ -205,14 +249,96 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Invalid Price. It should be a non-negative number.");
                 }
 
-                
-                _mapper.Map(productsView, existingProduct);
+                var currentProductImages = unitOfWork.ProductImageRepository.Find(b => b.ProductId == existingProduct.Id).ToList();
 
-                
+                existingProduct.Name = productsView.Name;
+                existingProduct.Price = productsView.Price;
+                existingProduct.Description = productsView.Description;
+
                 unitOfWork.ProductRepository.Update(existingProduct);
                 unitOfWork.Save();
 
-                return Ok(productsView); 
+                int countUrl = 0;
+                foreach (var image in productsView.productImagesViews)
+                {
+                    if (!String.IsNullOrEmpty(image.ImageUrl))
+                    {
+                        if (image.ImageUrl.Contains("https://localhost:7233/img/productImage/"))
+                        {
+                            countUrl++;
+                        }
+                    }
+                }
+
+                if (countUrl == currentProductImages.Count)
+                {
+                    foreach (var image in productsView.productImagesViews)
+                    {
+                        if (!image.ImageUrl.Contains("https://localhost:7233/img/productImage/") && !String.IsNullOrEmpty(image.ImageUrl))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                            string filename = $"ProductImage_{existingProduct.Id}_{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var productImage = new ProductImages
+                            {
+                                ProductId = existingProduct.Id,
+                                ImageUrl = filename
+                            };
+                            unitOfWork.ProductImageRepository.Insert(productImage);
+                            unitOfWork.Save();
+                        }
+                    }
+                }
+                else if (countUrl < currentProductImages.Count)
+                {
+                    List<ProductImages> tempList = currentProductImages;
+                    foreach (var image in productsView.productImagesViews)
+                    {
+                        if (!image.ImageUrl.Contains("https://localhost:7233/img/productImage/") && !String.IsNullOrEmpty(image.ImageUrl))
+                        {
+                            string randomString = GenerateRandomString(15);
+                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                            string filename = $"ProductImage_{existingProduct.Id}_{randomString}.png";
+                            string imagePath = Path.Combine(_imagesDirectory, filename);
+                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                            var productImage = new ProductImages
+                            {
+                                ProductId = existingProduct.Id,
+                                ImageUrl = filename
+                            };
+                            unitOfWork.ProductImageRepository.Insert(productImage);
+                            unitOfWork.Save();
+                        }
+                        else if (image.ImageUrl.Contains("https://localhost:7233/img/productImage/"))
+                        {
+                            for (int i = tempList.Count - 1; i >= 0; i--)
+                            {
+                                string url = $"https://localhost:7233/img/productImage/{tempList[i].ImageUrl}";
+                                if (url.Equals(image.ImageUrl))
+                                {
+                                    tempList.RemoveAt(i);
+                                }
+                            }
+                        }
+                    }
+                    foreach (var temp in tempList)
+                    {
+                        unitOfWork.ProductImageRepository.Delete(temp);
+                        unitOfWork.Save();
+                        if (!String.IsNullOrEmpty(temp.ImageUrl))
+                        {
+                            string imagePath = Path.Combine(_imagesDirectory, temp.ImageUrl);
+                            if (System.IO.File.Exists(imagePath))
+                            {
+                                System.IO.File.Delete(imagePath);
+                            }
+                        }
+                    }
+                }
+
+                return Ok("Update successfully"); 
             }
             catch (Exception ex)
             {
@@ -220,7 +346,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPut("/api/v1/products/status/id={id}")]
+        [HttpPut("/api/v1/products/put/status/id={id}")]
         public IActionResult ChangeStatusProduct(int id)
         {
             try

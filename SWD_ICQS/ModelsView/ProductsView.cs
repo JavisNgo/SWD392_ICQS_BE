@@ -2,6 +2,7 @@
 {
     public class ProductsView
     {
+        public int Id { get; set; }
         public int ContractorId { get; set; }
         public string? Code { get; set; }
         public string? Name { get; set; }

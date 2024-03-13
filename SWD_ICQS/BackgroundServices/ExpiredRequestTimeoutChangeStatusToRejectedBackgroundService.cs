@@ -20,7 +20,7 @@ namespace SWD_ICQS.BackgroundServices
 
                     // Get all contractors whose expiration date has passed
                     var expiredRequest = unitOfWork.RequestRepository.Get(
-                        filter: c => c.Status == Entities.Requests.RequestsStatusEnum.PENDING && c.TimeOut <= DateTime.Now
+                        filter: c => c.TimeOut != null && c.TimeOut <= DateTime.Now
                     );
 
                     /// Update each expired contractor

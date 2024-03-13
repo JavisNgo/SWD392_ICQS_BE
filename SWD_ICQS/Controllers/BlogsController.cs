@@ -27,7 +27,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/api/v1/blogs")]
+        [HttpGet("/api/v1/blogs/get")]
         public async Task<IActionResult> getAllBlogs()
         {
             try
@@ -61,8 +61,47 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/api/v1/blogs/code={code}")]
-        public IActionResult GetBlogById(string? code)
+        [HttpGet("/api/v1/blogs/get/contractorid={contractorid}")]
+        public async Task<IActionResult> getAllBlogsOfContractor(int contractorid)
+        {
+            try
+            {
+                var blogsList = unitOfWork.BlogRepository.Find(c => c.ContractorId == contractorid).ToList();
+                if (blogsList.Any())
+                {
+                    List<BlogsView> blogsViews = new List<BlogsView>();
+
+                    foreach (var blog in blogsList)
+                    {
+                        var blogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == blog.Id).ToList();
+                        var blogsView = _mapper.Map<BlogsView>(blog);
+
+                        if (blogImages.Any())
+                        {
+                            blogsView.blogImagesViews = new List<BlogImagesView>();
+                            foreach (var image in blogImages)
+                            {
+                                image.ImageUrl = $"https://localhost:7233/img/blogImage/{image.ImageUrl}";
+                                blogsView.blogImagesViews.Add(_mapper.Map<BlogImagesView>(image));
+                            }
+                        }
+                        blogsViews.Add(blogsView);
+                    }
+                    return Ok(blogsViews);
+                } else
+                {
+                    return NotFound("No blogs that posted by this contractor");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/api/v1/blogs/get/code={code}")]
+        public IActionResult GetBlogByCode(string? code)
         {
             try
             {
@@ -178,7 +217,7 @@ namespace SWD_ICQS.Controllers
 
 
         [AllowAnonymous]
-        [HttpPut("/api/v1/blogs/update/code={code}")]
+        [HttpPut("/api/v1/blogs/put/code={code}")]
         public IActionResult UpdateBlog(string? code, [FromBody] BlogsView blogView)
         {
             try
@@ -188,20 +227,13 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"BLog with Code : {code} not found");
                 }
-                var checkingContractorID = unitOfWork.ContractorRepository.GetByID(blogView.ContractorId);
-                if (checkingContractorID == null)
-                {
-                    return NotFound("ContractorID not found");
-                }
 
                 var currentBlogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == existingBlog.Id).ToList();
 
-                existingBlog.ContractorId = blogView.ContractorId;
                 existingBlog.Title = blogView.Title;
                 existingBlog.Content = blogView.Content;
                 existingBlog.PostTime = blogView.PostTime;
                 existingBlog.EditTime = DateTime.Now;
-                existingBlog.Status = blogView.Status;
 
                 unitOfWork.BlogRepository.Update(existingBlog);
                 unitOfWork.Save();
@@ -293,16 +325,16 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("/api/v1/blogs/status/id={id}")]
-        public IActionResult ChangeStatusBlog(int id)
+        [HttpPut("/api/v1/blogs/put/status/code={code}")]
+        public IActionResult ChangeStatusBlog(string? code)
         {
             try
             {
-                var blog = unitOfWork.BlogRepository.GetByID(id);
+                var blog = unitOfWork.BlogRepository.Find(b => b.Code == code).FirstOrDefault();
 
                 if (blog == null)
                 {
-                    return NotFound($"Blog with ID {id} not found.");
+                    return NotFound($"Blog with Code {code} not found.");
                 }
 
                 if(blog.Status == true)
@@ -326,22 +358,38 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpDelete("/api/v1/blogs/delete/id={id}")]
-        public IActionResult DeleteBlog(int id)
+        [HttpDelete("/api/v1/blogs/delete/code={code}")]
+        public IActionResult DeleteBlog(string? code)
         {
             try
             {
-                var blog = unitOfWork.BlogRepository.GetByID(id);
+                var blog = unitOfWork.BlogRepository.Find(b => b.Code == code).FirstOrDefault();
 
                 if (blog == null)
                 {
-                    return NotFound($"Blog with ID {id} not found.");
+                    return NotFound($"Blog with ID {code} not found.");
                 }
 
-                unitOfWork.BlogRepository.Delete(id);
+                var blogImages = unitOfWork.BlogImageRepository.Find(b => b.BlogId == blog.Id).ToList();
+
+                foreach (var image in blogImages)
+                {
+                    if (!String.IsNullOrEmpty(image.ImageUrl))
+                    {
+                        string imagePath = Path.Combine(_imagesDirectory, image.ImageUrl);
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                    unitOfWork.BlogImageRepository.Delete(image.Id);
+                    unitOfWork.Save();
+                }
+
+                unitOfWork.BlogRepository.Delete(blog.Id);
                 unitOfWork.Save();
 
-                return Ok($"Blog with ID: {id} has been successfully deleted.");
+                return Ok($"Blog with ID: {code} has been successfully deleted.");
             }
             catch (Exception ex)
             {

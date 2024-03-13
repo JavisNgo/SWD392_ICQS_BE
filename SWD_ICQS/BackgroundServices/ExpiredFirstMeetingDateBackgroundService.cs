@@ -34,6 +34,15 @@ namespace SWD_ICQS.BackgroundServices
                         var countAppointment = unitOfWork.AppointmentRepository.Find(a => a.RequestId == appointment.RequestId);
                         
                         var existingRequest = unitOfWork.RequestRepository.GetByID(appointment.RequestId);
+                        if (countAppointment.Count().Equals(2))
+                        {
+                            if (existingRequest != null)
+                            {
+                                existingRequest.Status = Requests.RequestsStatusEnum.REJECTED;
+                                unitOfWork.RequestRepository.Update(existingRequest);
+                                unitOfWork.Save();
+                            }
+                        }
                         if (countAppointment.Count().Equals(1))
                         {
                             if (existingRequest != null)
@@ -50,15 +59,7 @@ namespace SWD_ICQS.BackgroundServices
                                 unitOfWork.Save();
                             }
                         }
-                        if (countAppointment.Count().Equals(2))
-                        {
-                            if (existingRequest != null)
-                            {
-                                existingRequest.Status = Requests.RequestsStatusEnum.REJECTED;
-                                unitOfWork.RequestRepository.Update(existingRequest);
-                                unitOfWork.Save();
-                            }
-                        }
+                        
                     }
 
                     

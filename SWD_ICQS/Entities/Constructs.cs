@@ -13,6 +13,7 @@ namespace SWD_ICQS.Entities
         public int ContractorId { get; set; }
         public int CategoryId { get; set; }
         public string? Name { get; set; }
+        public string? Description { get; set; }
         public double? EstimatedPrice { get; set; }
         public bool? Status { get; set; }
         

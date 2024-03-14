@@ -145,6 +145,7 @@ namespace SWD_ICQS.Migrations
                     ContractorId = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EstimatedPrice = table.Column<double>(type: "float", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: true)
                 },

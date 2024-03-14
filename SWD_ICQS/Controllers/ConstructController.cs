@@ -127,33 +127,33 @@ namespace SWD_ICQS.Controllers
                     }
                 }
 
-                //var constructsProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == id).ToList();
-                //if (constructsProducts.Any())
-                //{
-                //    constructsView.constructProductsViews = new List<ConstructProductsView>();
-                //    foreach (var cp in constructsProducts)
-                //    {
-                //        constructsView.constructProductsViews.Add(_mapper.Map<ConstructProductsView>(cp));
-                //    }
-                //    foreach(var cpv in constructsView.constructProductsViews)
-                //    {
-                //        var product = unitOfWork.ProductRepository.GetByID(cpv.ProductId);
-                //        if(product != null)
-                //        {
-                //            var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
-                //            cpv.ProductsView = _mapper.Map<ProductsView>(product);
-                //            if (productImages.Any())
-                //            {
-                //                cpv.ProductsView.productImagesViews = new List<ProductImagesView>();
-                //                foreach (var image in productImages)
-                //                {
-                //                    image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
-                //                    cpv.ProductsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
+                var constructsProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == id).ToList();
+                if (constructsProducts.Any())
+                {
+                    constructsView.constructProductsViews = new List<ConstructProductsView>();
+                    foreach (var cp in constructsProducts)
+                    {
+                        constructsView.constructProductsViews.Add(_mapper.Map<ConstructProductsView>(cp));
+                    }
+                    foreach (var cpv in constructsView.constructProductsViews)
+                    {
+                        var product = unitOfWork.ProductRepository.GetByID(cpv.ProductId);
+                        if (product != null)
+                        {
+                            var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
+                            cpv.ProductsView = _mapper.Map<ProductsView>(product);
+                            if (productImages.Any())
+                            {
+                                cpv.ProductsView.productImagesViews = new List<ProductImagesView>();
+                                foreach (var image in productImages)
+                                {
+                                    image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
+                                    cpv.ProductsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
+                                }
+                            }
+                        }
+                    }
+                }
 
                 return Ok(constructsView);
             }catch(Exception ex)

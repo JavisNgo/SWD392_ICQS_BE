@@ -216,6 +216,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("ContractorId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double?>("EstimatedPrice")
                         .HasColumnType("float");
 

@@ -12,7 +12,7 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240314062540_Initial")]
+    [Migration("20240314151308_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -217,6 +217,9 @@ namespace SWD_ICQS.Migrations
 
                     b.Property<int>("ContractorId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("EstimatedPrice")
                         .HasColumnType("float");

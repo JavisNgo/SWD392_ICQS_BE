@@ -205,6 +205,7 @@ namespace SWD_ICQS.Controllers
                     ContractorId = constructsView.ContractorId,
                     CategoryId = constructsView.CategoryId,
                     Name = constructsView.Name,
+                    Description = constructsView.Description,
                     EstimatedPrice = constructsView.EstimatedPrice,
                     Status = true
                 };
@@ -332,6 +333,7 @@ namespace SWD_ICQS.Controllers
 
                 existingConstruct.CategoryId = constructsView.CategoryId;
                 existingConstruct.Name = constructsView.Name;
+                existingConstruct.Description = constructsView.Description;
                 existingConstruct.EstimatedPrice = constructsView.EstimatedPrice;
                 unitOfWork.ConstructRepository.Update(existingConstruct);
                 unitOfWork.Save();

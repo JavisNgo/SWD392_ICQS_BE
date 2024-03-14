@@ -9,6 +9,7 @@ namespace SWD_ICQS.ModelsView
         public int ContractorId { get; set; }
         public int CategoryId { get; set; }
         public string? Name { get; set; }
+        public string? Description { get; set; }
         public double? EstimatedPrice { get; set; }
         public bool? Status { get; set; }
         public CategoriesView? CategoriesView { get; set; }

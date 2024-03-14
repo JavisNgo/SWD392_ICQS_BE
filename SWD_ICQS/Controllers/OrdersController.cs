@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using System.Text;
 
 namespace SWD_ICQS.Controllers
 {
@@ -21,13 +22,25 @@ namespace SWD_ICQS.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/Orders")]
+        [HttpGet("/api/v1/orders/get")]
         public async Task<IActionResult> getAllOrders()
         {
             try
             {
                 var orderList = unitOfWork.OrderRepository.Get();
-                return Ok(orderList);
+
+                if(!orderList.Any())
+                {
+                    return NotFound("No one ordered yet");
+                }
+
+                List<OrdersView> ordersViews = new List<OrdersView>();
+
+                foreach (var item in orderList)
+                {
+                    ordersViews.Add(_mapper.Map<OrdersView>(item));
+                }
+                return Ok(ordersViews);
             }
             catch (Exception ex)
             {
@@ -35,9 +48,8 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-
         [AllowAnonymous]
-        [HttpGet("/Orders/{id}")]
+        [HttpGet("/api/v1/orders/get/id={id}")]
         public IActionResult GetOrderById(int id)
         {
             try
@@ -49,7 +61,9 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Order with ID {id} not found.");
                 }
 
-                return Ok(order);
+                var orderView = _mapper.Map<OrdersView>(order);
+
+                return Ok(orderView);
             }
             catch (Exception ex)
             {
@@ -57,9 +71,36 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet("/api/v1/orders/get/contractorid={contractorid}")]
+        public IActionResult GetOrderByContractorId(int contractorid)
+        {
+            try
+            {
+                var order = unitOfWork.OrderRepository.Find(o => o.ContractorId == contractorid).ToList();
+
+                if (order == null)
+                {
+                    return NotFound($"Order with Contractor ID {contractorid} not found.");
+                }
+
+                List<OrdersView> ordersViews = new List<OrdersView>();
+
+                foreach (var item in order)
+                {
+                    ordersViews.Add(_mapper.Map<OrdersView>(item));
+                }
+
+                return Ok(ordersViews);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred while getting the order. Error message: {ex.Message}");
+            }
+        }
 
         [AllowAnonymous]
-        [HttpPost("/Orders")]
+        [HttpPost("/api/v1/orders/post")]
         public IActionResult AddOrders([FromBody] OrdersView ordersView)
         {
             try
@@ -76,16 +117,45 @@ namespace SWD_ICQS.Controllers
                 {
                     return BadRequest("Price must be larger than 0");
                 }
-                var order = _mapper.Map<Orders>(ordersView);
-                order.OrderDate = DateTime.Now;
+
+                var order = new Orders
+                {
+                    SubscriptionId = ordersView.SubscriptionId,
+                    ContractorId = ordersView.ContractorId,
+                    OrderPrice = checkSubscriptionId.Price,
+                    OrderDate = DateTime.Now,
+                    Status = true,
+                    TransactionCode = GenerateRandomCode(10)
+                };
+
                 unitOfWork.OrderRepository.Insert(order);
                 unitOfWork.Save();
-                return Ok(ordersView);
+
+                checkContractorId.SubscriptionId = ordersView.SubscriptionId;
+                checkContractorId.ExpiredDate = DateTime.Now.AddDays((double) checkSubscriptionId.Duration);
+                unitOfWork.ContractorRepository.Update(checkContractorId); 
+                unitOfWork.Save();
+
+                return Ok("Order successfully");
             }catch (Exception ex)
             {
                 return BadRequest($"An error occurred while adding the order. Error message: {ex.Message}");
 
             }
+        }
+
+        public static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
         }
 
         //[AllowAnonymous]

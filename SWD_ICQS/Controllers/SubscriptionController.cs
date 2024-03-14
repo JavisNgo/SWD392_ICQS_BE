@@ -33,7 +33,7 @@ namespace SWD_ICQS.Controllers
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("/Subscriptions/{id}")]
         public IActionResult GetSubscriptionById(int id)
         {
@@ -53,7 +53,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while getting the subscription. Error message: {ex.Message}");
             }
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost("/Subscriptions")]
         public IActionResult AddSubscription([FromBody] SubscriptionsView subscriptionsView)
         {
@@ -88,7 +88,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the subscription. Error message: {ex.Message}");
             }
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("/Subscriptions/{id}")]
         public IActionResult UpdateSubscription(int id, [FromBody] SubscriptionsView subscriptionsView)
         {
@@ -133,7 +133,7 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while updating the subscription. Error message: {ex.Message}");
             }
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpPut("/SubscriptionStatus/{id}")]
         public IActionResult ChangeStatusSubscriptions(int id)
         {
@@ -146,13 +146,23 @@ namespace SWD_ICQS.Controllers
                     return NotFound($"Subscription with ID {id} not found.");
                 }
 
-                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                subscription.Status = false;
+                if(subscription.Status == true)
+                {
+                    // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+                    subscription.Status = false;
+                    unitOfWork.SubscriptionRepository.Update(subscription);
+                    unitOfWork.Save();
+                    return Ok("Set Status to false successfully.");
+                } else
+                {
+                    // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+                    subscription.Status = true;
+                    unitOfWork.SubscriptionRepository.Update(subscription);
+                    unitOfWork.Save();
+                    return Ok("Set Status to true successfully.");
+                }
 
-                unitOfWork.SubscriptionRepository.Update(subscription);
-                unitOfWork.Save();
-
-                return Ok("Set Status to false successfully.");
+                
             }
             catch (Exception ex)
             {
@@ -164,7 +174,7 @@ namespace SWD_ICQS.Controllers
         private bool IsValidName(string name)
         {
             // Use a regular expression to check if the name contains only letters and spaces
-            return !string.IsNullOrWhiteSpace(name) && System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-Z\s]+$");
+            return !string.IsNullOrWhiteSpace(name) && System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-Z0-9\s]+$");
         }
 
 

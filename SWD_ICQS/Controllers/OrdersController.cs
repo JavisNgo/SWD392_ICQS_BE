@@ -88,72 +88,72 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpPut("/Orders/{id}")]
-        public IActionResult UpdateOrders(int id, [FromBody] OrdersView ordersView)
-        {
-            try
-            {
-                var existingOrders = unitOfWork.OrderRepository.GetByID(id);
+        //[AllowAnonymous]
+        //[HttpPut("/Orders/{id}")]
+        //public IActionResult UpdateOrders(int id, [FromBody] OrdersView ordersView)
+        //{
+        //    try
+        //    {
+        //        var existingOrders = unitOfWork.OrderRepository.GetByID(id);
 
-                if (existingOrders == null)
-                {
-                    return NotFound($"Order with ID {id} not found.");
-                }
-                var checkContractorId = unitOfWork.ContractorRepository.GetByID(ordersView.ContractorId);
-                var checkSubscriptionId = unitOfWork.SubscriptionRepository.GetByID(ordersView.SubscriptionId);
+        //        if (existingOrders == null)
+        //        {
+        //            return NotFound($"Order with ID {id} not found.");
+        //        }
+        //        var checkContractorId = unitOfWork.ContractorRepository.GetByID(ordersView.ContractorId);
+        //        var checkSubscriptionId = unitOfWork.SubscriptionRepository.GetByID(ordersView.SubscriptionId);
 
-                if (checkContractorId == null || checkSubscriptionId == null)
-                {
-                    return NotFound("ContractorId or SubscriptionId not found");
-                }
-                if (ordersView.OrderPrice < 0)
-                {
-                    return BadRequest("Price must be larger than 0");
-                }
+        //        if (checkContractorId == null || checkSubscriptionId == null)
+        //        {
+        //            return NotFound("ContractorId or SubscriptionId not found");
+        //        }
+        //        if (ordersView.OrderPrice < 0)
+        //        {
+        //            return BadRequest("Price must be larger than 0");
+        //        }
 
-                _mapper.Map(ordersView, existingOrders);
+        //        _mapper.Map(ordersView, existingOrders);
 
-                // Mark the entity as modified
-                existingOrders.OrderDate = DateTime.Now;
-                unitOfWork.OrderRepository.Update(existingOrders);
-                unitOfWork.Save();
+        //        // Mark the entity as modified
+        //        existingOrders.OrderDate = DateTime.Now;
+        //        unitOfWork.OrderRepository.Update(existingOrders);
+        //        unitOfWork.Save();
 
-                return Ok(ordersView); // Return 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while updating the order. Error message: {ex.Message}");
-            }
-        }
+        //        return Ok(ordersView); // Return 
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while updating the order. Error message: {ex.Message}");
+        //    }
+        //}
 
 
-        [AllowAnonymous]
-        [HttpPut("/OrderStatus/{id}")]
-        public IActionResult ChangeStatusOrder(int id)
-        {
-            try
-            {
-                var order = unitOfWork.OrderRepository.GetByID(id);
+        //[AllowAnonymous]
+        //[HttpPut("/OrderStatus/{id}")]
+        //public IActionResult ChangeStatusOrder(int id)
+        //{
+        //    try
+        //    {
+        //        var order = unitOfWork.OrderRepository.GetByID(id);
 
-                if (order == null)
-                {
-                    return NotFound($"Order with ID {id} not found.");
-                }
+        //        if (order == null)
+        //        {
+        //            return NotFound($"Order with ID {id} not found.");
+        //        }
 
-                // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                order.Status = false;
+        //        // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
+        //        order.Status = false;
 
-                unitOfWork.OrderRepository.Update(order);
-                unitOfWork.Save();
+        //        unitOfWork.OrderRepository.Update(order);
+        //        unitOfWork.Save();
 
-                return Ok("Set status to false successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while changing status the order. Error message: {ex.Message}");
-            }
-        }
+        //        return Ok("Set status to false successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while changing status the order. Error message: {ex.Message}");
+        //    }
+        //}
 
     }
 }

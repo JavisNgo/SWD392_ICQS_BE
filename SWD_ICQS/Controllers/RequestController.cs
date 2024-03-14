@@ -213,7 +213,7 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Request with ID : {id} not found");
                 }
-                existingRequest.Status = (Requests.RequestsStatusEnum?)2;
+                existingRequest.Status = Requests.RequestsStatusEnum.ACCEPTED;
                 existingRequest.TimeOut = DateTime.Now.AddDays(14);
                 unitOfWork.RequestRepository.Update(existingRequest);
                 unitOfWork.Save();
@@ -223,7 +223,7 @@ namespace SWD_ICQS.Controllers
                     ContractorId = existingRequest.ContractorId,
                     RequestId = existingRequest.Id,
                     MeetingDate = DateTime.Now.AddDays(7),
-                    Status = (Appointments.AppointmentsStatusEnum?)0
+                    Status = Appointments.AppointmentsStatusEnum.PENDING
                 };
                 unitOfWork.AppointmentRepository.Insert(appointment);
                 unitOfWork.Save();
@@ -245,7 +245,7 @@ namespace SWD_ICQS.Controllers
                 {
                     return NotFound($"Appointment with ID : {id} not found");
                 }
-                existingAppointment.Status = (Appointments.AppointmentsStatusEnum?)2;
+                existingAppointment.Status = Appointments.AppointmentsStatusEnum.COMPLETED;
                 unitOfWork.AppointmentRepository.Update(existingAppointment);
                 unitOfWork.Save();
                 var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
@@ -254,7 +254,7 @@ namespace SWD_ICQS.Controllers
                     return NotFound("Request not found");
                 }
                 request.TimeOut = DateTime.Now.AddDays(14);
-                request.Status = (Requests.RequestsStatusEnum?)3;
+                request.Status = Requests.RequestsStatusEnum.COMPLETED;
                 unitOfWork.RequestRepository.Update(request);
                 unitOfWork.Save();
                 return Ok();

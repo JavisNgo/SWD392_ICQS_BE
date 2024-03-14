@@ -17,9 +17,10 @@ namespace SWD_ICQS.Entities
         public enum AppointmentsStatusEnum
         {
             PENDING,
-            CANCELLED,
             COMPLETED,
-            SIGNED
+            SIGNED,
+            CANCELLED
+
         }
 
         // Relationship

@@ -19,10 +19,11 @@ namespace SWD_ICQS.Entities
         public enum RequestsStatusEnum
         {
             PENDING,
-            REJECTED,
-            ACCEPTED,
             COMPLETED,
-            SIGNED
+            ACCEPTED,
+            SIGNED,
+            REJECTED,
+
         }
 
         // Relationship

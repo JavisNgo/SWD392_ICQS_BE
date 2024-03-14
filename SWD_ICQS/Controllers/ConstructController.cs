@@ -487,7 +487,7 @@ namespace SWD_ICQS.Controllers
         }
 
         [HttpDelete("/api/v1/constructs/delete/id={id}")]
-        public IActionResult DeleteConstruct(int id)
+        public IActionResult DeleteConstructById(int id)
         {
             try
             {
@@ -521,6 +521,9 @@ namespace SWD_ICQS.Controllers
                     unitOfWork.ConstructImageRepository.Delete(image.Id);
                     unitOfWork.Save();
                 }
+
+                unitOfWork.ConstructRepository.Delete(existingConstruct);
+                unitOfWork.Save();
 
                 return Ok($"Construct with ID: {id} has been successfully deleted.");
             }

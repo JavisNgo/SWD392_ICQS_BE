@@ -109,9 +109,9 @@ GO
 -- Constructs
 INSERT INTO Constructs (Code, ContractorId, CategoryId, Name, Description, EstimatedPrice, Status)
 VALUES
-    ('C-1-2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 1'), 'Construct Name 2', 'Construct Description 2', 500.00, 1),
-    ('C-1-6875463452', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 2'), 'Construct Name 2', 'Construct Description 2', 750.00, 1),
-    ('C-1-6523454276', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Category 3'), 'Construct Name 2', 'Construct Description 2', 1000.00, 1);
+    ('C-1-2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Mid-century modern'), 'Construct Name 2', 'Construct Description 2', 500.00, 1),
+    ('C-1-6875463452', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Industrial'), 'Traditional', 'Construct Description 2', 750.00, 1),
+    ('C-1-6523454276', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Modern'), 'Industrial', 'Construct Description 2', 1000.00, 1);
 GO
 
 -- ConstructProducts

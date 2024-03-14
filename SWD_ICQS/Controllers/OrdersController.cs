@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
+using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
 using System.Text;
 
@@ -47,7 +48,37 @@ namespace SWD_ICQS.Controllers
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
+        [AllowAnonymous]
+        [HttpGet("/api/v1/orders/contractor/{contractorId}")]
+        public ActionResult<IEnumerable<OrdersView>> GetOrdersByContractorId(int contractorId)
+        {
+            try
+            {
+                var orders = unitOfWork.OrderRepository.Get(filter: o => o.ContractorId == contractorId).ToList();
+                var ordersViews = new List<OrdersView>();
 
+                foreach (var order in orders)
+                {
+                    var orderView = new OrdersView
+                    {
+                        SubscriptionId = order.SubscriptionId,
+                        ContractorId = order.ContractorId,
+                        OrderPrice = order.OrderPrice,
+                        OrderDate = order.OrderDate,
+                        Status = order.Status,
+                        TransactionCode = order.TransactionCode
+                    };
+
+                    ordersViews.Add(orderView);
+                }
+
+                return Ok(ordersViews);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         [AllowAnonymous]
         [HttpGet("/api/v1/orders/get/id={id}")]
         public IActionResult GetOrderById(int id)

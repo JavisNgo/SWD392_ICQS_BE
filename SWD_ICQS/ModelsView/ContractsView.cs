@@ -5,6 +5,7 @@
         public int RequestId { get; set; } // Thêm thuộc tính RequestId
         public int AppointmentId { get; set; }
         public string? ContractUrl { get; set; }
+        public string? Progress { get; set; }
         public int? Status { get; set; }
     }
 }

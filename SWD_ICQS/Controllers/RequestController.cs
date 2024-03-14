@@ -56,7 +56,88 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while getting the request. Error message: {ex.Message}");
             }
         }
+        [AllowAnonymous]
+        [HttpGet("/api/v1/requests/contractor/{contractorId}")]
+        public ActionResult<IEnumerable<RequestViewForGet>> GetRequestByContractorId(int contractorId)
+        {
+            try
+            {
+                // Lấy tất cả các hợp đồng có liên quan đến nhà thầu có contractorId cung cấp
+                var requests = unitOfWork.RequestRepository.Get(filter: c => c.ContractorId == contractorId).ToList();
+                var requestViews = new List<RequestViewForGet>();
 
+                foreach (var request in requests)
+                {
+
+                    // Lấy thông tin của Customer từ Appointment
+                    var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    if (contractor == null)
+                    {
+                        // Nếu không tìm thấy thông tin của Contractor, bỏ qua contract này
+                        continue;
+                    }
+
+                    // Lấy thông tin của Customer từ Appointment
+                    var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                    var requestView = _mapper.Map<RequestViewForGet>(request);
+
+                    // Gán tên của Contractor và Customer vào ContractViewForGet
+                    requestView.ContractorName = contractor.Name;
+                    requestView.CustomerName = customer != null ? customer.Name : null;
+
+                    requestViews.Add(requestView);
+                }
+
+                return Ok(requestViews);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet("/api/v1/requests/customer/{customerId}")]
+        public ActionResult<IEnumerable<RequestViewForGet>> GetRequestByCustomerId(int customerId)
+        {
+            try
+            {
+                // Lấy tất cả các hợp đồng có liên quan đến nhà thầu có customerId cung cấp
+                var requests = unitOfWork.RequestRepository.Get(filter: c => c.CustomerId == customerId).ToList();
+                var requestViews = new List<RequestViewForGet>();
+
+                foreach (var request in requests)
+                {
+
+                    // Lấy thông tin của Customer từ Appointment
+                    var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                    if (customer == null)
+                    {
+                        // Nếu không tìm thấy thông tin của Contractor, bỏ qua contract này
+                        continue;
+                    }
+
+                    // Lấy thông tin của Customer từ Appointment
+                    var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    var requestView = _mapper.Map<RequestViewForGet>(request);
+
+                    // Gán tên của Contractor và Customer vào ContractViewForGet
+                    requestView.CustomerName = customer.Name;
+                    requestView.ContractorName = contractor != null ? contractor.Name : null;
+
+                    requestViews.Add(requestView);
+                }
+
+                return Ok(requestViews);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         [AllowAnonymous]
         [HttpPost("/Requests")]
         public IActionResult AddRequest([FromBody] RequestView requestView)

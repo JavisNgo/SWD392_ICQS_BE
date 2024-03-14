@@ -14,6 +14,7 @@ namespace SWD_ICQS.Entities
         public DateTime? UploadDate { get; set; }
         public DateTime? EditDate { get; set; }
         public int? Status { get; set; }
+        public string? Progress { get; set; }
 
         // Relationship
         public Appointments? Appointment { get; set; }

@@ -437,7 +437,8 @@ namespace SWD_ICQS.Migrations
                     ContractUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UploadDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EditDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    Progress = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

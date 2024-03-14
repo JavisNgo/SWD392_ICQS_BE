@@ -293,6 +293,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Progress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Status")
                         .HasColumnType("int");
 

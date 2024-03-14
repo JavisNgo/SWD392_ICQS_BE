@@ -12,7 +12,7 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240313043203_Initial")]
+    [Migration("20240314062540_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -294,6 +294,9 @@ namespace SWD_ICQS.Migrations
 
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Progress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Status")
                         .HasColumnType("int");

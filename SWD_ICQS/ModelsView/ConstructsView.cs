@@ -13,6 +13,6 @@ namespace SWD_ICQS.ModelsView
         public bool? Status { get; set; }
         public CategoriesView? CategoriesView { get; set; }
         public List<ConstructImagesView>? constructImagesViews { get; set; }
-        public List<ConstructProductsView>? constructProductsViews { get; set; }
+        //public List<ConstructProductsView>? constructProductsViews { get; set; }
     }
 }

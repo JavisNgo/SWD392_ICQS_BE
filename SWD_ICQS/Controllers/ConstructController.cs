@@ -127,33 +127,33 @@ namespace SWD_ICQS.Controllers
                     }
                 }
 
-                var constructsProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == id).ToList();
-                if (constructsProducts.Any())
-                {
-                    constructsView.constructProductsViews = new List<ConstructProductsView>();
-                    foreach (var cp in constructsProducts)
-                    {
-                        constructsView.constructProductsViews.Add(_mapper.Map<ConstructProductsView>(cp));
-                    }
-                    foreach(var cpv in constructsView.constructProductsViews)
-                    {
-                        var product = unitOfWork.ProductRepository.GetByID(cpv.ProductId);
-                        if(product != null)
-                        {
-                            var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
-                            cpv.ProductsView = _mapper.Map<ProductsView>(product);
-                            if (productImages.Any())
-                            {
-                                cpv.ProductsView.productImagesViews = new List<ProductImagesView>();
-                                foreach (var image in productImages)
-                                {
-                                    image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
-                                    cpv.ProductsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
-                                }
-                            }
-                        }
-                    }
-                }
+                //var constructsProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == id).ToList();
+                //if (constructsProducts.Any())
+                //{
+                //    constructsView.constructProductsViews = new List<ConstructProductsView>();
+                //    foreach (var cp in constructsProducts)
+                //    {
+                //        constructsView.constructProductsViews.Add(_mapper.Map<ConstructProductsView>(cp));
+                //    }
+                //    foreach(var cpv in constructsView.constructProductsViews)
+                //    {
+                //        var product = unitOfWork.ProductRepository.GetByID(cpv.ProductId);
+                //        if(product != null)
+                //        {
+                //            var productImages = unitOfWork.ProductImageRepository.Find(p => p.ProductId == product.Id).ToList();
+                //            cpv.ProductsView = _mapper.Map<ProductsView>(product);
+                //            if (productImages.Any())
+                //            {
+                //                cpv.ProductsView.productImagesViews = new List<ProductImagesView>();
+                //                foreach (var image in productImages)
+                //                {
+                //                    image.ImageUrl = $"https://localhost:7233/img/productImage/{image.ImageUrl}";
+                //                    cpv.ProductsView.productImagesViews.Add(_mapper.Map<ProductImagesView>(image));
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
 
                 return Ok(constructsView);
             }catch(Exception ex)
@@ -181,21 +181,21 @@ namespace SWD_ICQS.Controllers
                 {
                     return BadRequest("EstimatedPrice must be greater than 1 and has value");
                 }
-                if (constructsView.constructProductsViews.Any())
-                {
-                    foreach(var cp in constructsView.constructProductsViews)
-                    {
-                        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
-                        if (existingProduct == null)
-                        {
-                            return NotFound($"No product found with id {cp.ProductId}");
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("You need to add at least 1 product to construct");
-                }
+                //if (constructsView.constructProductsViews.Any())
+                //{
+                //    foreach(var cp in constructsView.constructProductsViews)
+                //    {
+                //        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
+                //        if (existingProduct == null)
+                //        {
+                //            return NotFound($"No product found with id {cp.ProductId}");
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    return BadRequest("You need to add at least 1 product to construct");
+                //}
 
                 string code = $"C_{constructsView.ContractorId}_{GenerateRandomCode(10)}";
 
@@ -235,23 +235,23 @@ namespace SWD_ICQS.Controllers
                     }
                 }
 
-                if (constructsView.constructProductsViews.Any())
-                {
-                    foreach(var cp in constructsView.constructProductsViews)
-                    {
-                        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
-                        if(existingProduct != null)
-                        {
-                            var constructProduct = new ConstructProducts
-                            {
-                                ConstructId = createdConstruct.Id,
-                                ProductId = cp.ProductId
-                            };
-                            unitOfWork.ConstructProductRepository.Insert(constructProduct);
-                            unitOfWork.Save();
-                        }
-                    }
-                }
+                //if (constructsView.constructProductsViews.Any())
+                //{
+                //    foreach(var cp in constructsView.constructProductsViews)
+                //    {
+                //        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
+                //        if(existingProduct != null)
+                //        {
+                //            var constructProduct = new ConstructProducts
+                //            {
+                //                ConstructId = createdConstruct.Id,
+                //                ProductId = cp.ProductId
+                //            };
+                //            unitOfWork.ConstructProductRepository.Insert(constructProduct);
+                //            unitOfWork.Save();
+                //        }
+                //    }
+                //}
 
                 return Ok("Create successfully");
 
@@ -313,20 +313,20 @@ namespace SWD_ICQS.Controllers
                 {
                     return BadRequest("EstimatedPrice must be greater than 1 and has value");
                 }
-                if (constructsView.constructProductsViews.Any())
-                {
-                    foreach (var cp in constructsView.constructProductsViews)
-                    {
-                        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
-                        if (existingProduct == null)
-                        {
-                            return NotFound($"No product found with id {cp.ProductId}");
-                        }
-                    }
-                } else
-                {
-                    return BadRequest("You need to add at least 1 product to update construct");
-                }
+                //if (constructsView.constructProductsViews.Any())
+                //{
+                //    foreach (var cp in constructsView.constructProductsViews)
+                //    {
+                //        var existingProduct = unitOfWork.ProductRepository.Find(c => c.Id == cp.ProductId).FirstOrDefault();
+                //        if (existingProduct == null)
+                //        {
+                //            return NotFound($"No product found with id {cp.ProductId}");
+                //        }
+                //    }
+                //} else
+                //{
+                //    return BadRequest("You need to add at least 1 product to update construct");
+                //}
 
                 var currentConstructImages = unitOfWork.ConstructImageRepository.Find(c => c.ConstructId == constructsView.Id).ToList();
 
@@ -416,37 +416,37 @@ namespace SWD_ICQS.Controllers
                     }
                 }
 
-                var currentConstructProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == existingConstruct.Id).ToList();
-                if (currentConstructProducts.Any())
-                {
-                    foreach(var cpp in currentConstructProducts)
-                    {
-                        unitOfWork.ConstructProductRepository.Delete(cpp);
-                        unitOfWork.Save();
-                    }
-                    foreach(var cpv in constructsView.constructProductsViews)
-                    {
-                        var constructProduct = new ConstructProducts
-                        {
-                            ConstructId = existingConstruct.Id,
-                            ProductId = cpv.ProductId
-                        };
-                        unitOfWork.ConstructProductRepository.Insert(constructProduct);
-                        unitOfWork.Save();
-                    }
-                } else
-                {
-                    foreach (var cpv in constructsView.constructProductsViews)
-                    {
-                        var constructProduct = new ConstructProducts
-                        {
-                            ConstructId = existingConstruct.Id,
-                            ProductId = cpv.ProductId
-                        };
-                        unitOfWork.ConstructProductRepository.Insert(constructProduct);
-                        unitOfWork.Save();
-                    }
-                }
+                //var currentConstructProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == existingConstruct.Id).ToList();
+                //if (currentConstructProducts.Any())
+                //{
+                //    foreach(var cpp in currentConstructProducts)
+                //    {
+                //        unitOfWork.ConstructProductRepository.Delete(cpp);
+                //        unitOfWork.Save();
+                //    }
+                //    foreach(var cpv in constructsView.constructProductsViews)
+                //    {
+                //        var constructProduct = new ConstructProducts
+                //        {
+                //            ConstructId = existingConstruct.Id,
+                //            ProductId = cpv.ProductId
+                //        };
+                //        unitOfWork.ConstructProductRepository.Insert(constructProduct);
+                //        unitOfWork.Save();
+                //    }
+                //} else
+                //{
+                //    foreach (var cpv in constructsView.constructProductsViews)
+                //    {
+                //        var constructProduct = new ConstructProducts
+                //        {
+                //            ConstructId = existingConstruct.Id,
+                //            ProductId = cpv.ProductId
+                //        };
+                //        unitOfWork.ConstructProductRepository.Insert(constructProduct);
+                //        unitOfWork.Save();
+                //    }
+                //}
                 
                 return Ok("Update successfully");
             }

@@ -74,7 +74,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public ContractorsView? GetContractorViewById(int id, Contractors contractor)
+        public ContractorsView? GetContractorViewById(Contractors contractor)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace SWD_ICQS.Services.Implements
                 }
                 var contractorsView = new ContractorsView
                 {
-                    Id = id,
+                    Id = contractor.Id,
                     Email = contractor.Email,
                     Name = contractor.Name,
                     PhoneNumber = contractor.PhoneNumber,
@@ -103,7 +103,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public List<ContractorsView>? GetContractsViews(List<Contractors> contractors)
+        public List<ContractorsView>? GetContractorsView(List<Contractors> contractors)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public bool IsChangedStatusContractorById(int id, Accounts account, Contractors contractor)
+        public bool IsChangedStatusContractorById(int id, Accounts account)
         {
             try
             {

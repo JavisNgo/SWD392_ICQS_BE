@@ -20,16 +20,10 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class ContractorsController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly string _imagesDirectory;
         private readonly IContractorsService _contractorsService;
 
-        public ContractorsController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env, IContractorsService contractorsService)
+        public ContractorsController(IContractorsService contractorsService)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "contractorAvatar");
             _contractorsService = contractorsService;
         }
 
@@ -43,7 +37,7 @@ namespace SWD_ICQS.Controllers
             {
                 return NotFound("No contractor in database");
             }
-            var contractorsViews = _contractorsService.GetContractsViews(contractors);
+            var contractorsViews = _contractorsService.GetContractorsView(contractors);
             return Ok(contractorsViews);
         }
 
@@ -61,7 +55,7 @@ namespace SWD_ICQS.Controllers
             {
                 return NotFound($"No contractor found with id {id}");
             }
-            var contractorsView = _contractorsService.GetContractorViewById(id, contractor);
+            var contractorsView = _contractorsService.GetContractorViewById(contractor);
             return Ok(contractorsView);
         }
 
@@ -112,7 +106,7 @@ namespace SWD_ICQS.Controllers
             {
                 return NotFound("No account found");
             }
-            if (_contractorsService.IsChangedStatusContractorById(id, account, contractor))
+            if (_contractorsService.IsChangedStatusContractorById(id, account))
             {
                 return Ok("Change status success");
             }

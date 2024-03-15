@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,6 +12,8 @@ using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Implements;
+using SWD_ICQS.Services.Interfaces;
 
 namespace SWD_ICQS.Controllers
 {
@@ -20,11 +23,13 @@ namespace SWD_ICQS.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICustomersService _customersService;
 
-        public CustomersController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomersController(IUnitOfWork unitOfWork, IMapper mapper, ICustomersService customersService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _customersService = customersService;
         }
 
         // GET: api/Customers
@@ -32,17 +37,12 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/customers")]
         public async Task<ActionResult<IEnumerable<Customers>>> GetCustomers()
         {
-            if (_unitOfWork.CustomerRepository.Get() == null)
+            var customers = _customersService.GetAllCustomers();
+            if(customers == null)
             {
                 return NotFound("No customer found");
             }
-            List<Customers> customers = _unitOfWork.CustomerRepository.Get().ToList();
-            List<CustomersView> customersViews = new List<CustomersView>();
-            foreach (Customers customer in customers)
-            {
-                CustomersView customersView = _mapper.Map<CustomersView>(customer);
-                customersViews.Add(customersView);
-            }
+            var customersViews = _customersService.GetCustomersView(customers);
             return Ok(customersViews);
         }
 
@@ -50,16 +50,17 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/customers/id={id}")]
         public ActionResult<CustomersView> GetCustomer(int id)
         {
-            if (_unitOfWork.CustomerRepository.Get() == null)
+            var customers = _customersService.GetAllCustomers();
+            if (customers == null)
             {
                 return NotFound("No customer found");
             }
-            var customer = _unitOfWork.CustomerRepository.GetByID(id);
+            var customer = _customersService.GetCustomersById(id);
             if (customer == null)
             {
-                return NotFound("No customer found");
+                return NotFound($"No customer with id {id} found");
             }
-            CustomersView customersView = _mapper.Map<CustomersView>(customer);
+            var customersView = _customersService.GetCustomersViewById(customer);
             return Ok(customersView);
         }
 
@@ -69,34 +70,25 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/customers/username={username}")]
         public IActionResult UpdateCustomer(string username, CustomersView customersView)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+            var account = _customersService.GetAccountByUsername(username);
             if (account == null)
             {
-                return NotFound("No account found in database");
+                return NotFound($"No account with username {username} found");
+
             }
-            if (account.Id != customersView.AccountId)
-            {
-                return BadRequest("Your current loged in session is not valid, please log in right account to update");
-            }
-            var customer = _unitOfWork.CustomerRepository.Find(a => a.AccountId == account.Id).FirstOrDefault();
+            var customer = _customersService.GetCustomersByAccount(account);
             if (customer == null)
             {
                 return NotFound("No customer found");
             }
-            try
+            if (_customersService.IsUpdateCustomer(username, customersView, account, customer))
             {
-                customer.Name = customersView.Name;
-                customer.Email = customersView.Email;
-                customer.PhoneNumber = customersView.PhoneNumber;
-                customer.Address = customersView.Address;
-                _unitOfWork.CustomerRepository.Update(customer);
-                _unitOfWork.Save();
+                return Ok("Update successfully");
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Update failed");
             }
-            return Ok("Update successfully");
         }
 
         // DELETE: api/Contractors/5
@@ -104,42 +96,29 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/customers/status/id={id}")]
         public async Task<IActionResult> SetStatusCustomer(int id)
         {
-            if (_unitOfWork.CustomerRepository.Get() == null)
+            var customers = _customersService.GetAllCustomers();
+            if (customers == null)
             {
-                return NotFound("No customer in database to enable/disable");
+                return NotFound("No customer in database to disable");
             }
-            var customer = _unitOfWork.CustomerRepository.GetByID(id);
+            var customer = _customersService.GetCustomersById(id);
             if (customer == null)
             {
-                return NotFound("No customer found");
+                return NotFound($"No customer with id {id} found");
             }
-            var account = _unitOfWork.AccountRepository.Find(a => a.Id == customer.AccountId).FirstOrDefault();
+            var account = _customersService.GetAccountByCustomers(customer);
             if (account == null)
             {
                 return NotFound("No account found");
             }
-            try
+            if (_customersService.IsChangedStatusCustomerById(id, account))
             {
-                if (account.Status == true)
-                {
-                    account.Status = false;
-                    _unitOfWork.AccountRepository.Update(account);
-                    _unitOfWork.Save();
-                    return Ok("Disable successfully");
-                }
-                else if (account.Status == false)
-                {
-                    account.Status = true;
-                    _unitOfWork.AccountRepository.Update(account);
-                    _unitOfWork.Save();
-                    return Ok("Enable successfully");
-                }
+                return Ok("Change status success");
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Change status failed");
             }
-            return BadRequest("Something went wrong!");
         }
     }
 }

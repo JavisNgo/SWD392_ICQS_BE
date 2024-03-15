@@ -43,6 +43,7 @@ builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IContractorsService, ContractorsService>();
+builder.Services.AddScoped<ICustomersService, CustomersService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program), typeof(MappingProfile));

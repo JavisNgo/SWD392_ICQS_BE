@@ -5,6 +5,7 @@ using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 using System.Text;
 
 namespace SWD_ICQS.Controllers
@@ -13,13 +14,12 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class OrdersController : Controller
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
 
-        public OrdersController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IOrdersService _orderService;
+
+        public OrdersController(IOrdersService ordersService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _orderService = ordersService;
         }
 
         [AllowAnonymous]
@@ -28,73 +28,68 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var orderList = unitOfWork.OrderRepository.Get();
+                var orderList = _orderService.getOrders();
 
                 if(!orderList.Any())
                 {
                     return NotFound("No one ordered yet");
                 }
 
-                List<OrdersView> ordersViews = new List<OrdersView>();
-
-                foreach (var item in orderList)
-                {
-                    ordersViews.Add(_mapper.Map<OrdersView>(item));
-                }
-                return Ok(ordersViews);
+                
+                return Ok(orderList);
             }
             catch (Exception ex)
             {
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
-        [AllowAnonymous]
-        [HttpGet("/api/v1/orders/contractor/{contractorId}")]
-        public ActionResult<IEnumerable<OrdersView>> GetOrdersByContractorId(int contractorId)
-        {
-            try
-            {
-                var orders = unitOfWork.OrderRepository.Get(filter: o => o.ContractorId == contractorId).ToList();
-                var ordersViews = new List<OrdersView>();
+        //[AllowAnonymous]
+        //[HttpGet("/api/v1/orders/contractor/{contractorId}")]
+        //public ActionResult<IEnumerable<OrdersView>> GetOrdersByContractorId(int contractorId)
+        //{
+        //    try
+        //    {
+        //        var orders = unitOfWork.OrderRepository.Get(filter: o => o.ContractorId == contractorId).ToList();
+        //        var ordersViews = new List<OrdersView>();
 
-                foreach (var order in orders)
-                {
-                    var orderView = new OrdersView
-                    {
-                        SubscriptionId = order.SubscriptionId,
-                        ContractorId = order.ContractorId,
-                        OrderPrice = order.OrderPrice,
-                        OrderDate = order.OrderDate,
-                        Status = order.Status,
-                        TransactionCode = order.TransactionCode
-                    };
+        //        foreach (var order in orders)
+        //        {
+        //            var orderView = new OrdersView
+        //            {
+        //                SubscriptionId = order.SubscriptionId,
+        //                ContractorId = order.ContractorId,
+        //                OrderPrice = order.OrderPrice,
+        //                OrderDate = order.OrderDate,
+        //                Status = order.Status,
+        //                TransactionCode = order.TransactionCode
+        //            };
 
-                    ordersViews.Add(orderView);
-                }
+        //            ordersViews.Add(orderView);
+        //        }
 
-                return Ok(ordersViews);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //        return Ok(ordersViews);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
         [AllowAnonymous]
         [HttpGet("/api/v1/orders/get/id={id}")]
         public IActionResult GetOrderById(int id)
         {
             try
             {
-                var order = unitOfWork. OrderRepository.GetByID(id);
+                var order = _orderService.GetOrderById(id);
 
                 if (order == null)
                 {
                     return NotFound($"Order with ID {id} not found.");
                 }
 
-                var orderView = _mapper.Map<OrdersView>(order);
+                
 
-                return Ok(orderView);
+                return Ok(order);
             }
             catch (Exception ex)
             {
@@ -108,21 +103,16 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var order = unitOfWork.OrderRepository.Find(o => o.ContractorId == contractorid).ToList();
+                var order = _orderService.GetOrdersByContractorId(contractorid);
 
                 if (order == null)
                 {
                     return NotFound($"Order with Contractor ID {contractorid} not found.");
                 }
 
-                List<OrdersView> ordersViews = new List<OrdersView>();
+                
 
-                foreach (var item in order)
-                {
-                    ordersViews.Add(_mapper.Map<OrdersView>(item));
-                }
-
-                return Ok(ordersViews);
+                return Ok(order);
             }
             catch (Exception ex)
             {
@@ -136,58 +126,25 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var checkContractorId = unitOfWork.ContractorRepository.GetByID(ordersView.ContractorId);
-                var checkSubscriptionId = unitOfWork.SubscriptionRepository.GetByID(ordersView.SubscriptionId);
-
-                if (checkContractorId == null || checkSubscriptionId == null)
-                {
-                    return NotFound("ContractorId or SubscriptionId not found");
-                }
-
                 if (ordersView.OrderPrice < 0)
                 {
                     return BadRequest("Price must be larger than 0");
                 }
-
-                var order = new Orders
+                var order = _orderService.AddOrder(ordersView);
+                if(order != null)
                 {
-                    SubscriptionId = ordersView.SubscriptionId,
-                    ContractorId = ordersView.ContractorId,
-                    OrderPrice = checkSubscriptionId.Price,
-                    OrderDate = DateTime.Now,
-                    Status = true,
-                    TransactionCode = GenerateRandomCode(10)
-                };
-
-                unitOfWork.OrderRepository.Insert(order);
-                unitOfWork.Save();
-
-                checkContractorId.SubscriptionId = ordersView.SubscriptionId;
-                checkContractorId.ExpiredDate = DateTime.Now.AddDays((double) checkSubscriptionId.Duration);
-                unitOfWork.ContractorRepository.Update(checkContractorId); 
-                unitOfWork.Save();
-
-                return Ok("Order successfully");
-            }catch (Exception ex)
+                    return Ok("Order successfully");
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
             {
                 return BadRequest($"An error occurred while adding the order. Error message: {ex.Message}");
 
             }
         }
 
-        public static string GenerateRandomCode(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var stringBuilder = new StringBuilder(length);
-
-            for (int i = 0; i < length; i++)
-            {
-                stringBuilder.Append(chars[random.Next(chars.Length)]);
-            }
-
-            return stringBuilder.ToString();
-        }
+        
 
         //[AllowAnonymous]
         //[HttpPut("/Orders/{id}")]

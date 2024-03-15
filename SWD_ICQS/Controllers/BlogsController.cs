@@ -92,7 +92,7 @@ namespace SWD_ICQS.Controllers
                 var blog = _blogService.AddBlog(blogView);
                 if (blog == null)
                 {
-                    return NotFound("ContractorID not found");
+                    return BadRequest("An error occurred while adding the blog");
                 }
 
                 

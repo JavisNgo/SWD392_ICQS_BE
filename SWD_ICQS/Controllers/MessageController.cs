@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 using System.Diagnostics.Contracts;
 using System.Text;
 
@@ -13,15 +14,11 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly string _imagesDirectory;
+        private readonly IMessageService _messageService;
 
-        public MessageController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
+        public MessageController(IMessageService messageService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "messageImage");
+            _messageService = messageService;
         }
 
         //[HttpGet("/messages")]
@@ -42,18 +39,10 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var messages = unitOfWork.MessageRepository.Find(m => m.CustomerId == CustomerId && m.ContractorId == ContractorId);
+                var messages = _messageService.getMesssageById(CustomerId, ContractorId);
                 if(messages == null)
                 {
                     return NotFound($"Message with id {CustomerId} not found");
-                }
-                
-                foreach(var message in messages)
-                {
-                    if (!String.IsNullOrEmpty(message.ImageUrl))
-                    {
-                        message.ImageUrl = $"https://localhost:7233/img/messageImage/{message.ImageUrl}";
-                    }
                 }
                 
                 return Ok(messages);
@@ -69,55 +58,16 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var checkContractorID = unitOfWork.ContractorRepository.GetByID(messagesView.ContractorId);
-                var checkCustomerID = unitOfWork.CustomerRepository.GetByID(messagesView.CustomerId);
-                if(checkContractorID == null)
-                {
-                    return NotFound("Contractor not found");
-                }
-                if(checkCustomerID == null)
-                {
-                    return NotFound("Customer not found");
-                }
-                Messages message = _mapper.Map<Messages>(messagesView);
+                var message = _messageService.AddMessage(messagesView);
                 
-                message.SendAt = DateTime.Now;
-                message.Status = true;
-                string filename = null;
-                string? tempString = message.ImageUrl;
-                if (!String.IsNullOrEmpty(message.ImageUrl))
-                {
-                    string randomString = GenerateRandomString(15);
-                    byte[] imageBytes = Convert.FromBase64String(message.ImageUrl);
-                    filename = $"MessageImage_{message.CustomerId}_{message.CustomerId}_{randomString}.png";
-                    string imagePath = Path.Combine(_imagesDirectory, filename);
-                    System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                }
-                message.ImageUrl = filename;
-
-                unitOfWork.MessageRepository.Insert(message);
-                
-                unitOfWork.Save();
-                return Ok(messagesView);
+                return Ok(message);
             }catch (Exception ex)
             {
                 return BadRequest($"An error occurred while adding the message. Error message: {ex.Message}");
             }
         }
 
-        public static string GenerateRandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            var stringBuilder = new StringBuilder(length);
-
-            for (int i = 0; i < length; i++)
-            {
-                stringBuilder.Append(chars[random.Next(chars.Length)]);
-            }
-
-            return stringBuilder.ToString();
-        }
+        
 
         //[HttpPut("/messageStatus/{id}")]        
         //public IActionResult ChangingStatusMessage(int id)

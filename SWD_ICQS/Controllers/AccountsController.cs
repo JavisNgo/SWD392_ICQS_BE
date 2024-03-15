@@ -33,21 +33,18 @@ namespace SWD_ICQS.Controllers
         {
             IActionResult response = Unauthorized();
             var account_ = _accountsService.AuthenticateUser(loginInfo);
-            if (account_ != null)
+            if (account_ == null)
             {
-                if (account_.Status == true)
-                {
-                    var token = _accountsService.GenerateToken(account_);
-                    response = Ok(new { accessToken = token, account_});
-                }
-                else
-                {
-                    return BadRequest("Your account is locked");
-                }
+                return NotFound("No account found");
+            }
+            if (account_.Status == true)
+            {
+                var token = _accountsService.GenerateToken(account_);
+                response = Ok(new { accessToken = token, account_ });
             }
             else
             {
-                return NotFound("No account found");
+                return BadRequest("Your account is locked");
             }
             return response;
         }
@@ -71,8 +68,7 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {
-            bool checkExisted = _accountsService.checkExistedAccount(username);
-            if(!checkExisted)
+            if(!_accountsService.checkExistedAccount(username))
             {
                 return NotFound("No account found in database");
             }

@@ -53,11 +53,17 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/accounts/register")]
         public IActionResult Register([FromBody] AccountsView newAccount)
         {
-            bool checkExist = _accountsService.checkExistedAccount(newAccount.Username);
-            if(!checkExist)
+            var account = _accountsService.GetAccountByUsername(newAccount.Username);
+            if(account == null)
             {
-                _accountsService.CreateAccount(newAccount);
-                return Ok("Create success");
+                bool checkRegister = _accountsService.CreateAccount(newAccount);
+                if(checkRegister)
+                {
+                    return Ok("Create success");
+                } else
+                {
+                    return BadRequest("Not correct role");
+                }
             } else
             {
                 return BadRequest("Existed username");
@@ -68,17 +74,22 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {
-            if(!_accountsService.checkExistedAccount(username))
+            var account = _accountsService.GetAccountByUsername(username);
+            if(account == null)
             {
-                return NotFound("No account found in database");
+                return NotFound($"No account with username {username} found");
             }
-            string StringRole = _accountsService.GetAccountRole(username);
+            var StringRole = _accountsService.GetAccountRole(username, account);
+            if(StringRole == null)
+            {
+                return BadRequest("Some problems occur, cannot find your role!");
+            }
             if (StringRole.Equals("CONTRACTOR"))
             {
-                bool checkContractor = _accountsService.checkExistedContractor(username);
-                if(checkContractor)
+                var contractor = _accountsService.GetContractorByAccount(account);
+                if(contractor != null)
                 {
-                    ContractorsView contractorsView = _accountsService.GetContractorInformation(username);
+                    var contractorsView = _accountsService.GetContractorInformation(username, account, contractor);
                     return Ok(contractorsView);
                 } else
                 {
@@ -86,10 +97,10 @@ namespace SWD_ICQS.Controllers
                 }
             } else if (StringRole.Equals("CUSTOMER"))
             {
-                bool checkCustomer = _accountsService.checkExistedCustomer(username);
-                if(checkCustomer)
+                var customer = _accountsService.GetCustomerByUsername(account);
+                if(customer != null)
                 {
-                    CustomersView customersView = _accountsService.GetCustomersInformation(username);
+                    var customersView = _accountsService.GetCustomersInformation(username, account, customer);
                     return Ok(customersView);
                 } else
                 {

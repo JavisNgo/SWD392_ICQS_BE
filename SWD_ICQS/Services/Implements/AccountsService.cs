@@ -28,7 +28,7 @@ namespace SWD_ICQS.Services.Implements
             _mapper = mapper;
         }
 
-        public AccountsView AuthenticateUser(AccountsView loginInfo)
+        public AccountsView? AuthenticateUser(AccountsView loginInfo)
         {
             AccountsView accountsView = null;
             try
@@ -51,7 +51,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public string HashPassword(string password)
+        public string? HashPassword(string password)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public string GenerateToken(AccountsView account)
+        public string? GenerateToken(AccountsView account)
         {
             try
             {
@@ -99,23 +99,16 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public bool checkExistedAccount(string username)
+        public Accounts? GetAccountByUsername(string username)
         {
             try
             {
                 var account_ = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-                if (account_ != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return account_;
             } catch (Exception ex)
             {
                 Console.WriteLine (ex.Message);
-                return false;
+                return null;
             }
         }
 
@@ -158,6 +151,9 @@ namespace SWD_ICQS.Services.Implements
                         };
                         _unitOfWork.CustomerRepository.Insert(customer);
                         _unitOfWork.Save();
+                    } else
+                    {
+                        return false;
                     }
                 }
                 return true;
@@ -175,11 +171,10 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public string GetAccountRole(string username)
+        public string? GetAccountRole(string username, Accounts account)
         {
             try
             {
-                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
                 if (account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
                 {
                     return "CONTRACTOR";
@@ -188,9 +183,13 @@ namespace SWD_ICQS.Services.Implements
                 {
                     return "CUSTOMER";
                 }
-                else
+                else if (account.Role == Accounts.AccountsRoleEnum.ADMIN)
                 {
                     return "ADMIN";
+                }
+                else
+                {
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -200,12 +199,10 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public ContractorsView GetContractorInformation(string username)
+        public ContractorsView? GetContractorInformation(string username, Accounts account, Contractors contractor)
         {
             try
             {
-                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-                var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
                 ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
                 string url = null;
                 if (!String.IsNullOrEmpty(contractor.AvatarUrl))
@@ -221,12 +218,10 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public CustomersView GetCustomersInformation(string username)
+        public CustomersView? GetCustomersInformation(string username, Accounts account, Customers customer)
         {
             try
             {
-                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-                var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
                 CustomersView customersView = _mapper.Map<CustomersView>(customer);
                 return customersView;
             } catch(Exception ex)
@@ -236,45 +231,29 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public bool checkExistedContractor(string username)
+        public Contractors? GetContractorByAccount(Accounts account)
         {
             try
             {
-                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
                 var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-                if (contractor != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return contractor;
             } catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
 
-        public bool checkExistedCustomer(string username)
+        public Customers? GetCustomerByUsername(Accounts account)
         {
             try
             {
-                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
                 var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-                if (customer != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return customer;
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
     }

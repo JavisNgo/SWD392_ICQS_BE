@@ -36,6 +36,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //Add services to the container
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program), typeof(MappingProfile));

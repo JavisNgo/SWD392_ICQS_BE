@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
+using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 using System.Net.WebSockets;
 
 namespace SWD_ICQS.Controllers
@@ -13,12 +15,11 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
+        
+        private readonly ICategoriesService _categoriesService; 
 
-        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper) {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
+        public CategoryController(ICategoriesService categoriesService) {
+            _categoriesService = categoriesService;
         }
         [AllowAnonymous]
         [HttpGet("/api/v1/categories/get")]
@@ -26,7 +27,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var categoriesList = unitOfWork.CategoryRepository.Get();
+                var categoriesList = _categoriesService.getAllCategories();
                 return Ok(categoriesList);
             }
             catch (Exception ex)
@@ -41,37 +42,16 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var category = unitOfWork.CategoryRepository.GetByID(id);
+                var category = _categoriesService.GetCategoryById(id);
 
                 if (category == null)
                 {
                     return NotFound($"Category with ID {id} not found.");
                 }
 
-                var categoriesView = _mapper.Map<CategoriesView>(category);
+                
 
-                var constructLists = unitOfWork.ConstructRepository.Find(c => c.CategoryId == id).ToList();
-
-                if(constructLists.Any())
-                {
-                    categoriesView.constructsViewList = new List<ConstructsView>();
-                    foreach (var construct in constructLists)
-                    {
-                        categoriesView.constructsViewList.Add(_mapper.Map<ConstructsView>(construct));
-                    }
-                    foreach (var construct in categoriesView.constructsViewList)
-                    {
-                        construct.constructImagesViews = new List<ConstructImagesView>();
-                        var imageLists = unitOfWork.ConstructImageRepository.Find(c => c.ConstructId == construct.Id).ToList();
-                        foreach (var image in imageLists)
-                        {
-                            image.ImageUrl = $"https://localhost:7233/img/constructImage/{image.ImageUrl}";
-                            construct.constructImagesViews.Add(_mapper.Map<ConstructImagesView>(image));
-                        }
-                    }
-                }
-
-                return Ok(categoriesView);
+                return Ok(category);
             }
             catch (Exception ex)
             {
@@ -90,9 +70,11 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Invalid name. It should only contain letters.");
                 }
 
-                var category = _mapper.Map<Categories>(categoryView);
-                unitOfWork.CategoryRepository.Insert(category);
-                unitOfWork.Save();
+                var category = _categoriesService.AddCategory(categoryView);
+                if(category == null)
+                {
+                    return BadRequest();
+                }
                 return Ok("Create successfully");
             }
             catch (Exception ex)
@@ -107,25 +89,19 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var existingCategory = unitOfWork.CategoryRepository.GetByID(id);
+                // Validate the name using a regular expression
+                if (!IsValidName(updatedCategoryView.Name))
+                {
+                    return BadRequest("Invalid name. It should only contain letters.");
+                }
+                var existingCategory = _categoriesService.UpdateCategory(id, updatedCategoryView);
 
                 if (existingCategory == null)
                 {
                     return NotFound($"Category with ID {id} not found.");
                 }
 
-                // Validate the name using a regular expression
-                if (!IsValidName(updatedCategoryView.Name))
-                {
-                    return BadRequest("Invalid name. It should only contain letters.");
-                }
-
-                // Map the properties from updatedCategoryView to existingCategory using AutoMapper
-                _mapper.Map(updatedCategoryView, existingCategory);
-
-                // Mark the entity as modified
-                unitOfWork.CategoryRepository.Update(existingCategory);
-                unitOfWork.Save();
+                
 
                 return Ok("Update successfully"); // Return the updated category
             }
@@ -142,23 +118,14 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var category = unitOfWork.CategoryRepository.GetByID(id);
+                var category = _categoriesService.DeleteCategory(id);
 
                 if (category == null)
                 {
                     return NotFound($"Category with ID {id} not found.");
                 }
                 
-                var existingConstruct = unitOfWork.ConstructRepository.Find(c => c.CategoryId == category.Id).ToList();
-                if (existingConstruct.Any())
-                {
-                    return BadRequest("Please delete or change category of construct that contain this category");
-                }
-
-                unitOfWork.CategoryRepository.Delete(id);
-                unitOfWork.Save();
-
-                // You can return a custom response message 
+                
                 return Ok(new { Message = $"Category with ID {id} has been successfully deleted." });
             }
             catch (Exception ex)

@@ -38,6 +38,7 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IBlogsService, BlogsService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 
 
 // Add AutoMapper

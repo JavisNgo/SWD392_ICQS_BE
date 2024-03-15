@@ -4,5 +4,6 @@
     {
         public int RequestId { get; set; }
         public int ProductId { get; set; }
+        public ProductsView? ProductView { get; set; }
     }
 }

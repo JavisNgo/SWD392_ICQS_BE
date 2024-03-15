@@ -5,6 +5,7 @@ using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 using System.Threading;
 
 namespace SWD_ICQS.Controllers
@@ -14,11 +15,13 @@ namespace SWD_ICQS.Controllers
 
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IRequestService _requestService;
 
-        public RequestController(IUnitOfWork unitOfWork, IMapper mapper)
+        public RequestController(IUnitOfWork unitOfWork, IMapper mapper, IRequestService requestService)
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _requestService = requestService;
         }
 
         [AllowAnonymous]
@@ -40,20 +43,16 @@ namespace SWD_ICQS.Controllers
         [HttpGet("/Requests/{id}")]
         public IActionResult GetRequestById(int id)
         {
-            try
+            bool checkRequest = _requestService.checkExistedRequestId(id);
+            if(checkRequest)
             {
-                var request = unitOfWork.RequestRepository.GetByID(id);
+                RequestView requestView = _requestService.GetRequestView(id);
 
-                if (request == null)
-                {
-                    return NotFound($"Request with ID {id} not found.");
-                }
 
-                return Ok(request);
-            }
-            catch (Exception ex)
+                return Ok(requestView);
+            } else
             {
-                return BadRequest($"An error occurred while getting the request. Error message: {ex.Message}");
+                return NotFound($"No request that have id {id}");
             }
         }
         [AllowAnonymous]

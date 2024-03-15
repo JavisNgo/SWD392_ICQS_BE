@@ -31,65 +31,95 @@ namespace SWD_ICQS.Services.Implements
         public AccountsView AuthenticateUser(AccountsView loginInfo)
         {
             AccountsView accountsView = null;
-            string hashedPassword = HashPassword(loginInfo.Password);
-            Accounts? account = _unitOfWork.AccountRepository.Find(a => a.Username == loginInfo.Username && a.Password == hashedPassword).FirstOrDefault();
-            if (account != null)
+            try
             {
-                accountsView = new AccountsView();
-                accountsView.Username = account.Username;
-                accountsView.Status = account.Status;
-                accountsView.Role = account.Role.ToString();
+                string hashedPassword = HashPassword(loginInfo.Password);
+                Accounts? account = _unitOfWork.AccountRepository.Find(a => a.Username == loginInfo.Username && a.Password == hashedPassword).FirstOrDefault();
+                if (account != null)
+                {
+                    accountsView = new AccountsView();
+                    accountsView.Username = account.Username;
+                    accountsView.Status = account.Status;
+                    accountsView.Role = account.Role.ToString();
+                }
+                return accountsView;
             }
-            return accountsView;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public string HashPassword(string password)
         {
-            using (SHA512 sha512 = SHA512.Create())
+            try
             {
-                // Compute hash from the password bytes
-                byte[] hashBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-                // Convert the byte array to a hexadecimal string
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
+                using (SHA512 sha512 = SHA512.Create())
                 {
-                    stringBuilder.Append(hashBytes[i].ToString("x2"));
-                }
+                    // Compute hash from the password bytes
+                    byte[] hashBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(password));
 
-                return stringBuilder.ToString();
+                    // Convert the byte array to a hexadecimal string
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < hashBytes.Length; i++)
+                    {
+                        stringBuilder.Append(hashBytes[i].ToString("x2"));
+                    }
+
+                    return stringBuilder.ToString();
+                }
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return null;
             }
         }
 
         public string GenerateToken(AccountsView account)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var expirationTime = DateTime.UtcNow.AddMinutes(60);
-
-            var claims = new List<Claim>
+            try
             {
-                new Claim(ClaimTypes.Role, account.Role.ToString())
-            };
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var expirationTime = DateTime.UtcNow.AddMinutes(60);
 
-            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: expirationTime, signingCredentials: credentials);
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, account.Role.ToString())
+                };
+
+                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: expirationTime, signingCredentials: credentials);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine (ex.Message);
+                return null;
+            }
         }
 
         public bool checkExistedAccount(string username)
         {
-            var account_ = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            if (account_ != null)
+            try
             {
-                return true;
-            }
-            else
+                var account_ = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                if (account_ != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            } catch (Exception ex)
             {
+                Console.WriteLine (ex.Message);
                 return false;
             }
         }
 
-        public void CreateAccount(AccountsView newAccount)
+        public bool CreateAccount(AccountsView newAccount)
         {
             try
             {
@@ -130,6 +160,7 @@ namespace SWD_ICQS.Services.Implements
                         _unitOfWork.Save();
                     }
                 }
+                return true;
             }
             catch (Exception ex)
             {
@@ -140,69 +171,109 @@ namespace SWD_ICQS.Services.Implements
                     _unitOfWork.Save();
                 }
                 Console.WriteLine(ex.Message);
+                return false;
             }
         }
 
         public string GetAccountRole(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            if (account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
+            try
             {
-                return "CONTRACTOR";
-            } else if (account.Role == Accounts.AccountsRoleEnum.CUSTOMER)
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                if (account.Role == Accounts.AccountsRoleEnum.CONTRACTOR)
+                {
+                    return "CONTRACTOR";
+                }
+                else if (account.Role == Accounts.AccountsRoleEnum.CUSTOMER)
+                {
+                    return "CUSTOMER";
+                }
+                else
+                {
+                    return "ADMIN";
+                }
+            }
+            catch (Exception ex)
             {
-                return "CUSTOMER";
-            } else
-            {
-                return "ADMIN";
+                Console.WriteLine(ex.Message);
+                return null;
             }
         }
 
         public ContractorsView GetContractorInformation(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-            ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
-            string url = null;
-            if (!String.IsNullOrEmpty(contractor.AvatarUrl))
+            try
             {
-                url = $"https://localhost:7233/img/contractorAvatar/{contractor.AvatarUrl}";
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                ContractorsView contractorsView = _mapper.Map<ContractorsView>(contractor);
+                string url = null;
+                if (!String.IsNullOrEmpty(contractor.AvatarUrl))
+                {
+                    url = $"https://localhost:7233/img/contractorAvatar/{contractor.AvatarUrl}";
+                }
+                contractorsView.AvatarUrl = url;
+                return contractorsView;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
             }
-            contractorsView.AvatarUrl = url;
-            return contractorsView;
         }
 
         public CustomersView GetCustomersInformation(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-            CustomersView customersView = _mapper.Map<CustomersView>(customer);
-            return customersView;
+            try
+            {
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                CustomersView customersView = _mapper.Map<CustomersView>(customer);
+                return customersView;
+            } catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public bool checkExistedContractor(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-            if(contractor != null)
+            try
             {
-                return true;
-            } else
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                var contractor = _unitOfWork.ContractorRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                if (contractor != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            } catch(Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
 
         public bool checkExistedCustomer(string username)
         {
-            var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
-            var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
-            if (customer != null)
+            try
             {
-                return true;
-            }
-            else
+                var account = _unitOfWork.AccountRepository.Find(a => a.Username == username).FirstOrDefault();
+                var customer = _unitOfWork.CustomerRepository.Find(c => c.AccountId == account.Id).FirstOrDefault();
+                if (customer != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            } catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }

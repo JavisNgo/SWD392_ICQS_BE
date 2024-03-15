@@ -8,7 +8,7 @@ namespace SWD_ICQS.Services.Interfaces
         string HashPassword(string password);
         string GenerateToken(AccountsView account);
         bool checkExistedAccount(string username);
-        void CreateAccount (AccountsView newAccount);
+        bool CreateAccount (AccountsView newAccount);
         string GetAccountRole(string username);
         bool checkExistedContractor(string username);
         ContractorsView GetContractorInformation(string username);

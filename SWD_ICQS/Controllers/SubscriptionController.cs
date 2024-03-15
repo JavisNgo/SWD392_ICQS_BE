@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
+using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 
 namespace SWD_ICQS.Controllers
 {
@@ -11,13 +13,12 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class SubscriptionController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
+        
+        private readonly ISubscriptionService _subscriptionService;
 
-        public SubscriptionController(IUnitOfWork unitOfWork, IMapper mapper)
+        public SubscriptionController(ISubscriptionService subscriptionService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _subscriptionService = subscriptionService;
         }
         //[Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpGet("/Subscriptions")]
@@ -25,7 +26,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var subscriptionsList = unitOfWork.SubscriptionRepository.Get();
+                var subscriptionsList = _subscriptionService.getSubscriptions();
                 return Ok(subscriptionsList);
             }
             catch (Exception ex)
@@ -39,7 +40,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var subscription = unitOfWork.SubscriptionRepository.GetByID(id);
+                var subscription = _subscriptionService.GetSubscriptionById(id);
 
                 if (subscription == null)
                 {
@@ -77,11 +78,13 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Invalid Duration. It should be a positive integer.");
                 }
 
-                var subscription = _mapper.Map<Subscriptions>(subscriptionsView);
-                unitOfWork.SubscriptionRepository.Insert(subscription);
-                unitOfWork.Save();
+                var subscription = _subscriptionService.AddNewSubscription(subscriptionsView);
 
-                return Ok(subscriptionsView);
+                if(subscription == null)
+                {
+                    return BadRequest("An error occurred while adding the subscription");
+                }
+                return Ok(subscription);
             }
             catch (Exception ex)
             {
@@ -94,12 +97,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var existingSubscription = unitOfWork.SubscriptionRepository.GetByID(id);
-
-                if (existingSubscription == null)
-                {
-                    return NotFound($"Subscription with ID {id} not found.");
-                }
+                
 
                 // Validate the name using a regular expression
                 if (!IsValidName(subscriptionsView.Name))
@@ -119,12 +117,15 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Invalid Duration. It should be a positive integer.");
                 }
 
-                // Map the properties from updatedCategoryView to existingCategory using AutoMapper
-                _mapper.Map(subscriptionsView, existingSubscription);
+                var existingSubscription = _subscriptionService.UpdateSubscription(id, subscriptionsView);
 
-                // Mark the entity as modified
-                unitOfWork.SubscriptionRepository.Update(existingSubscription);
-                unitOfWork.Save();
+                if (existingSubscription == null)
+                {
+                    return NotFound($"Subscription with ID {id} not found.");
+                }
+
+                // Map the properties from updatedCategoryView to existingCategory using AutoMapper
+                
 
                 return Ok(existingSubscription); // Return the updated Subscription
             }
@@ -139,26 +140,18 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var subscription = unitOfWork.SubscriptionRepository.GetByID(id);
+                var subscription = _subscriptionService.ChangeStatusSubscriptions(id);
 
                 if (subscription == null)
                 {
                     return NotFound($"Subscription with ID {id} not found.");
                 }
 
-                if(subscription.Status == true)
+                if(subscription.Status == false)
                 {
-                    // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                    subscription.Status = false;
-                    unitOfWork.SubscriptionRepository.Update(subscription);
-                    unitOfWork.Save();
                     return Ok("Set Status to false successfully.");
                 } else
                 {
-                    // Chỉ đặt thuộc tính Status là false thay vì xóa hoàn toàn
-                    subscription.Status = true;
-                    unitOfWork.SubscriptionRepository.Update(subscription);
-                    unitOfWork.Save();
                     return Ok("Set Status to true successfully.");
                 }
 

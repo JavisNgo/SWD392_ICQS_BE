@@ -7,6 +7,8 @@ using SWD_ICQS.Mapper;
 using SWD_ICQS.Repository;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Implements;
+using SWD_ICQS.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +32,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+//Add services to the container
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program), typeof(MappingProfile));
 

@@ -5,6 +5,7 @@ using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
+using System.Text;
 
 namespace SWD_ICQS.Services.Implements
 {
@@ -251,8 +252,22 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception("Price must be larger than 0");
                 }
-
+                
                 var request = _mapper.Map<Requests>(requestView);
+                string code = $"P_{requestView.CustomerId}_{requestView.ContractorId}_{GenerateRandomCode(10)}";
+                bool checking = true;
+                while (checking)
+                {
+                    if (unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault() != null)
+                    {
+                        code = $"P_{requestView.CustomerId}_{requestView.ContractorId}_{GenerateRandomCode(10)}";
+                    }
+                    else
+                    {
+                        checking = false;
+                    }
+                };
+                request.Code = code;
                 request.Status = 0;
                 request.TimeIn = DateTime.Now;
                 request.TimeOut = DateTime.Now.AddDays(7);
@@ -260,12 +275,50 @@ namespace SWD_ICQS.Services.Implements
                 unitOfWork.RequestRepository.Insert(request);
                 unitOfWork.Save();
 
+                var createdRequest = unitOfWork.RequestRepository.Find(r => r.Code == code).FirstOrDefault();
+
+                if(requestView.requestDetailViews != null && createdRequest != null)
+                {
+                    if (requestView.requestDetailViews.Any())
+                    {
+                        foreach (var rd in requestView.requestDetailViews)
+                        {
+                            var existingProduct = unitOfWork.ProductRepository.Find(p => p.Id == rd.ProductId).FirstOrDefault();
+                            if (existingProduct != null)
+                            {
+                                var requestDetails = new RequestDetails
+                                {
+                                    RequestId = createdRequest.Id,
+                                    ProductId = rd.ProductId,
+                                    Quantity = rd.Quantity
+                                };
+                                unitOfWork.RequestDetailRepository.Insert(requestDetails);
+                                unitOfWork.Save();
+                            }
+                        }
+                    }
+                }
+
                 return requestView;
             }
             catch (Exception ex)
             {
                 throw new Exception($"An error occurred while adding the request. Error message: {ex.Message}");
             }
+        }
+
+        public static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                stringBuilder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            return stringBuilder.ToString();
         }
 
         public RequestView UpdateRequest(int id, RequestView requestView)

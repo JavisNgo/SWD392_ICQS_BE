@@ -11,6 +11,7 @@ namespace SWD_ICQS.Entities
         public int Id { get; set; }
         public int CustomerId { get; set; }
         public int ContractorId { get; set; }
+        public string? Code { get; set; }
         public string? Note { get; set; }
         public double? TotalPrice { get; set; }
         public DateTime? TimeIn { get; set; }

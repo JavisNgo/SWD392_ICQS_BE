@@ -32,6 +32,18 @@ namespace SWD_ICQS.Services.Implements
                 Blogs blog = _mapper.Map<Blogs>(blogView);
 
                 string code = $"B_{blog.ContractorId}_{GenerateRandomCode(10)}";
+                bool checking = true;
+                while (checking)
+                {
+                    if (unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault() != null)
+                    {
+                        code = $"P_{blogView.ContractorId}_{GenerateRandomCode(10)}";
+                    }
+                    else
+                    {
+                        checking = false;
+                    }
+                };
                 blog.Code = code;
                 DateTime postTime = DateTime.Now;
                 blog.PostTime = postTime;
@@ -40,24 +52,27 @@ namespace SWD_ICQS.Services.Implements
 
                 var blogCreated = unitOfWork.BlogRepository.Find(b => b.ContractorId == blogView.ContractorId && b.Content == blogView.Content && b.Title == blogView.Title && b.PostTime == postTime && b.Code == code).FirstOrDefault();
 
-                if (blogView.blogImagesViews.Any())
+                if(blogView.blogImagesViews != null && blogCreated != null)
                 {
-                    foreach (var item in blogView.blogImagesViews)
+                    if (blogView.blogImagesViews.Any())
                     {
-                        if (!String.IsNullOrEmpty(item.ImageUrl))
+                        foreach (var item in blogView.blogImagesViews)
                         {
-                            string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(item.ImageUrl);
-                            string filename = $"BlogImage_{blogCreated.Id}_{randomString}.png";
-                            string imagePath = Path.Combine(_imagesDirectory, filename);
-                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                            var blogImage = new BlogImages
+                            if (!String.IsNullOrEmpty(item.ImageUrl))
                             {
-                                BlogId = blogCreated.Id,
-                                ImageUrl = filename
-                            };
-                            unitOfWork.BlogImageRepository.Insert(blogImage);
-                            unitOfWork.Save();
+                                string randomString = GenerateRandomString(15);
+                                byte[] imageBytes = Convert.FromBase64String(item.ImageUrl);
+                                string filename = $"BlogImage_{blogCreated.Id}_{randomString}.png";
+                                string imagePath = Path.Combine(_imagesDirectory, filename);
+                                System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                                var blogImage = new BlogImages
+                                {
+                                    BlogId = blogCreated.Id,
+                                    ImageUrl = filename
+                                };
+                                unitOfWork.BlogImageRepository.Insert(blogImage);
+                                unitOfWork.Save();
+                            }
                         }
                     }
                 }
@@ -292,81 +307,84 @@ namespace SWD_ICQS.Services.Implements
                 unitOfWork.BlogRepository.Update(existingBlog);
                 unitOfWork.Save();
 
-                int countUrl = 0;
-                foreach (var image in blogView.blogImagesViews)
+                if(blogView.blogImagesViews != null)
                 {
-                    if (!String.IsNullOrEmpty(image.ImageUrl))
-                    {
-                        if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/"))
-                        {
-                            countUrl++;
-                        }
-                    }
-                }
-
-                if (countUrl == currentBlogImages.Count)
-                {
+                    int countUrl = 0;
                     foreach (var image in blogView.blogImagesViews)
                     {
-                        if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
+                        if (!String.IsNullOrEmpty(image.ImageUrl))
                         {
-                            string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
-                            string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
-                            string imagePath = Path.Combine(_imagesDirectory, filename);
-                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                            var blogImage = new BlogImages
+                            if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/"))
                             {
-                                BlogId = existingBlog.Id,
-                                ImageUrl = filename
-                            };
-                            unitOfWork.BlogImageRepository.Insert(blogImage);
-                            unitOfWork.Save();
-                        }
-                    }
-                }
-                else if (countUrl < currentBlogImages.Count)
-                {
-                    List<BlogImages> tempList = currentBlogImages;
-                    foreach (var image in blogView.blogImagesViews)
-                    {
-                        if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
-                        {
-                            string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
-                            string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
-                            string imagePath = Path.Combine(_imagesDirectory, filename);
-                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                            var blogImage = new BlogImages
-                            {
-                                BlogId = existingBlog.Id,
-                                ImageUrl = filename
-                            };
-                            unitOfWork.BlogImageRepository.Insert(blogImage);
-                            unitOfWork.Save();
-                        }
-                        else if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/"))
-                        {
-                            for (int i = tempList.Count - 1; i >= 0; i--)
-                            {
-                                string url = $"https://localhost:7233/img/blogImage/{tempList[i].ImageUrl}";
-                                if (url.Equals(image.ImageUrl))
-                                {
-                                    tempList.RemoveAt(i);
-                                }
+                                countUrl++;
                             }
                         }
                     }
-                    foreach (var temp in tempList)
+
+                    if (countUrl == currentBlogImages.Count)
                     {
-                        unitOfWork.BlogImageRepository.Delete(temp);
-                        unitOfWork.Save();
-                        if (!String.IsNullOrEmpty(temp.ImageUrl))
+                        foreach (var image in blogView.blogImagesViews)
                         {
-                            string imagePath = Path.Combine(_imagesDirectory, temp.ImageUrl);
-                            if (System.IO.File.Exists(imagePath))
+                            if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
                             {
-                                System.IO.File.Delete(imagePath);
+                                string randomString = GenerateRandomString(15);
+                                byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                                string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
+                                string imagePath = Path.Combine(_imagesDirectory, filename);
+                                System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                                var blogImage = new BlogImages
+                                {
+                                    BlogId = existingBlog.Id,
+                                    ImageUrl = filename
+                                };
+                                unitOfWork.BlogImageRepository.Insert(blogImage);
+                                unitOfWork.Save();
+                            }
+                        }
+                    }
+                    else if (countUrl < currentBlogImages.Count)
+                    {
+                        List<BlogImages> tempList = currentBlogImages;
+                        foreach (var image in blogView.blogImagesViews)
+                        {
+                            if (!image.ImageUrl.Contains("https://localhost:7233/img/blogImage/") && !String.IsNullOrEmpty(image.ImageUrl))
+                            {
+                                string randomString = GenerateRandomString(15);
+                                byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                                string filename = $"BlogImage_{existingBlog.Id}_{randomString}.png";
+                                string imagePath = Path.Combine(_imagesDirectory, filename);
+                                System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                                var blogImage = new BlogImages
+                                {
+                                    BlogId = existingBlog.Id,
+                                    ImageUrl = filename
+                                };
+                                unitOfWork.BlogImageRepository.Insert(blogImage);
+                                unitOfWork.Save();
+                            }
+                            else if (image.ImageUrl.Contains("https://localhost:7233/img/blogImage/"))
+                            {
+                                for (int i = tempList.Count - 1; i >= 0; i--)
+                                {
+                                    string url = $"https://localhost:7233/img/blogImage/{tempList[i].ImageUrl}";
+                                    if (url.Equals(image.ImageUrl))
+                                    {
+                                        tempList.RemoveAt(i);
+                                    }
+                                }
+                            }
+                        }
+                        foreach (var temp in tempList)
+                        {
+                            unitOfWork.BlogImageRepository.Delete(temp);
+                            unitOfWork.Save();
+                            if (!String.IsNullOrEmpty(temp.ImageUrl))
+                            {
+                                string imagePath = Path.Combine(_imagesDirectory, temp.ImageUrl);
+                                if (System.IO.File.Exists(imagePath))
+                                {
+                                    System.IO.File.Delete(imagePath);
+                                }
                             }
                         }
                     }

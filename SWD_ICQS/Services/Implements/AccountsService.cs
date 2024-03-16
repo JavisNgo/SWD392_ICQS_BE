@@ -84,7 +84,8 @@ namespace SWD_ICQS.Services.Implements
 
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Role, account.Role.ToString())
+                    new Claim("Role", account.Role.ToString()),
+                    new Claim("Username", account.Username.ToString())
                 };
 
                 var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: expirationTime, signingCredentials: credentials);

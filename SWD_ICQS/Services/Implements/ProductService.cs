@@ -29,6 +29,17 @@ namespace SWD_ICQS.Services.Implements
                     throw new Exception("Contractor not found");
                 }
                 string code = $"P_{productsView.ContractorId}_{GenerateRandomCode(10)}";
+                bool checking = true;
+                while (checking)
+                {
+                    if (unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault() != null)
+                    {
+                        code = $"P_{productsView.ContractorId}_{GenerateRandomCode(10)}";
+                    } else
+                    {
+                        checking = false ;
+                    }
+                };
                 var product = new Products
                 {
                     Code = code,
@@ -44,24 +55,27 @@ namespace SWD_ICQS.Services.Implements
 
                 var createdProduct = unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault();
 
-                if (productsView.productImagesViews.Any())
+                if(productsView.productImagesViews != null && createdProduct != null)
                 {
-                    foreach (var image in productsView.productImagesViews)
+                    if (productsView.productImagesViews.Any())
                     {
-                        if (!String.IsNullOrEmpty(image.ImageUrl))
+                        foreach (var image in productsView.productImagesViews)
                         {
-                            string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
-                            string filename = $"ProductImage_{createdProduct.Id}_{randomString}.png";
-                            string imagePath = Path.Combine(_imagesDirectory, filename);
-                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                            var productImage = new ProductImages
+                            if (!String.IsNullOrEmpty(image.ImageUrl))
                             {
-                                ProductId = createdProduct.Id,
-                                ImageUrl = filename
-                            };
-                            unitOfWork.ProductImageRepository.Insert(productImage);
-                            unitOfWork.Save();
+                                string randomString = GenerateRandomString(15);
+                                byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                                string filename = $"ProductImage_{createdProduct.Id}_{randomString}.png";
+                                string imagePath = Path.Combine(_imagesDirectory, filename);
+                                System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                                var productImage = new ProductImages
+                                {
+                                    ProductId = createdProduct.Id,
+                                    ImageUrl = filename
+                                };
+                                unitOfWork.ProductImageRepository.Insert(productImage);
+                                unitOfWork.Save();
+                            }
                         }
                     }
                 }

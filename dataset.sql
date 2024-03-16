@@ -117,11 +117,11 @@ VALUES
 GO
 
 -- Requests
-INSERT INTO Requests (CustomerId, ContractorId, Note, TotalPrice, TimeIn, TimeOut, Status)
+INSERT INTO Requests (CustomerId, ContractorId, Code, Note, TotalPrice, TimeIn, TimeOut, Status)
 VALUES
-    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Request 1 note', 100.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1),
-    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Request 2 note', 150.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1),
-    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Request 3 note', 200.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1);
+    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'R_1_1_2435476451', 'Request 1 note', 100.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1),
+    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'R_1_1_2435476451', 'Request 2 note', 150.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1),
+    ((SELECT Id FROM Customers WHERE Email = 'customer@example.com'), (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'R_1_1_2435476451', 'Request 3 note', 200.00, GETDATE(), DATEADD(day, 7, GETDATE()), 1);
 GO
 
 -- RequestDetails

@@ -239,7 +239,18 @@ namespace SWD_ICQS.Services.Implements
                 //}
 
                 string code = $"C_{constructsView.ContractorId}_{GenerateRandomCode(10)}";
-
+                bool checking = true;
+                while (checking)
+                {
+                    if (unitOfWork.ProductRepository.Find(p => p.Code == code).FirstOrDefault() != null)
+                    {
+                        code = $"P_{constructsView.ContractorId}_{GenerateRandomCode(10)}";
+                    }
+                    else
+                    {
+                        checking = false;
+                    }
+                };
                 var construct = new Constructs
                 {
                     Code = code,
@@ -255,24 +266,27 @@ namespace SWD_ICQS.Services.Implements
 
                 var createdConstruct = unitOfWork.ConstructRepository.Find(c => c.Code == code).FirstOrDefault();
 
-                if (constructsView.constructImagesViews.Any())
+                if(constructsView.constructImagesViews != null && createdConstruct != null)
                 {
-                    foreach (var image in constructsView.constructImagesViews)
+                    if (constructsView.constructImagesViews.Any())
                     {
-                        if (!String.IsNullOrEmpty(image.ImageUrl))
+                        foreach (var image in constructsView.constructImagesViews)
                         {
-                            string randomString = GenerateRandomString(15);
-                            byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
-                            string filename = $"ConstructImage_{createdConstruct.Id}_{randomString}.png";
-                            string imagePath = Path.Combine(_imagesDirectory, filename);
-                            System.IO.File.WriteAllBytes(imagePath, imageBytes);
-                            var constructImage = new ConstructImages
+                            if (!String.IsNullOrEmpty(image.ImageUrl))
                             {
-                                ConstructId = createdConstruct.Id,
-                                ImageUrl = filename
-                            };
-                            unitOfWork.ConstructImageRepository.Insert(constructImage);
-                            unitOfWork.Save();
+                                string randomString = GenerateRandomString(15);
+                                byte[] imageBytes = Convert.FromBase64String(image.ImageUrl);
+                                string filename = $"ConstructImage_{createdConstruct.Id}_{randomString}.png";
+                                string imagePath = Path.Combine(_imagesDirectory, filename);
+                                System.IO.File.WriteAllBytes(imagePath, imageBytes);
+                                var constructImage = new ConstructImages
+                                {
+                                    ConstructId = createdConstruct.Id,
+                                    ImageUrl = filename
+                                };
+                                unitOfWork.ConstructImageRepository.Insert(constructImage);
+                                unitOfWork.Save();
+                            }
                         }
                     }
                 }

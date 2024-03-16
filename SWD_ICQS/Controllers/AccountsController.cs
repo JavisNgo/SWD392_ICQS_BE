@@ -50,7 +50,7 @@ namespace SWD_ICQS.Controllers
             if (account_.Status == true)
             {
                 var token = _accountsService.GenerateToken(account_);
-                response = Ok(new { accessToken = token, account_ });
+                response = Ok(new { accessToken = token});
             }
             else
             {

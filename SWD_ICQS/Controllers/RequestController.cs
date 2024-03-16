@@ -86,6 +86,23 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/Requests")]
         public async Task<IActionResult> AddRequest([FromBody] RequestView requestView)
         {
+            if (requestView.requestDetailViews == null)
+            {
+                return BadRequest("Request must contain at least 1 product");
+            }
+            if (!requestView.requestDetailViews.Any())
+            {
+                return BadRequest("Request must contain at least 1 product");
+            } else
+            {
+                foreach(var view in requestView.requestDetailViews)
+                {
+                    if(view.Quantity <= 1)
+                    {
+                        return BadRequest("Quantity cannot <= 1");
+                    }
+                }
+            }
             try
             {
             var request = _requestService.AddRequest(requestView);
@@ -101,6 +118,14 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/Requests/{id}")]
         public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestView requestView)
         {
+            if(requestView.requestDetailViews == null)
+            {
+                return BadRequest("Request must contain at least 1 product");
+            }
+            if (!requestView.requestDetailViews.Any())
+            {
+                return BadRequest("Request must contain at least 1 product");
+            }
             try
             {
                 var result = _requestService.UpdateRequest(id, requestView);

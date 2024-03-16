@@ -14,14 +14,10 @@ namespace SWD_ICQS.Controllers
     public class RequestController : ControllerBase
     {
 
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
         private readonly IRequestService _requestService;
 
-        public RequestController(IUnitOfWork unitOfWork, IMapper mapper, IRequestService requestService)
+        public RequestController(IRequestService requestService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
             _requestService = requestService;
         }
 

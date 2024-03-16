@@ -142,7 +142,7 @@ namespace SWD_ICQS.Services.Implements
         }
 
 
-        public Boolean AcceptRequest(int id)
+        public bool AcceptRequest(int id)
         {
             try
             {

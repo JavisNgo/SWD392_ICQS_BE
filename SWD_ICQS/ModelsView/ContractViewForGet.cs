@@ -2,7 +2,7 @@
 {
     public class ContractViewForGet
     {
-        public int AppointmentId { get; set; }
+        public int RequestId { get; set; }
         public string? CustomerName { get; set; }
         public string? ContractorName { get; set; }
         public string? ContractUrl { get; set; }

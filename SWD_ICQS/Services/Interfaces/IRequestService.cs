@@ -10,13 +10,13 @@ namespace SWD_ICQS.Services.Interfaces
         IEnumerable<Requests> GetAllRequests();
 
         RequestViewForGet GetRequestView(int id);
+        RequestView AddRequest(RequestView requestView);
 
-        IEnumerable<RequestViewForGet> GetRequestsByContractorId(int contractorId);
-        IEnumerable<RequestViewForGet> GetRequestsByCustomerId(int customerId);
-        Task<IActionResult> AddRequest(RequestView requestView);
-        Task<IActionResult> UpdateRequest(int id, RequestView requestView);
-        IActionResult AcceptRequest(int id);
-        IActionResult MarkMeetingAsCompleted(int id);
+        IEnumerable<RequestViewForGet>? GetRequestsByContractorId(int contractorId);
+        IEnumerable<RequestViewForGet>? GetRequestsByCustomerId(int customerId);
+        RequestView UpdateRequest(int id, RequestView requestView);
+        bool MarkMeetingAsCompleted(int id);
+        bool AcceptRequest(int id);
 
     }
 }

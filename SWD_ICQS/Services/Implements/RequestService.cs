@@ -141,77 +141,16 @@ namespace SWD_ICQS.Services.Implements
             return requestViews;
         }
 
-        public async Task<IActionResult> AddRequest(RequestView requestView)
+
+        public Boolean AcceptRequest(int id)
         {
             try
             {
-                var contractor = unitOfWork.ContractorRepository.GetByID(requestView.ContractorId);
-                var customer = unitOfWork.CustomerRepository.GetByID(requestView.CustomerId);
 
-                if (contractor == null || customer == null)
-                {
-                    return new NotFoundObjectResult("ContractorID or CustomerID not found");
-                }
-
-                if (requestView.TotalPrice < 0)
-                {
-                    return new BadRequestObjectResult("Price must be larger than 0");
-                }
-
-                var request = _mapper.Map<Requests>(requestView);
-                request.Status = 0;
-                request.TimeIn = DateTime.Now;
-                request.TimeOut = DateTime.Now.AddDays(7);
-
-                unitOfWork.RequestRepository.Insert(request);
-                unitOfWork.Save();
-
-                return new OkObjectResult(requestView);
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult($"An error occurred while adding the request. Error message: {ex.Message}");
-            }
-        }
-
-        public async Task<IActionResult> UpdateRequest(int id, RequestView requestView)
-        {
-            try
-            {
                 var existingRequest = unitOfWork.RequestRepository.GetByID(id);
                 if (existingRequest == null)
                 {
-                    return new NotFoundObjectResult($"Request with ID : {id} not found");
-                }
-                var checkingContractorID = unitOfWork.ContractorRepository.GetByID(requestView.ContractorId);
-                var checkingCustomerId = unitOfWork.CustomerRepository.GetByID(requestView.CustomerId);
-                if (checkingContractorID == null || checkingCustomerId == null)
-                {
-                    return new NotFoundObjectResult("ContractorID or CustomerID not found");
-                }
-                if (requestView.TotalPrice < 0)
-                {
-                    return new BadRequestObjectResult("Price must be larger than 0");
-                }
-                _mapper.Map(requestView, existingRequest);
-                unitOfWork.RequestRepository.Update(existingRequest);
-                unitOfWork.Save();
-                return new OkObjectResult(requestView);
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult($"An error occurred while updating the constructProduct. Error message: {ex.Message}");
-            }
-        }
-
-        public IActionResult AcceptRequest(int id)
-        {
-            try
-            {
-                var existingRequest = unitOfWork.RequestRepository.GetByID(id);
-                if (existingRequest == null)
-                {
-                    return new NotFoundObjectResult($"Request with ID : {id} not found");
+                    throw new Exception($"Request with ID : {id} not found");
                 }
 
                 existingRequest.Status = Requests.RequestsStatusEnum.ACCEPTED;
@@ -230,22 +169,22 @@ namespace SWD_ICQS.Services.Implements
                 unitOfWork.AppointmentRepository.Insert(appointment);
                 unitOfWork.Save();
 
-                return new OkResult();
+                return true;
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult($"An error occurred while accepting the request. Error message: {ex.Message}");
+                 throw new Exception($"An error occurred while accepting the request. Error message: {ex.Message}");
             }
         }
 
-        public IActionResult MarkMeetingAsCompleted(int id)
+        public bool MarkMeetingAsCompleted(int id)
         {
             try
             {
                 var existingAppointment = unitOfWork.AppointmentRepository.GetByID(id);
                 if (existingAppointment == null)
                 {
-                    return new NotFoundObjectResult($"Appointment with ID : {id} not found");
+                    throw new Exception($"Appointment with ID : {id} not found");
                 }
 
                 existingAppointment.Status = Appointments.AppointmentsStatusEnum.COMPLETED;
@@ -255,19 +194,83 @@ namespace SWD_ICQS.Services.Implements
                 var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
                 if (request == null)
                 {
-                    return new NotFoundObjectResult("Request not found");
+                    throw new Exception("Request not found");
                 }
 
                 request.TimeOut = DateTime.Now.AddDays(14);
                 request.Status = Requests.RequestsStatusEnum.COMPLETED;
                 unitOfWork.RequestRepository.Update(request);
                 unitOfWork.Save();
-
-                return new OkResult();
+               return true;
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult($"An error occurred while marking meeting as completed. Error message: {ex.Message}");
+                throw new Exception($"An error occurred while marking meeting as completed. Error message: {ex.Message}");
+            }
+        }
+
+        
+
+        public RequestView AddRequest(RequestView requestView)
+        {
+           try
+            {
+                var contractor = unitOfWork.ContractorRepository.GetByID(requestView.ContractorId);
+                var customer = unitOfWork.CustomerRepository.GetByID(requestView.CustomerId);
+
+                if (contractor == null || customer == null)
+                {
+                    throw new Exception("ContractorID or CustomerID not found");
+                }
+
+                if (requestView.TotalPrice < 0)
+                {
+                    throw new Exception("Price must be larger than 0");
+                }
+
+                var request = _mapper.Map<Requests>(requestView);
+                request.Status = 0;
+                request.TimeIn = DateTime.Now;
+                request.TimeOut = DateTime.Now.AddDays(7);
+
+                unitOfWork.RequestRepository.Insert(request);
+                unitOfWork.Save();
+
+                return requestView;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while adding the request. Error message: {ex.Message}");
+            }
+        }
+
+        public RequestView UpdateRequest(int id, RequestView requestView)
+        {
+            try
+            {
+                var existingRequest = unitOfWork.RequestRepository.GetByID(id);
+                if (existingRequest == null)
+                {
+                    throw new Exception($"Request with ID : {id} not found");
+                }
+                var checkingContractorID = unitOfWork.ContractorRepository.GetByID(requestView.ContractorId);
+                var checkingCustomerId = unitOfWork.CustomerRepository.GetByID(requestView.CustomerId);
+                if (checkingContractorID == null || checkingCustomerId == null)
+                {
+                    throw new Exception("ContractorID or CustomerID not found");
+                }
+                if (requestView.TotalPrice < 0)
+                {
+                    throw new Exception("Price must be larger than 0");
+                }
+                _mapper.Map(requestView, existingRequest);
+                unitOfWork.RequestRepository.Update(existingRequest);
+                unitOfWork.Save();
+                return requestView;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while updating the constructProduct. Error message: {ex.Message}");
             }
         }
     }

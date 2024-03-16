@@ -6,6 +6,7 @@ using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
+using System.Net.WebSockets;
 using System.Threading;
 
 namespace SWD_ICQS.Controllers
@@ -48,7 +49,6 @@ namespace SWD_ICQS.Controllers
             {
                 RequestViewForGet requestView = _requestService.GetRequestView(id);
 
-
                 return Ok(requestView);
             } else
             {
@@ -90,7 +90,14 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/Requests")]
         public async Task<IActionResult> AddRequest([FromBody] RequestView requestView)
         {
-            return await _requestService.AddRequest(requestView);
+            try
+            {
+            var request = _requestService.AddRequest(requestView);
+            return Ok(request);
+            }catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
@@ -98,20 +105,52 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/Requests/{id}")]
         public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestView requestView)
         {
-            var result = await _requestService.UpdateRequest(id, requestView);
-            return result;
+            try
+            {
+                var result = _requestService.UpdateRequest(id, requestView);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPut("/RequestAccepted/{id}")]
         public IActionResult AcceptRequest(int id)
         {
-            return _requestService.AcceptRequest(id);
+            try
+            {
+                var result = _requestService.AcceptRequest(id);
+                if (result == true)
+                {
+                    return Ok("Accept successfully");
+                }
+                return BadRequest("Accept Fail");
+            }catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+
+            }
         }
 
         [HttpPut("/IsMeeting/{id}/")]
         public IActionResult IsMeeting(int id)
         {
-            return _requestService.MarkMeetingAsCompleted(id);
+            try
+            {
+                var request = _requestService.MarkMeetingAsCompleted(id);
+               if(request == true)
+                {
+                    return Ok("Successfully");
+                }
+                return BadRequest("Fail");
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
 
         }
 

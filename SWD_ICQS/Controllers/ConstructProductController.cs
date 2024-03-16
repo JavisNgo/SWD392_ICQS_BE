@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Implements;
+using SWD_ICQS.Services.Interfaces;
 
 namespace SWD_ICQS.Controllers
 {
@@ -11,13 +13,13 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class ConstructProductController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IConstructProductService _constructProductService;
 
-        public ConstructProductController(IUnitOfWork unitOfWork, IMapper mapper)
+
+
+        public ConstructProductController(IConstructProductService constructProductService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _constructProductService = constructProductService;
         }
 
         [HttpGet("/api/constructProducts")]
@@ -25,7 +27,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var constructProducts = unitOfWork.ConstructProductRepository.Get();
+                var constructProducts = _constructProductService.GetConstructProducts();
                 return Ok(constructProducts);
             }
             catch (Exception ex)
@@ -39,7 +41,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var constructProduct = unitOfWork.ConstructProductRepository.GetByID(id);
+                var constructProduct = _constructProductService.GetConstructProductByID(id);
                 if (constructProduct == null)
                 {
                     return NotFound($"ConstructProduct with ID : {id} not found");
@@ -57,22 +59,9 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var checkingConstruct = unitOfWork.ConstructRepository.GetByID(constructProductsView.ConstructId);
-                if (checkingConstruct == null)
-                {
-                    return NotFound("Construct not found");
-                }
-                var checkingProduct = unitOfWork.ProductRepository.GetByID(constructProductsView.ProductId);
-                if (checkingProduct == null)
-                {
-                    return NotFound("Product not found");
-                }
-
-                var constructProduct = _mapper.Map<ConstructProducts>(constructProductsView);
-
-                unitOfWork.ConstructProductRepository.Insert(constructProduct);
-                unitOfWork.Save();
-                return Ok(constructProductsView);
+                var constructProduct = _constructProductService.AddConstructProduct(constructProductsView);
+                
+                return Ok(constructProduct);
 
             }
             catch (Exception ex)
@@ -85,25 +74,9 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var existingConstructProduct = unitOfWork.ConstructProductRepository.GetByID(id);
-                if (existingConstructProduct == null)
-                {
-                    return NotFound($"ConstructProduct with ID : {id} not found");
-                }
-                var checkingConstruct = unitOfWork.ConstructRepository.GetByID(constructProductsView.ConstructId);
-                if (checkingConstruct == null)
-                {
-                    return NotFound("Construct not found");
-                }
-                var checkingProduct = unitOfWork.ProductRepository.GetByID(constructProductsView.ProductId);
-                if (checkingProduct == null)
-                {
-                    return NotFound("Product not found");
-                }
-                _mapper.Map(constructProductsView, existingConstructProduct);
-                unitOfWork.ConstructProductRepository.Update(existingConstructProduct);
-                unitOfWork.Save();
-                return Ok(constructProductsView);
+                var constructProduct = _constructProductService.UpdateConstructProduct(id, constructProductsView);
+                
+                return Ok(constructProduct);
             }
             catch (Exception ex)
             {
@@ -115,14 +88,14 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var existingConstructProduct = unitOfWork.ConstructProductRepository.GetByID(id);
-                if (existingConstructProduct == null)
+                var checkDelete =  _constructProductService.DeleteConstructProduct(id);
+                if (checkDelete.Equals(true))
                 {
-                    return NotFound($"ConstructProduct with ID : {id} not found");
+                    return Ok($"ConstructProduct with ID: {id} has been successfully deleted.");
                 }
-                unitOfWork.ConstructProductRepository.Delete(id);
-                unitOfWork.Save();
-                return Ok($"ConstructProduct with ID: {id} has been successfully deleted.");
+                
+                
+                return BadRequest($"ConstructProduct with ID: {id} deleted fail.");
             }
             catch (Exception ex)
             {

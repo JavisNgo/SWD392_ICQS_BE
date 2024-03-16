@@ -87,6 +87,14 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/blogs/post")]
         public IActionResult AddBlog([FromBody] BlogsView blogView)
         {
+            if (string.IsNullOrEmpty(blogView.Title))
+            {
+                return BadRequest("Title is required");
+            }
+            if(string.IsNullOrEmpty(blogView.Content))
+            {
+                return BadRequest("Content is required");
+            }
             try
             {
                 var blog = _blogService.AddBlog(blogView);
@@ -114,6 +122,14 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(blogView.Title))
+                {
+                    return BadRequest("Title is required");
+                }
+                if (string.IsNullOrEmpty(blogView.Content))
+                {
+                    return BadRequest("Content is required");
+                }
                 var existingBlog = _blogService.UpdateBlog(blogView);
                 if (existingBlog == null)
                 {

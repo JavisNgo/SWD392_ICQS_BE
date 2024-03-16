@@ -51,6 +51,14 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/constructs/post")]
         public IActionResult AddConstruct([FromBody] ConstructsView constructsView)
         {
+            if (string.IsNullOrEmpty(constructsView.Name))
+            {
+                return BadRequest("Construct's name is required");
+            }
+            if(constructsView.EstimatedPrice < 0)
+            {
+                return BadRequest("Estimate Price must larger than 0 ");
+            }
             var checkingContractor = _constructService.GetContractorById(constructsView.ContractorId);
             if (checkingContractor == null)
             {
@@ -80,6 +88,14 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/constructs/put")]
         public IActionResult UpdateConstruct([FromBody] ConstructsView constructsView)
         {
+            if (string.IsNullOrEmpty(constructsView.Name))
+            {
+                return BadRequest("Construct's name is required");
+            }
+            if (constructsView.EstimatedPrice < 0)
+            {
+                return BadRequest("Estimate Price must larger than 0 ");
+            }
             var existingConstruct = _constructService.GetConstructsById(constructsView.Id);
             if (existingConstruct == null)
             {

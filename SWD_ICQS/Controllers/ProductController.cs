@@ -84,6 +84,14 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/products/post")]
         public IActionResult AddProduct([FromBody] ProductsView productsView)
         {
+            if (string.IsNullOrEmpty(productsView.Name))
+            {
+                return BadRequest("Construct's name is required");
+            }
+            if (productsView.Price < 0)
+            {
+                return BadRequest("Estimate Price must larger than 0 ");
+            }
             try
             {
                 var product = _productService.AddProduct(productsView); 
@@ -106,6 +114,14 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/products/put")]
         public IActionResult UpdateProduct([FromBody] ProductsView productsView)
         {
+            if (string.IsNullOrEmpty(productsView.Name))
+            {
+                return BadRequest("Construct's name is required");
+            }
+            if (productsView.Price < 0)
+            {
+                return BadRequest("Estimate Price must larger than 0 ");
+            }
             try
             {
                 var product = _productService.UpdateProduct(productsView);

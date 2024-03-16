@@ -62,6 +62,10 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/categories/post")]
         public IActionResult AddCategory([FromBody] CategoriesView categoryView)
         {
+            if (string.IsNullOrEmpty(categoryView.Name))
+            {
+                return BadRequest("Category name is required");
+            }
             try
             {
                 // Validate the name using a regular expression
@@ -87,6 +91,10 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/categories/put/id={id}")]
         public IActionResult UpdateCategory(int id, [FromBody] CategoriesView updatedCategoryView)
         {
+            if (string.IsNullOrEmpty(updatedCategoryView.Name))
+            {
+                return BadRequest("Category name is required");
+            }
             try
             {
                 // Validate the name using a regular expression

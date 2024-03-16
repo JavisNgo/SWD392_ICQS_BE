@@ -189,8 +189,7 @@ namespace SWD_ICQS.Services.Implements
 
                 existingAppointment.Status = Appointments.AppointmentsStatusEnum.COMPLETED;
                 unitOfWork.AppointmentRepository.Update(existingAppointment);
-                unitOfWork.Save();
-
+                
                 var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
                 if (request == null)
                 {
@@ -200,8 +199,33 @@ namespace SWD_ICQS.Services.Implements
                 request.TimeOut = DateTime.Now.AddDays(14);
                 request.Status = Requests.RequestsStatusEnum.COMPLETED;
                 unitOfWork.RequestRepository.Update(request);
-                unitOfWork.Save();
-               return true;
+                
+
+                var deposit = unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == request.Id).FirstOrDefault();
+                if (deposit != null)
+                {
+                    throw new Exception("Deposit has been created");
+                }
+                if (request.Status == Requests.RequestsStatusEnum.COMPLETED &&
+                    existingAppointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
+                {
+                    if(request.TotalPrice.HasValue && request.TotalPrice > 0)
+                    {
+                        var newDeposit = new DepositOrders
+                        {
+                            RequestId = request.Id,
+                            DepositPrice = (request.TotalPrice.Value * 2/10),
+                            Status = DepositOrders.DepositOrderStatusEnum.PENDING
+
+                        };
+                        unitOfWork.DepositOrdersRepository.Insert(newDeposit);
+                        unitOfWork.Save();
+                        return true;
+                    }
+                    
+                }
+                return false;
+                
             }
             catch (Exception ex)
             {

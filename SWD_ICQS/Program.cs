@@ -34,12 +34,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //Add services to the container
-builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IBlogsService, BlogsService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
-builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IContractorsService, ContractorsService>();
@@ -57,7 +55,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 // Background process
-builder.Services.AddHostedService<ExpiredContractorBackgroundService>();
 builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
 builder.Services.AddHostedService<DeleteStatusFalseMessageBackgroundService>();
 builder.Services.AddHostedService<ExpiredFirstMeetingDateBackgroundService>();

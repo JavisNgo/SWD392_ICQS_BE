@@ -11,6 +11,7 @@ namespace SWD_ICQS.Entities
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int ConstructId { get; set; }
+        public int Quantity { get; set; }
 
         // Relationship
         public Products? Product { get; set; }

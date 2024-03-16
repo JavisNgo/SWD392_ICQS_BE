@@ -11,7 +11,6 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Contractors> _contractorsRepository;
         private GenericRepository<Customers> _customersRepository;
         private GenericRepository<Categories> categoryRepository;
-        private GenericRepository<Subscriptions> subscriptionRepository;
         private GenericRepository<Blogs> blogRepository;
         private GenericRepository<BlogImages> blogImageRepository;
         private GenericRepository<Messages> messagesRepository;
@@ -20,7 +19,7 @@ namespace SWD_ICQS.Repository.Implements
         private GenericRepository<Constructs> constructsRepository;
         private GenericRepository<Contracts> contractsRepository;
 
-        private GenericRepository<Orders> ordersRepository;
+        private GenericRepository<DepositOrders> depositOrdersRepository;
         private GenericRepository<ConstructProducts> constructProductsRepository;
         public GenericRepository<ConstructImages> constructImagesRepository;
         public GenericRepository<ProductImages> productImagesRepository;
@@ -105,18 +104,6 @@ namespace SWD_ICQS.Repository.Implements
 
         public IGenericRepository<Customers> CustomerRepository => _customersRepository ??= new GenericRepository<Customers>(context);
 
-
-        public IGenericRepository<Orders> OrderRepository
-        {
-            get
-            {
-                if (ordersRepository == null)
-                {
-                    this.ordersRepository = new GenericRepository<Orders>(context);
-                }
-                return ordersRepository;
-            }
-        }
 
         public IGenericRepository<Messages> MessageRepository
         {
@@ -213,17 +200,8 @@ namespace SWD_ICQS.Repository.Implements
                 return categoryRepository;
             }
         }
-        public IGenericRepository<Subscriptions> SubscriptionRepository
-        {
-            get
-            {
-                if (subscriptionRepository == null)
-                {
-                    subscriptionRepository = new GenericRepository<Subscriptions>(context);
-                }
-                return subscriptionRepository;
-            }
-        }
+
+        public IGenericRepository<DepositOrders> DepositOrdersRepository => depositOrdersRepository ??= new GenericRepository<DepositOrders>(context);
 
         protected virtual void Dispose(bool disposing)
         {

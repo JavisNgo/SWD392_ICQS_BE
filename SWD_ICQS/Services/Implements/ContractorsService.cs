@@ -86,8 +86,6 @@ namespace SWD_ICQS.Services.Implements
                     Name = contractor.Name,
                     PhoneNumber = contractor.PhoneNumber,
                     Address = contractor.Address,
-                    SubscriptionId = contractor.SubscriptionId,
-                    ExpiredDate = contractor.ExpiredDate,
                     AvatarUrl = url,
                     AccountId = contractor.AccountId
                 };

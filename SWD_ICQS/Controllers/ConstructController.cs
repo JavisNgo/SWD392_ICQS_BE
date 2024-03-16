@@ -14,16 +14,10 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class ConstructController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly string _imagesDirectory;
         private readonly IConstructService _constructService;
 
-        public ConstructController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env, IConstructService constructService)
+        public ConstructController(IConstructService constructService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _imagesDirectory = Path.Combine(env.ContentRootPath, "img", "constructImage");
             _constructService = constructService;
         }
 
@@ -119,77 +113,37 @@ namespace SWD_ICQS.Controllers
         [HttpPut("/api/v1/constructs/put/status/id={id}")]
         public IActionResult SetStatusConstruct(int id)
         {
-            try
+            var existingConstruct = _constructService.GetConstructsById(id);
+            if (existingConstruct == null)
             {
-                var existingConstruct = unitOfWork.ConstructRepository.GetByID(id);
-                if (existingConstruct == null)
-                {
-                    return NotFound($"Construct with ID : {id} not found");
-                }
-
-                if(existingConstruct.Status == true)
-                {
-                    existingConstruct.Status = false;
-                    unitOfWork.ConstructRepository.Update(existingConstruct);
-                    unitOfWork.Save();
-                    return Ok($"Construct with ID {id} set status to false successfully.");
-                } else
-                {
-                    existingConstruct.Status = true;
-                    unitOfWork.ConstructRepository.Update(existingConstruct);
-                    unitOfWork.Save();
-                    return Ok($"Construct with ID {id} set status to true successfully.");
-                }
-            } catch (Exception ex)
+                return NotFound($"Construct with ID : {id} not found");
+            }
+            bool IsChanged = _constructService.IsChangedStatusConstruct(existingConstruct);
+            if(IsChanged)
             {
-                return StatusCode(500, ex.Message);
+                return Ok("Changed status successfully");
+            } else
+            {
+                return BadRequest("Change status failed");
             }
         }
 
         [HttpDelete("/api/v1/constructs/delete/id={id}")]
         public IActionResult DeleteConstructById(int id)
         {
-            try
+            var existingConstruct = _constructService.GetConstructsById(id);
+            if (existingConstruct == null)
             {
-                var existingConstruct = unitOfWork.ConstructRepository.GetByID(id);
-                if (existingConstruct == null)
-                {
-                    return NotFound($"Construct with ID : {id} not found");
-                }
-
-                var constructProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == existingConstruct.Id).ToList();
-                if(constructProducts.Any())
-                {
-                    foreach (var cp in constructProducts)
-                    {
-                        unitOfWork.ConstructProductRepository.Delete(cp.Id);
-                        unitOfWork.Save();
-                    }
-                }
-
-                var constructImage = unitOfWork.ConstructImageRepository.Find(c => c.ConstructId == existingConstruct.Id).ToList();
-                foreach (var image in constructImage)
-                {
-                    if (!String.IsNullOrEmpty(image.ImageUrl))
-                    {
-                        string imagePath = Path.Combine(_imagesDirectory, image.ImageUrl);
-                        if (System.IO.File.Exists(imagePath))
-                        {
-                            System.IO.File.Delete(imagePath);
-                        }
-                    }
-                    unitOfWork.ConstructImageRepository.Delete(image.Id);
-                    unitOfWork.Save();
-                }
-
-                unitOfWork.ConstructRepository.Delete(existingConstruct);
-                unitOfWork.Save();
-
-                return Ok($"Construct with ID: {id} has been successfully deleted.");
+                return NotFound($"Construct with ID : {id} not found");
             }
-            catch (Exception ex)
+            bool IsDelete = _constructService.IsDeleteConstruct(existingConstruct);
+            if(IsDelete)
             {
-                return StatusCode(500, ex.Message);
+                return Ok("Delete construct successfully");
+            }
+            else
+            {
+                return BadRequest("Delete construct failed");
             }
         }
 

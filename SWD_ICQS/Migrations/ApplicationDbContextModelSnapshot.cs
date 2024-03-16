@@ -190,6 +190,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConstructId");
@@ -257,24 +260,16 @@ namespace SWD_ICQS.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ExpiredDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
                         .IsUnique();
-
-                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("Contractors");
                 });
@@ -287,9 +282,6 @@ namespace SWD_ICQS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ContractUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -299,6 +291,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<string>("Progress")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Status")
                         .HasColumnType("int");
 
@@ -307,7 +302,7 @@ namespace SWD_ICQS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId")
+                    b.HasIndex("RequestId")
                         .IsUnique();
 
                     b.ToTable("Contracts");
@@ -344,6 +339,37 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("SWD_ICQS.Entities.DepositOrders", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("DepositDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("DepositPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
+                    b.ToTable("DepositOrders");
+                });
+
             modelBuilder.Entity("SWD_ICQS.Entities.Messages", b =>
                 {
                     b.Property<int>("Id")
@@ -377,41 +403,6 @@ namespace SWD_ICQS.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("SWD_ICQS.Entities.Orders", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ContractorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double?>("OrderPrice")
-                        .HasColumnType("float");
-
-                    b.Property<bool?>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TransactionCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContractorId");
-
-                    b.HasIndex("SubscriptionId");
-
-                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.ProductImages", b =>
@@ -479,6 +470,9 @@ namespace SWD_ICQS.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
 
@@ -527,34 +521,6 @@ namespace SWD_ICQS.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Requests");
-                });
-
-            modelBuilder.Entity("SWD_ICQS.Entities.Subscriptions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Duration")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<bool?>("Status")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
@@ -663,26 +629,18 @@ namespace SWD_ICQS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SWD_ICQS.Entities.Subscriptions", "Subscription")
-                        .WithMany("Contractors")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Account");
-
-                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.Contracts", b =>
                 {
-                    b.HasOne("SWD_ICQS.Entities.Appointments", "Appointment")
+                    b.HasOne("SWD_ICQS.Entities.Requests", "Request")
                         .WithOne("Contract")
-                        .HasForeignKey("SWD_ICQS.Entities.Contracts", "AppointmentId")
+                        .HasForeignKey("SWD_ICQS.Entities.Contracts", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Appointment");
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.Customers", b =>
@@ -694,6 +652,17 @@ namespace SWD_ICQS.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("SWD_ICQS.Entities.DepositOrders", b =>
+                {
+                    b.HasOne("SWD_ICQS.Entities.Requests", "Request")
+                        .WithOne("DepositOrder")
+                        .HasForeignKey("SWD_ICQS.Entities.DepositOrders", "RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.Messages", b =>
@@ -713,25 +682,6 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Contractor");
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("SWD_ICQS.Entities.Orders", b =>
-                {
-                    b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
-                        .WithMany("Orders")
-                        .HasForeignKey("ContractorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SWD_ICQS.Entities.Subscriptions", "Subscription")
-                        .WithMany("Orders")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Contractor");
-
-                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.ProductImages", b =>
@@ -801,11 +751,6 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
-                {
-                    b.Navigation("Contract");
-                });
-
             modelBuilder.Entity("SWD_ICQS.Entities.Blogs", b =>
                 {
                     b.Navigation("BlogImages");
@@ -832,8 +777,6 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Constructs");
 
                     b.Navigation("Messages");
-
-                    b.Navigation("Orders");
 
                     b.Navigation("Products");
 
@@ -862,14 +805,11 @@ namespace SWD_ICQS.Migrations
                 {
                     b.Navigation("Appointments");
 
+                    b.Navigation("Contract");
+
+                    b.Navigation("DepositOrder");
+
                     b.Navigation("RequestDetails");
-                });
-
-            modelBuilder.Entity("SWD_ICQS.Entities.Subscriptions", b =>
-                {
-                    b.Navigation("Contractors");
-
-                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

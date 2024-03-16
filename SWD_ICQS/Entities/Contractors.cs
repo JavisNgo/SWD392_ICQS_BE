@@ -15,14 +15,10 @@ namespace SWD_ICQS.Entities
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? AvatarUrl { get; set; }
-        public int SubscriptionId { get; set; }
-        public DateTime? ExpiredDate { get; set; }
 
         // Relationship
         public ICollection<Appointments>? Appointments { get; set; }
         public ICollection<Blogs>? Blogs { get; set; }
-        public ICollection<Orders>? Orders { get; set; }
-        public Subscriptions? Subscription { get; set; }
         public ICollection<Products>? Products { get; set; }
         public ICollection<Constructs>? Constructs { get; set; }
         public ICollection<Requests>? Requests { get; set; }

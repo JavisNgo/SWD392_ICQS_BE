@@ -31,9 +31,9 @@ namespace SWD_ICQS.Repository.Interfaces
 
         IGenericRepository<Customers> CustomerRepository { get; }
 
-        IGenericRepository<Messages> MessageRepository { get; }
+        IGenericRepository<DepositOrders> DepositOrdersRepository { get; }
 
-        IGenericRepository<Orders> OrderRepository { get; }
+        IGenericRepository<Messages> MessageRepository { get; }
 
         IGenericRepository<ProductImages> ProductImageRepository { get; }
 
@@ -42,8 +42,6 @@ namespace SWD_ICQS.Repository.Interfaces
         IGenericRepository<RequestDetails> RequestDetailRepository { get; }
 
         IGenericRepository<Requests> RequestRepository { get; }
-
-        IGenericRepository<Subscriptions> SubscriptionRepository { get; }
 
         void Save();
     }

@@ -23,13 +23,12 @@ namespace SWD_ICQS.Repository
         public DbSet<Contractors>? Contractors { get; set; }
         public DbSet<Contracts>? Contracts { get; set; }
         public DbSet<Customers>? Customers { get; set; }
+        public DbSet<DepositOrders>? DepositOrders { get; set; }
         public DbSet<Messages>? Messages { get; set; }
-        public DbSet<Orders>? Orders { get; set; }
         public DbSet<ProductImages>? ProductImages { get; set; }
         public DbSet<Products>? Products { get; set; }
         public DbSet<Requests>? Requests { get; set; }
         public DbSet<RequestDetails>? RequestDetails { get; set; }
-        public DbSet<Subscriptions>? Subscriptions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
@@ -66,21 +65,19 @@ namespace SWD_ICQS.Repository
 
             // Contractors
             modelBuilder.Entity<Contractors>().HasOne(c => c.Account).WithOne(a => a.Contractor).HasForeignKey<Contractors>(c => c.AccountId);
-            modelBuilder.Entity<Contractors>().HasOne(c => c.Subscription).WithMany(s => s.Contractors).HasForeignKey(c => c.SubscriptionId);
 
             // Contracts
-            modelBuilder.Entity<Contracts>().HasOne(c => c.Appointment).WithOne(a => a.Contract).HasForeignKey<Contracts>(c => c.AppointmentId);
+            modelBuilder.Entity<Contracts>().HasOne(c => c.Request).WithOne(r => r.Contract).HasForeignKey<Contracts>(c => c.RequestId);
 
             // Customers
             modelBuilder.Entity<Customers>().HasOne(c => c.Account).WithOne(a => a.Customer).HasForeignKey<Customers>(c => c.AccountId);
 
+            // DepositOrders
+            modelBuilder.Entity<DepositOrders>().HasOne(d => d.Request).WithOne(r => r.DepositOrder).HasForeignKey<DepositOrders>(d => d.RequestId);
+
             // Messages
             modelBuilder.Entity<Messages>().HasOne(m => m.Contractor).WithMany(c => c.Messages).HasForeignKey(m => m.ContractorId);
             modelBuilder.Entity<Messages>().HasOne(m => m.Customer).WithMany(c => c.Messages).HasForeignKey(m => m.CustomerId).OnDelete(DeleteBehavior.Restrict);
-
-            // Orders
-            modelBuilder.Entity<Orders>().HasOne(o => o.Contractor).WithMany(c => c.Orders).HasForeignKey(o => o.ContractorId);
-            modelBuilder.Entity<Orders>().HasOne(o => o.Subscription).WithMany(s => s.Orders).HasForeignKey(o => o.SubscriptionId).OnDelete(DeleteBehavior.Restrict);
 
             // ProductImages
             modelBuilder.Entity<ProductImages>().HasOne(p => p.Product).WithMany(p => p.ProductImages).HasForeignKey(p => p.ProductId);
@@ -95,8 +92,6 @@ namespace SWD_ICQS.Repository
             // Requests
             modelBuilder.Entity<Requests>().HasOne(r => r.Contractor).WithMany(c => c.Requests).HasForeignKey(r => r.ContractorId);
             modelBuilder.Entity<Requests>().HasOne(r => r.Customer).WithMany(c => c.Requests).HasForeignKey(r => r.CustomerId).OnDelete(DeleteBehavior.Restrict);
-
-            // Subscriptions
 
         }
 

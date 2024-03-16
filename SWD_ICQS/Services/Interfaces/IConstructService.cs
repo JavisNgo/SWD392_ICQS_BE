@@ -14,5 +14,7 @@ namespace SWD_ICQS.Services.Interfaces
         Categories? GetCategoryById(int id);
         bool IsCreateConstruct(ConstructsView constructsView);
         bool IsUpdateConstruct(ConstructsView constructsView, Constructs construct);
+        bool IsChangedStatusConstruct(Constructs construct);
+        bool IsDeleteConstruct(Constructs construct);
     }
 }

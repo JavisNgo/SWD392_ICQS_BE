@@ -27,6 +27,5 @@ namespace SWD_ICQS.Entities
         public Contractors? Contractor { get; set; }
         public Customers? Customer { get; set; }
         public Requests? Request { get; set; }
-        public Contracts? Contract { get; set; }
     }
 }

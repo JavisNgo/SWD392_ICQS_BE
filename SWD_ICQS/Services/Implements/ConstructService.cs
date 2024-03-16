@@ -455,5 +455,72 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception(ex.Message);
             }
         }
+
+        public bool IsChangedStatusConstruct(Constructs construct)
+        {
+            try
+            {
+                bool status = false;
+                if (construct.Status == true)
+                {
+                    construct.Status = false;
+                }
+                else
+                {
+                    construct.Status = true;
+                }
+                unitOfWork.ConstructRepository.Update(construct);
+                unitOfWork.Save();
+                status = true;
+
+                return status;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception (ex.Message);
+            }
+        }
+
+        public bool IsDeleteConstruct(Constructs construct)
+        {
+            try
+            {
+                bool status = false;
+                var constructProducts = unitOfWork.ConstructProductRepository.Find(c => c.ConstructId == construct.Id).ToList();
+                if (constructProducts.Any())
+                {
+                    foreach (var cp in constructProducts)
+                    {
+                        unitOfWork.ConstructProductRepository.Delete(cp.Id);
+                        unitOfWork.Save();
+                    }
+                }
+
+                var constructImage = unitOfWork.ConstructImageRepository.Find(c => c.ConstructId == construct.Id).ToList();
+                foreach (var image in constructImage)
+                {
+                    if (!String.IsNullOrEmpty(image.ImageUrl))
+                    {
+                        string imagePath = Path.Combine(_imagesDirectory, image.ImageUrl);
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                    unitOfWork.ConstructImageRepository.Delete(image.Id);
+                    unitOfWork.Save();
+                }
+
+                unitOfWork.ConstructRepository.Delete(construct);
+                unitOfWork.Save();
+                status = true;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

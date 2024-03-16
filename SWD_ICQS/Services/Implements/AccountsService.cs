@@ -129,9 +129,7 @@ namespace SWD_ICQS.Services.Implements
                             Name = newAccount.Name,
                             Email = newAccount.Email,
                             PhoneNumber = newAccount.PhoneNumber,
-                            Address = newAccount.Address,
-                            SubscriptionId = 1,
-                            ExpiredDate = DateTime.ParseExact("20991231 23:59", "yyyyMMdd HH:mm", null)
+                            Address = newAccount.Address
                         };
                         _unitOfWork.ContractorRepository.Insert(contractor);
                         _unitOfWork.Save();

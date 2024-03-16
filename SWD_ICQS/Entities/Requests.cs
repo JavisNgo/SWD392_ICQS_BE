@@ -31,5 +31,7 @@ namespace SWD_ICQS.Entities
         public ICollection<Appointments>? Appointments { get; set; }
         public Customers? Customer { get; set; }
         public Contractors? Contractor { get; set; }
+        public Contracts? Contract { get; set; }
+        public DepositOrders? DepositOrder {  get; set; }
     }
 }

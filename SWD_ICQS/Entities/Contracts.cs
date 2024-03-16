@@ -9,7 +9,7 @@ namespace SWD_ICQS.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int AppointmentId { get; set; }
+        public int RequestId { get; set; }
         public string? ContractUrl { get; set; }
         public DateTime? UploadDate { get; set; }
         public DateTime? EditDate { get; set; }
@@ -17,6 +17,6 @@ namespace SWD_ICQS.Entities
         public string? Progress { get; set; }
 
         // Relationship
-        public Appointments? Appointment { get; set; }
+        public Requests? Request { get; set; }
     }
 }

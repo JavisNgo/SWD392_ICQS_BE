@@ -8,8 +8,6 @@
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? AvatarUrl { get; set; }
-        public int SubscriptionId { get; set; }
-        public DateTime? ExpiredDate { get; set; }
         public int AccountId { get; set; }
     }
 }

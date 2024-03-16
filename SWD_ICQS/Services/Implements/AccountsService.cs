@@ -109,32 +109,21 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public bool CreateAccount(AccountsView newAccount)
+        public bool CreateAccountCustomer(AccountsView newAccount)
         {
             try
             {
+                bool status = false;
                 newAccount.Password = HashPassword(newAccount.Password);
                 newAccount.Status = true;
+                newAccount.Role = "CUSTOMER";
                 var account = _mapper.Map<Accounts>(newAccount);
                 _unitOfWork.AccountRepository.Insert(account);
                 _unitOfWork.Save();
                 var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == newAccount.Username).FirstOrDefault();
                 if (insertedAccount != null)
                 {
-                    if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), newAccount.Role).Equals(Accounts.AccountsRoleEnum.CONTRACTOR))
-                    {
-                        var contractor = new Contractors
-                        {
-                            AccountId = insertedAccount.Id,
-                            Name = newAccount.Name,
-                            Email = newAccount.Email,
-                            PhoneNumber = newAccount.PhoneNumber,
-                            Address = newAccount.Address
-                        };
-                        _unitOfWork.ContractorRepository.Insert(contractor);
-                        _unitOfWork.Save();
-                    }
-                    else if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), newAccount.Role).Equals(Accounts.AccountsRoleEnum.CUSTOMER))
+                    if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), newAccount.Role).Equals(Accounts.AccountsRoleEnum.CUSTOMER))
                     {
                         var customer = new Customers
                         {
@@ -146,12 +135,10 @@ namespace SWD_ICQS.Services.Implements
                         };
                         _unitOfWork.CustomerRepository.Insert(customer);
                         _unitOfWork.Save();
-                    } else
-                    {
-                        return false;
+                        status = true;
                     }
                 }
-                return true;
+                return status;
             }
             catch (Exception ex)
             {
@@ -242,6 +229,49 @@ namespace SWD_ICQS.Services.Implements
                 return customer;
             } catch (Exception ex)
             {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public bool CreateAccountContractor(AccountsView newAccount)
+        {
+            try
+            {
+                bool status = false;
+                newAccount.Password = HashPassword(newAccount.Password);
+                newAccount.Status = true;
+                newAccount.Role = "CONTRACTOR";
+                var account = _mapper.Map<Accounts>(newAccount);
+                _unitOfWork.AccountRepository.Insert(account);
+                _unitOfWork.Save();
+                var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == newAccount.Username).FirstOrDefault();
+                if (insertedAccount != null)
+                {
+                    if (Enum.Parse(typeof(Accounts.AccountsRoleEnum), newAccount.Role).Equals(Accounts.AccountsRoleEnum.CONTRACTOR))
+                    {
+                        var contractor = new Contractors
+                        {
+                            AccountId = insertedAccount.Id,
+                            Name = newAccount.Name,
+                            Email = newAccount.Email,
+                            PhoneNumber = newAccount.PhoneNumber,
+                            Address = newAccount.Address
+                        };
+                        _unitOfWork.ContractorRepository.Insert(contractor);
+                        _unitOfWork.Save();
+                        status = true;
+                    }
+                }
+                return status;
+            }
+            catch (Exception ex)
+            {
+                var insertedAccount = _unitOfWork.AccountRepository.Find(a => a.Username == newAccount.Username).FirstOrDefault();
+                if (insertedAccount != null)
+                {
+                    _unitOfWork.AccountRepository.Delete(insertedAccount);
+                    _unitOfWork.Save();
+                }
                 throw new Exception(ex.Message);
             }
         }

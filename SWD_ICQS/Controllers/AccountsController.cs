@@ -8,9 +8,12 @@ using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace SWD_ICQS.Controllers
 {
@@ -31,6 +34,13 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/accounts/login")]
         public IActionResult Login([FromBody] AccountsView loginInfo)
         {
+            if(loginInfo.Username.IsNullOrEmpty())
+            {
+                return BadRequest("Username is required");
+            } else if(loginInfo.Password.IsNullOrEmpty())
+            {
+                return BadRequest("Password is required");
+            }
             IActionResult response = Unauthorized();
             var account_ = _accountsService.AuthenticateUser(loginInfo);
             if (account_ == null)
@@ -53,10 +63,64 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/v1/accounts/register")]
         public IActionResult Register([FromBody] AccountsView newAccount)
         {
+            if (string.IsNullOrEmpty(newAccount.Name))
+            {
+                return BadRequest("Full Name is required");
+            }
+            if (newAccount.Name.Length > 100)
+            {
+                return BadRequest("Full Name must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Email))
+            {
+                return BadRequest("Email is required");
+            }
+            if (!IsValidEmail(newAccount.Email))
+            {
+                return BadRequest("Invalid email address");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Address))
+            {
+                return BadRequest("Address is required");
+            }
+            if (newAccount.Address.Length > 100)
+            {
+                return BadRequest("Address must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.PhoneNumber))
+            {
+                return BadRequest("Phone number is required");
+            }
+            if (!Regex.IsMatch(newAccount.PhoneNumber, @"^[0-9]{10}$"))
+            {
+                return BadRequest("Phone number must be exactly 10 digits");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Username))
+            {
+                return BadRequest("Username is required");
+            }
+
+            if (newAccount.Username.Length > 100)
+            {
+                return BadRequest("Username must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Password))
+            {
+                return BadRequest("Password is required");
+            }
+            if (newAccount.Password.Length < 10 || !Regex.IsMatch(newAccount.Password, @"(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])"))
+            {
+                return BadRequest("Password must be at least 10 characters long and contain at least one uppercase letter, one lowercase letter, and one number");
+            }
             var account = _accountsService.GetAccountByUsername(newAccount.Username);
             if(account == null)
             {
-                bool checkRegister = _accountsService.CreateAccount(newAccount);
+                bool checkRegister = _accountsService.CreateAccountCustomer(newAccount);
                 if(checkRegister)
                 {
                     return Ok("Create success");
@@ -65,6 +129,83 @@ namespace SWD_ICQS.Controllers
                     return BadRequest("Not correct role");
                 }
             } else
+            {
+                return BadRequest("Existed username");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/api/v1/accounts/register/contractor")]
+        public IActionResult RegisterContractor([FromBody] AccountsView newAccount)
+        {
+            if (string.IsNullOrEmpty(newAccount.Name))
+            {
+                return BadRequest("Full Name is required");
+            }
+            if (newAccount.Name.Length > 100)
+            {
+                return BadRequest("Full Name must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Email))
+            {
+                return BadRequest("Email is required");
+            }
+            if (!IsValidEmail(newAccount.Email))
+            {
+                return BadRequest("Invalid email address");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Address))
+            {
+                return BadRequest("Address is required");
+            }
+            if (newAccount.Address.Length > 100)
+            {
+                return BadRequest("Address must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.PhoneNumber))
+            {
+                return BadRequest("Phone number is required");
+            }
+            if (!Regex.IsMatch(newAccount.PhoneNumber, @"^[0-9]{10}$"))
+            {
+                return BadRequest("Phone number must be exactly 10 digits");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Username))
+            {
+                return BadRequest("Username is required");
+            }
+
+            if (newAccount.Username.Length > 100)
+            {
+                return BadRequest("Username must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(newAccount.Password))
+            {
+                return BadRequest("Password is required");
+            }
+            if (newAccount.Password.Length < 10 || !Regex.IsMatch(newAccount.Password, @"(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])"))
+            {
+                return BadRequest("Password must be at least 10 characters long and contain at least one uppercase letter, one lowercase letter, and one number");
+            }
+            var account = _accountsService.GetAccountByUsername(newAccount.Username);
+            if (account == null)
+            {
+                bool checkRegister = _accountsService.CreateAccountContractor(newAccount);
+                if (checkRegister)
+                {
+                    return Ok("Create success");
+                }
+                else
+                {
+                    return BadRequest("Not correct role");
+                }
+            }
+            else
             {
                 return BadRequest("Existed username");
             }
@@ -109,6 +250,19 @@ namespace SWD_ICQS.Controllers
             } else
             {
                 return BadRequest($"You dont have permission to access {username} information");
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

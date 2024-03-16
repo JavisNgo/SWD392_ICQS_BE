@@ -9,7 +9,8 @@ namespace SWD_ICQS.Services.Interfaces
         string? HashPassword(string password);
         string? GenerateToken(AccountsView account);
         Accounts? GetAccountByUsername(string username);
-        bool CreateAccount (AccountsView newAccount);
+        bool CreateAccountCustomer (AccountsView newAccount);
+        bool CreateAccountContractor(AccountsView newAccount);
         string? GetAccountRole(string username, Accounts account);
         Contractors? GetContractorByAccount(Accounts account);
         ContractorsView? GetContractorInformation(string username, Accounts account, Contractors contractor);

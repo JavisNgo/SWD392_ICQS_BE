@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -64,7 +65,42 @@ namespace SWD_ICQS.Controllers
         [AllowAnonymous]
         [HttpPut("/api/v1/contractors/username={username}")]
         public IActionResult UpdateContractor(string username, ContractorsView contractorsView)
-        { 
+        {
+            if (string.IsNullOrEmpty(contractorsView.Name))
+            {
+                return BadRequest("Full Name is required");
+            }
+            if (contractorsView.Name.Length > 100)
+            {
+                return BadRequest("Full Name must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(contractorsView.Email))
+            {
+                return BadRequest("Email is required");
+            }
+            if (!IsValidEmail(contractorsView.Email))
+            {
+                return BadRequest("Invalid email address");
+            }
+
+            if (string.IsNullOrEmpty(contractorsView.Address))
+            {
+                return BadRequest("Address is required");
+            }
+            if (contractorsView.Address.Length > 100)
+            {
+                return BadRequest("Address must be 100 characters or less");
+            }
+
+            if (string.IsNullOrEmpty(contractorsView.PhoneNumber))
+            {
+                return BadRequest("Phone number is required");
+            }
+            if (!Regex.IsMatch(contractorsView.PhoneNumber, @"^[0-9]{10}$"))
+            {
+                return BadRequest("Phone number must be exactly 10 digits");
+            }
             var account = _contractorsService.GetAccountByUsername(username);
             if (account == null)
             {
@@ -83,6 +119,19 @@ namespace SWD_ICQS.Controllers
             else
             {
                 return BadRequest("Update failed");
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
             }
         }
 

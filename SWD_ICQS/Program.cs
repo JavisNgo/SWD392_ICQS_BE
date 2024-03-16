@@ -45,6 +45,8 @@ builder.Services.AddScoped<ICustomersService, CustomersService>();
 builder.Services.AddScoped<IConstructProductService, ConstructProductService>();
 builder.Services.AddScoped<IConstructService, ConstructService>();
 builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IRequestDetailService, RequestDetailService>();
+
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program), typeof(MappingProfile));

@@ -5,18 +5,17 @@ using Newtonsoft.Json;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Interfaces;
 
 namespace SWD_ICQS.Controllers
 {
     public class RequestDetailController : ControllerBase
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IRequestDetailService _requestDetailService;
 
-        public RequestDetailController(IUnitOfWork unitOfWork, IMapper mapper)
+        public RequestDetailController(IRequestDetailService requestDetailService)
         {
-            this.unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _requestDetailService = requestDetailService;
         }
 
         [AllowAnonymous]
@@ -25,7 +24,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var requestDetailList = unitOfWork.RequestDetailRepository.Get();
+                var requestDetailList = _requestDetailService.GetRequestDetails();
                 return Ok(requestDetailList);
             }
             catch (Exception ex)
@@ -40,12 +39,7 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var requestDetail = unitOfWork.RequestDetailRepository.GetByID(id);
-
-                if (requestDetail == null)
-                {
-                    return NotFound($"RequestDetail with ID {id} not found.");
-                }
+                var requestDetail = _requestDetailService.GetRequestById(id);
 
                 return Ok(requestDetail);
             }
@@ -61,17 +55,8 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var checkingProductID = unitOfWork.ProductRepository.GetByID(requestDetailView.ProductId);
-                var checkingRequestId = unitOfWork.RequestRepository.GetByID(requestDetailView.RequestId);
-                if (checkingProductID == null || checkingRequestId == null)
-                {
-                    return NotFound("ProductID or RequestID not found");
-                }
-                RequestDetails requestDetail = _mapper.Map<RequestDetails>(requestDetailView);
-                unitOfWork.RequestDetailRepository.Insert(requestDetail);
-                unitOfWork.Save();
-
-                return Ok(requestDetailView);
+                var requestDetail = _requestDetailService.AddRequestDetail(requestDetailView);
+                return Ok(requestDetail);
             }
             catch (Exception ex)
             {
@@ -85,25 +70,15 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                var existingrequestDetail = unitOfWork.RequestDetailRepository.GetByID(id);
-
-                if (existingrequestDetail == null)
+                var success = _requestDetailService.UpdateRequestDetail(id, requestDetailView);
+                if (success)
                 {
-                    return NotFound($"RequestDetail with ID {id} not found.");
+                    return Ok("RequestDetail updated successfully.");
                 }
-                var checkingProductID = unitOfWork.ProductRepository.GetByID(requestDetailView.ProductId);
-                var checkingRequestId = unitOfWork.RequestRepository.GetByID(requestDetailView.RequestId);
-                if (checkingProductID == null || checkingRequestId == null)
+                else
                 {
-                    return NotFound("ProductID or RequestID not found");
+                    return BadRequest("Failed to update RequestDetail.");
                 }
-
-                _mapper.Map(requestDetailView, existingrequestDetail);
-
-                unitOfWork.RequestDetailRepository.Update(existingrequestDetail);
-                unitOfWork.Save();
-
-                return Ok(requestDetailView);
             }
             catch (Exception ex)
             {
@@ -111,28 +86,28 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+
         [AllowAnonymous]
         [HttpDelete("/RequestDetails/{id}")]
         public IActionResult DeleteRequestDetails(int id)
         {
             try
             {
-                var requestDetail = unitOfWork.RequestDetailRepository.GetByID(id);
-
-                if (requestDetail == null)
+                bool isDeleted = _requestDetailService.DeleteRequestDetail(id);
+                if (isDeleted)
                 {
-                    return NotFound($"Request Detail with ID {id} not found.");
+                    return Ok($"Request Detail with ID: {id} has been successfully deleted.");
                 }
-
-                unitOfWork.RequestDetailRepository.Delete(id);
-                unitOfWork.Save();
-
-                return Ok($"Request Detail with ID: {id} has been successfully deleted.");
+                else
+                {
+                    return NotFound($"Request Detail with ID: {id} not found.");
+                }
             }
             catch (Exception ex)
             {
                 return BadRequest($"An error occurred while deleting the Request Detail. Error message: {ex.Message}");
             }
         }
+
     }
 }

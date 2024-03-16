@@ -27,8 +27,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -41,8 +40,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -56,8 +54,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -70,8 +67,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -84,8 +80,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -103,8 +98,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -116,8 +110,7 @@ namespace SWD_ICQS.Services.Implements
                 return customersView;
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -139,8 +132,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -158,8 +150,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return false;
+                throw new Exception(ex.Message);
             }
         }
     }

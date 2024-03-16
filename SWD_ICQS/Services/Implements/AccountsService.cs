@@ -46,8 +46,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -71,8 +70,7 @@ namespace SWD_ICQS.Services.Implements
                 }
             } catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -94,8 +92,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine (ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -166,8 +163,7 @@ namespace SWD_ICQS.Services.Implements
                     _unitOfWork.AccountRepository.Delete(insertedAccount);
                     _unitOfWork.Save();
                 }
-                Console.WriteLine(ex.Message);
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -194,8 +190,7 @@ namespace SWD_ICQS.Services.Implements
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -213,8 +208,7 @@ namespace SWD_ICQS.Services.Implements
                 return contractorsView;
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -226,8 +220,7 @@ namespace SWD_ICQS.Services.Implements
                 return customersView;
             } catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -239,8 +232,7 @@ namespace SWD_ICQS.Services.Implements
                 return contractor;
             } catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -252,8 +244,7 @@ namespace SWD_ICQS.Services.Implements
                 return customer;
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return null;
+                throw new Exception(ex.Message);
             }
         }
     }

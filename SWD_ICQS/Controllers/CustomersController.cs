@@ -21,14 +21,10 @@ namespace SWD_ICQS.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly ICustomersService _customersService;
 
-        public CustomersController(IUnitOfWork unitOfWork, IMapper mapper, ICustomersService customersService)
+        public CustomersController(ICustomersService customersService)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _customersService = customersService;
         }
 

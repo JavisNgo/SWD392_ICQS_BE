@@ -62,18 +62,19 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.Al
 builder.Services.AddHostedService<ExpiredRequestTimeoutChangeStatusToRejectedBackgroundService>();
 builder.Services.AddHostedService<DeleteStatusFalseMessageBackgroundService>();
 builder.Services.AddHostedService<ExpiredFirstMeetingDateBackgroundService>();
+builder.Services.AddHostedService<DeleteExpiredTokenBackgroundService>();
 
 // CORS
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("0"));
-    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("1"));
-    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("2"));
-    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("0", "1"));
-    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("0", "2"));
-    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("1", "2"));
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("ADMIN"));
+    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("CONTRACTOR"));
+    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("CUSTOMER"));
+    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("ADMIN", "CONTRACTOR"));
+    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("ADMIN", "CUSTOMER"));
+    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("CONTRACTOR", "CUSTOMER"));
 });
 var app = builder.Build();
 

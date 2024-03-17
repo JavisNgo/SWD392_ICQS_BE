@@ -74,22 +74,47 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public string? GenerateToken(AccountsView account)
+        public (string accessToken, string refreshToken) GenerateTokens(AccountsView account)
         {
             try
             {
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-                var expirationTime = DateTime.UtcNow.AddMinutes(60);
 
-                var claims = new List<Claim>
+                var accessClaims = new List<Claim>
                 {
                     new Claim("Role", account.Role.ToString()),
                     new Claim("Username", account.Username.ToString())
                 };
 
-                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: expirationTime, signingCredentials: credentials);
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                var accessExpiration = DateTime.UtcNow.AddHours(1);
+                var accessJwt = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], accessClaims, expires: accessExpiration, signingCredentials: credentials);
+                var accessToken = new JwtSecurityTokenHandler().WriteToken(accessJwt);
+
+                var accounts = _unitOfWork.AccountRepository.Find(a => a.Username == account.Username).FirstOrDefault();
+
+                var refreshClaims = new List<Claim>
+                {
+                    new Claim("AccountId", accounts.Id.ToString())
+                };
+                var refreshExpiration = DateTime.UtcNow.AddDays(14);
+                var refreshJwt = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], refreshClaims, expires: refreshExpiration, signingCredentials: credentials);
+                var refreshToken = new JwtSecurityTokenHandler().WriteToken(refreshJwt);
+
+                // Store refresh token in the database
+                // For simplicity, let's assume there's a method to store it
+                
+                var token = new Token
+                {
+                    AccountId = accounts.Id,
+                    RefreshToken = refreshToken,
+                    ExpiredDate = refreshExpiration
+                };
+
+                _unitOfWork.TokenRepository.Insert(token);
+                _unitOfWork.Save();
+
+                return (accessToken, refreshToken);
             }
             catch (Exception ex)
             {
@@ -276,5 +301,88 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception(ex.Message);
             }
         }
+
+        public Token? GetRefreshTokenByAccountId(int AccountId)
+        {
+            var Token = _unitOfWork.TokenRepository.Find(a => a.AccountId == AccountId).FirstOrDefault();
+            return Token;
+        }
+
+        public (bool isValid, string username) ValidateRefreshToken(string refreshToken)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false // Disable lifetime validation as refresh tokens may be long-lived
+                };
+
+                SecurityToken validatedToken;
+                var principal = tokenHandler.ValidateToken(refreshToken, tokenValidationParameters, out validatedToken);
+
+                var accountIdClaim = principal.FindFirst("AccountId");
+                if (accountIdClaim == null)
+                {
+                    // If AccountId claim is missing, return false
+                    return (false, null);
+                }
+
+                // Extract the AccountId as a string
+                var accountId = accountIdClaim.Value;
+
+                // Check if the refresh token exists in the database and is not expired
+                var token = _unitOfWork.TokenRepository.Find(t => t.AccountId == int.Parse(accountId) && t.RefreshToken == refreshToken).FirstOrDefault();
+                if (token == null || token.ExpiredDate < DateTime.UtcNow)
+                {
+                    // If token not found or expired, return false
+                    return (false, null);
+                }
+
+                // If the token is valid, return true and the associated AccountId
+                return (true, accountId);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                return (false, null);
+            }
+        }
+
+        public Accounts GetAccountById(int AccountId)
+        {
+            var account = _unitOfWork.AccountRepository.GetByID(AccountId);
+            return account;
+        }
+
+        public string? GenerateToken(Accounts account)
+        {
+            try
+            {
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var expirationTime = DateTime.UtcNow.AddHours(1);
+
+                var claims = new List<Claim>
+                {
+                    new Claim("Role", account.Role.ToString()),
+                    new Claim("Username", account.Username.ToString())
+                };
+
+                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: expirationTime, signingCredentials: credentials);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

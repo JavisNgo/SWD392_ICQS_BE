@@ -23,5 +23,6 @@ namespace SWD_ICQS.Entities
         // Relationship
         public Contractors? Contractor { get; set; }
         public Customers? Customer { get; set; }
+        public IEnumerable<Token>? Tokens { get; set; }
     }
 }

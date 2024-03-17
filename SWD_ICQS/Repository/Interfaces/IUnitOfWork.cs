@@ -42,6 +42,7 @@ namespace SWD_ICQS.Repository.Interfaces
         IGenericRepository<RequestDetails> RequestDetailRepository { get; }
 
         IGenericRepository<Requests> RequestRepository { get; }
+        IGenericRepository<Token> TokenRepository { get; }
 
         void Save();
     }

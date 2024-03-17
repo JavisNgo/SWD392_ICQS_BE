@@ -7,7 +7,11 @@ namespace SWD_ICQS.Services.Interfaces
     {
         AccountsView? AuthenticateUser(AccountsView loginInfo);
         string? HashPassword(string password);
-        string? GenerateToken(AccountsView account);
+        (string accessToken, string refreshToken) GenerateTokens(AccountsView account);
+        public string? GenerateToken(Accounts account);
+        Token? GetRefreshTokenByAccountId(int AccountId);
+        (bool isValid, string username) ValidateRefreshToken(string refreshToken);
+        Accounts GetAccountById(int AccountId);
         Accounts? GetAccountByUsername(string username);
         bool CreateAccountCustomer (AccountsView newAccount);
         bool CreateAccountContractor(AccountsView newAccount);

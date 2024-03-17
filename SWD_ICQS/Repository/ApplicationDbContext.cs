@@ -29,6 +29,7 @@ namespace SWD_ICQS.Repository
         public DbSet<Products>? Products { get; set; }
         public DbSet<Requests>? Requests { get; set; }
         public DbSet<RequestDetails>? RequestDetails { get; set; }
+        public DbSet<Token>? Token { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
@@ -93,6 +94,8 @@ namespace SWD_ICQS.Repository
             modelBuilder.Entity<Requests>().HasOne(r => r.Contractor).WithMany(c => c.Requests).HasForeignKey(r => r.ContractorId);
             modelBuilder.Entity<Requests>().HasOne(r => r.Customer).WithMany(c => c.Requests).HasForeignKey(r => r.CustomerId).OnDelete(DeleteBehavior.Restrict);
 
+            // Token
+            modelBuilder.Entity<Token>().HasOne(t => t.Account).WithMany(a => a.Tokens).HasForeignKey(t => t.AccountId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

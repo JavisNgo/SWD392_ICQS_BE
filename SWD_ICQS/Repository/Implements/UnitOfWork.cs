@@ -26,6 +26,7 @@ namespace SWD_ICQS.Repository.Implements
         public GenericRepository<Requests> requestsRepository;
         public GenericRepository<RequestDetails> requestDetailsRepository;
         public GenericRepository<Appointments> appointmentsRepository;
+        public GenericRepository<Token> tokenRepository;
         public UnitOfWork(ApplicationDbContext context)
         {
             this.context = context;
@@ -202,6 +203,8 @@ namespace SWD_ICQS.Repository.Implements
         }
 
         public IGenericRepository<DepositOrders> DepositOrdersRepository => depositOrdersRepository ??= new GenericRepository<DepositOrders>(context);
+
+        public IGenericRepository<Token> TokenRepository => tokenRepository ??= new GenericRepository<Token>(context);
 
         protected virtual void Dispose(bool disposing)
         {

@@ -12,7 +12,7 @@ using SWD_ICQS.Repository;
 namespace SWD_ICQS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240316172845_Initial")]
+    [Migration("20240317130351_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -528,6 +528,31 @@ namespace SWD_ICQS.Migrations
                     b.ToTable("Requests");
                 });
 
+            modelBuilder.Entity("SWD_ICQS.Entities.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Token");
+                });
+
             modelBuilder.Entity("SWD_ICQS.Entities.Appointments", b =>
                 {
                     b.HasOne("SWD_ICQS.Entities.Contractors", "Contractor")
@@ -749,11 +774,24 @@ namespace SWD_ICQS.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("SWD_ICQS.Entities.Token", b =>
+                {
+                    b.HasOne("SWD_ICQS.Entities.Accounts", "Account")
+                        .WithMany("Tokens")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("SWD_ICQS.Entities.Accounts", b =>
                 {
                     b.Navigation("Contractor");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Tokens");
                 });
 
             modelBuilder.Entity("SWD_ICQS.Entities.Blogs", b =>

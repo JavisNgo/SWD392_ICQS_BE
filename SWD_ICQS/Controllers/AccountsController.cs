@@ -49,14 +49,37 @@ namespace SWD_ICQS.Controllers
             }
             if (account_.Status == true)
             {
-                var token = _accountsService.GenerateToken(account_);
-                response = Ok(new { accessToken = token});
+                var token = _accountsService.GenerateTokens(account_);
+                response = Ok(new { accessToken = token.accessToken, refreshToken = token.refreshToken});
             }
             else
             {
                 return BadRequest("Your account is locked");
             }
             return response;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/api/v1/accounts/refresh-token")]
+        public IActionResult RefreshToken([FromBody] TokenView refreshTokenRequest)
+        {
+            var refreshToken = refreshTokenRequest.RefreshToken;
+
+            // Validate the refresh token
+            var (isValid, AccountId) = _accountsService.ValidateRefreshToken(refreshToken);
+
+            if (!isValid)
+            {
+                return Unauthorized("Invalid refresh token");
+            }
+
+            // Get the user account associated with the refresh token
+            var account = _accountsService.GetAccountById(int.Parse(AccountId));
+
+            // Generate a new access token
+            var accessToken = _accountsService.GenerateToken(account);
+
+            return Ok(new { accessToken });
         }
 
         [AllowAnonymous]
@@ -211,7 +234,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {

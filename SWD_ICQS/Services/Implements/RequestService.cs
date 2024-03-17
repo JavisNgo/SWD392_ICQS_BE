@@ -1,11 +1,17 @@
 ﻿using AutoMapper;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit.Text;
+using MimeKit;
+using SimpleEmailApp.Models;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Implements;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
 using System.Text;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using MailKit.Net.Smtp;
 
 namespace SWD_ICQS.Services.Implements
 {
@@ -14,11 +20,13 @@ namespace SWD_ICQS.Services.Implements
 
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-        public RequestService(IUnitOfWork unitOfWork, IMapper mapper)
+        public RequestService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration config)
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _config = config;
         }
 
         public bool checkExistedRequestId(int id)
@@ -298,6 +306,25 @@ namespace SWD_ICQS.Services.Implements
                         }
                     }
                 }
+                var existingContractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+                var existingCustomer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+                if(existingContractor != null)
+                {
+                    if (existingCustomer != null)
+                    {
+                        EmailDto email = new EmailDto()
+                        {
+                            From = existingCustomer.Email,
+                            To = existingContractor.Email,
+                            Subject = request.Note,
+                            Body = request.Note,
+                            Price = (double)request.TotalPrice
+                        };
+
+                        SendEmail(email);
+                    }
+                }
+                
 
                 return requestView;
             }
@@ -306,7 +333,27 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception($"An error occurred while adding the request. Error message: {ex.Message}");
             }
         }
+        public void SendEmail(EmailDto request)
+        {
+            try
+            {
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(request.From));
+                email.To.Add(MailboxAddress.Parse(request.To));
+                email.Subject = request.Subject;
+                email.Body = new TextPart(TextFormat.Text) { Text = request.Body };
 
+                using var smtp = new SmtpClient();
+                smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(request.To, _config.GetSection("EmailPassword").Value);
+                smtp.Send(email);
+                smtp.Disconnect(true);
+            }catch
+            {
+                throw new Exception("Error while send email");
+            }
+            
+        }
         public static string GenerateRandomCode(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

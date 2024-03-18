@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
+using SWD_ICQS.ModelsView;
 using SWD_ICQS.Services.Implements;
 using SWD_ICQS.Services.Interfaces;
 
@@ -104,5 +105,40 @@ namespace SWD_ICQS.Controllers
                 throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
             }
         }
+
+        [HttpPut("/api/v1/depositOrders/update/{id}")]
+        public async Task<IActionResult> UpdateTransactionCode(int id, string transactionCode)
+        {
+            try
+            {
+                var depositOrder = _depositOrdersService.UpdateTransactionCode(id, transactionCode);
+                if(depositOrder == true)
+                {
+                    return Ok();
+                }
+                return BadRequest("Error!");
+            }catch(Exception ex)
+            {
+                throw new Exception($"An error occurred while update.ErrorMessage:{ex}");
+            }
+        }
+
+        [HttpPut("/api/v1/depositOrders/updateStatus/{id}")]
+        public async Task<IActionResult> UpdateStatus(int id)
+        {
+            try
+            {
+                var depositCheck = _depositOrdersService.UpdateStatus(id);
+                if(depositCheck == true)
+                {
+                    return Ok();
+                }
+                return BadRequest("Error!");
+            }catch(Exception ex)
+            {
+                throw new Exception($"An error occurred while update.ErrorMessage:{ex}");
+            }
+        }
+        
     }
 }

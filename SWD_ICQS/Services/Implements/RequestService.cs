@@ -194,13 +194,13 @@ namespace SWD_ICQS.Services.Implements
                         };
 
                         SendMail(email);
-
+                        return true;
                     }
                 }
-                
-                
 
-                return true;
+
+                return false;
+                
             }
             catch (Exception ex)
             {
@@ -313,9 +313,9 @@ namespace SWD_ICQS.Services.Implements
                             };
 
                             SendMail(email);
-
+                            return true;
                         }
-                        return true;
+                        
                     }
                     
                 }

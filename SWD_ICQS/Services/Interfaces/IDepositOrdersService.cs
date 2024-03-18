@@ -1,4 +1,5 @@
 ﻿using SWD_ICQS.Entities;
+using SWD_ICQS.ModelsView;
 
 namespace SWD_ICQS.Services.Interfaces
 {
@@ -8,6 +9,10 @@ namespace SWD_ICQS.Services.Interfaces
         DepositOrders? GetDepositOrdersById(int id);
         DepositOrders? GetDepositOrdersByRequestId(int RequestsId);
         IEnumerable<DepositOrders>? GetDepositOrdersByCustomerId(int CustomerId);
+
+        bool UpdateTransactionCode(int id, string transactionCode);
+
+        bool UpdateStatus(int id);
         
     }
 }

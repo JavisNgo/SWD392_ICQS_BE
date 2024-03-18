@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using SWD_ICQS.Entities;
+using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
+using System.Transactions;
 
 namespace SWD_ICQS.Services.Implements
 {
@@ -76,6 +78,57 @@ namespace SWD_ICQS.Services.Implements
                 var depositOrder = _unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == RequestsId).FirstOrDefault();
                 return depositOrder;
             } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public bool UpdateStatus(int id)
+        {
+            try
+            {
+                var depositOrder = _unitOfWork.DepositOrdersRepository.GetByID(id);
+                if (depositOrder != null)
+                {
+                    if(depositOrder.TransactionCode != null)
+                    {
+                        depositOrder.Status = DepositOrders.DepositOrderStatusEnum.COMPLETED;
+                        _unitOfWork.DepositOrdersRepository.Update(depositOrder);
+                        _unitOfWork.Save();
+                        return true;
+                    }
+                    
+                    
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public bool UpdateTransactionCode(int id, string transactionCode)
+        {
+            try
+            {
+                var depositOrder = _unitOfWork.DepositOrdersRepository.GetByID(id);
+                if(depositOrder != null)
+                {
+                    if(depositOrder.TransactionCode == null)
+                    {
+                        depositOrder.DepositDate = DateTime.Now;
+                        depositOrder.TransactionCode = transactionCode;
+                        depositOrder.Status = DepositOrders.DepositOrderStatusEnum.PROCESSING;
+                        _unitOfWork.DepositOrdersRepository.Update(depositOrder);
+                        _unitOfWork.Save();
+                        return true;
+                    }
+                    
+                }
+                
+                return false;
+            }catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }

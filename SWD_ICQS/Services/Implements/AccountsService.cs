@@ -405,5 +405,73 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception($"{ex.Message}");
             }
         }
+
+        public (double? TotalRevenue, double? TotalDepositRevenue, int TotalCustomers, int TotalFilterdCustomer, int TotalContractors, int TotalRequests, int TotalSignedRequests, int TotalOnGoingRequests, int TotalRejectedRequests, int TotalConstructs, int TotalProducts) GetPlatformStats()
+        {
+            try
+            {
+                var requestList = _unitOfWork.RequestRepository.Get().ToList();
+                double? revenue = 0;
+                double depositRevenue = 0;
+                if (requestList != null)
+                {
+                    if (requestList.Any())
+                    {
+                        foreach (var request in requestList)
+                        {
+                            if(request.Status == Requests.RequestsStatusEnum.SIGNED)
+                            {
+                                revenue += request.TotalPrice;
+                            }
+                            var depositOrder = _unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == request.Id && d.Status == DepositOrders.DepositOrderStatusEnum.COMPLETED).FirstOrDefault();
+                            if(depositOrder != null)
+                            {
+                                depositRevenue += depositOrder.DepositPrice;
+                            }
+                        }
+                    }
+                }
+                
+
+                var customers = _unitOfWork.CustomerRepository.Get().Count();
+
+                int requestedCustomer = 0;
+                var customerList = _unitOfWork.CustomerRepository.Get().ToList();
+                if (customerList != null && requestList != null) { 
+                    if(customerList.Any() && requestList.Any())
+                    {
+                        var uniqueCustomer = customerList.Select(c => c.Id).Except(requestList.Select(r => r.CustomerId)).Count();
+                        requestedCustomer = customers - uniqueCustomer;
+                    }
+                }
+
+                var contractors = _unitOfWork.ContractorRepository.Get().Count();
+
+                var requests = 0;
+                var signedRequests = 0;
+                var onGoingRequests = 0;
+                var rejectedRequests = 0;
+                if (requestList != null)
+                {
+                    if (requestList.Any())
+                    {
+                        requests = requestList.Count();
+                        signedRequests = requestList.Count(r => r.Status == Requests.RequestsStatusEnum.SIGNED);
+                        onGoingRequests = requestList.Count(r => (r.Status == Requests.RequestsStatusEnum.PENDING || r.Status == Requests.RequestsStatusEnum.ACCEPTED || r.Status == Requests.RequestsStatusEnum.COMPLETED));
+                        rejectedRequests = requestList.Count(r => r.Status == Requests.RequestsStatusEnum.REJECTED);
+                    }
+                }
+
+                var constructs = _unitOfWork.ConstructRepository.Get().Count();
+
+                var products = _unitOfWork.ProductRepository.Get().Count();
+
+                return (revenue, depositRevenue, customers, requestedCustomer, contractors, requests, signedRequests, onGoingRequests, rejectedRequests, constructs, products);
+
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

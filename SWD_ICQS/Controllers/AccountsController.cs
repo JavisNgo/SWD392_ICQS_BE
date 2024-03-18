@@ -242,7 +242,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {
@@ -282,6 +282,27 @@ namespace SWD_ICQS.Controllers
             {
                 return BadRequest($"You dont have permission to access {username} information");
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/api/v1/admin/stats")]
+        public IActionResult GetPlatfromStatistics()
+        {
+            var stats = _accountsService.GetPlatformStats();
+            return Ok(new
+            {
+                TotalRevenue = stats.TotalRevenue,
+                TotalDepositRevenue = stats.TotalDepositRevenue,
+                TotalCustomers = stats.TotalCustomers,
+                TotalRequestedCustomer = stats.TotalFilterdCustomer,
+                TotalContractors = stats.TotalContractors,
+                TotalRequests = stats.TotalRequests,
+                TotalSignedRequests = stats.TotalSignedRequests,
+                TotalOnGoingRequests = stats.TotalOnGoingRequests,
+                TotalRejectedRequests = stats.TotalRejectedRequests,
+                TotalConstructs = stats.TotalConstructs,
+                TotalProducts = stats.TotalProducts
+            });
         }
 
         private bool IsValidEmail(string email)

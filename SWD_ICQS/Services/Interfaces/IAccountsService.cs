@@ -21,5 +21,6 @@ namespace SWD_ICQS.Services.Interfaces
         ContractorsView? GetContractorInformation(string username, Accounts account, Contractors contractor);
         Customers? GetCustomerByUsername(Accounts account);
         CustomersView? GetCustomersInformation(string username, Accounts account, Customers customer);
+        (double? TotalRevenue, double? TotalDepositRevenue, int TotalCustomers, int TotalFilterdCustomer, int TotalContractors, int TotalRequests, int TotalSignedRequests, int TotalOnGoingRequests, int TotalRejectedRequests, int TotalConstructs, int TotalProducts) GetPlatformStats();
     }
 }

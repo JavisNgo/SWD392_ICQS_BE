@@ -594,7 +594,7 @@ namespace SWD_ICQS.Services.Implements
             try
             {
                 bool status = true;
-                var request = unitOfWork.RequestRepository.Find(r => r.CustomerId == CustomerId && r.ContractorId == ContractorId && (r.Status == Requests.RequestsStatusEnum.PENDING)).FirstOrDefault();
+                var request = unitOfWork.RequestRepository.Find(r => r.CustomerId == CustomerId && r.ContractorId == ContractorId && (r.Status == Requests.RequestsStatusEnum.PENDING || r.Status == Requests.RequestsStatusEnum.ACCEPTED || r.Status == Requests.RequestsStatusEnum.COMPLETED)).FirstOrDefault();
                 if (request == null)
                 {
                     status = false;

@@ -11,11 +11,13 @@ namespace SWD_ICQS.Services.Implements
     {
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
+        private readonly string _PDFFileDirectory;
 
-        public ContractService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ContractService(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment env)
         {
             this.unitOfWork = unitOfWork;
             _mapper = mapper;
+            _PDFFileDirectory = Path.Combine(env.ContentRootPath, "pdf", "contracts");
         }
         public ContractsView AddContract(ContractsView contractView)
         {
@@ -26,16 +28,19 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception($"Request with ID {contractView.RequestId} not found.");
             }
 
-            var checkingAppointment = unitOfWork.AppointmentRepository.GetByID(contractView.AppointmentId);
-
-            if (checkingAppointment == null)
+            var appointment = new Appointments();
+            var checkingAppointment = unitOfWork.AppointmentRepository.Find(a => a.RequestId == contractView.RequestId).ToList();
+            if(checkingAppointment.Count == 1)
             {
-               throw new Exception($"Appointment with ID {contractView.AppointmentId} not found.");
+                 appointment = checkingAppointment[0];
+            } else if(checkingAppointment.Count == 2)
+            {
+                appointment = checkingAppointment[1];
             }
 
             // Kiểm tra xem trạng thái của yêu cầu và cuộc hẹn có đúng không
             if (checkingRequest.Status == Requests.RequestsStatusEnum.COMPLETED &&
-                checkingAppointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
+                appointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
             {
                 // Kiểm tra xem thời hạn Timeout của yêu cầu còn hay không
                 if (checkingRequest.TimeOut.HasValue && checkingRequest.TimeOut > DateTime.Now)
@@ -59,7 +64,9 @@ namespace SWD_ICQS.Services.Implements
 
                     // Tạo một Contracts mới
                     var newContract = _mapper.Map<Contracts>(contractView);
-                    newContract.UploadDate = DateTime.Now;
+                    newContract.ContractUrl = null;
+                    newContract.Status = 0;
+                    newContract.Progress = null;
 
                     // Thêm bản hợp đồng vào repository
                     unitOfWork.ContractRepository.Insert(newContract);
@@ -211,34 +218,56 @@ namespace SWD_ICQS.Services.Implements
             return contractsViews;
         }
 
-            public ContractsView UpdateContract(int id, ContractsView contractsView)
+        public ContractsView UpdateContract(int id, ContractsView contractsView)
+        {
+            var existingContract = unitOfWork.ContractRepository.GetByID(id);
+
+            if (existingContract == null)
             {
-                var existingContract = unitOfWork.ContractRepository.GetByID(id);
-
-                if (existingContract == null)
-                {
-                    throw new Exception($"Contract with ID {id} not found.");
-                }
-                var checkingRequest = unitOfWork.RequestRepository.GetByID(contractsView.RequestId);
-
-                if (checkingRequest == null)
-                {
-                    throw new Exception($"Request with ID {contractsView.RequestId} not found.");
-                }
-                var checkingAppointmentId = unitOfWork.AppointmentRepository.GetByID(id);
-
-                if (checkingAppointmentId == null)
-                {
-                    throw new Exception("AppointmentId was not found");
-                }
-
-                var contract = _mapper.Map(contractsView, existingContract);
-                contract.EditDate = DateTime.Now;
-                unitOfWork.ContractRepository.Update(existingContract);
-                unitOfWork.Save();
-
-                return contractsView;
+                throw new Exception($"Contract with ID {id} not found.");
             }
+            var checkingRequest = unitOfWork.RequestRepository.GetByID(contractsView.RequestId);
+
+            if (checkingRequest == null)
+            {
+                throw new Exception($"Request with ID {contractsView.RequestId} not found.");
+            }
+            var checkingAppointmentId = unitOfWork.AppointmentRepository.GetByID(id);
+
+            if (checkingAppointmentId == null)
+            {
+                throw new Exception("AppointmentId was not found");
+            }
+
+            var contract = _mapper.Map(contractsView, existingContract);
+            if(existingContract.UploadDate == null)
+            {
+                contract.UploadDate = DateTime.Now;
+            } else
+            {
+                contract.EditDate = DateTime.Now;
+            }
+            if(existingContract.ContractUrl == null)
+            {
+                byte[] pdfBytes = Convert.FromBase64String(contract.ContractUrl);
+                string filename = $"Contract_{contract.Id}.pdf";
+                string pdfPath = Path.Combine(_PDFFileDirectory, filename);
+                System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
+            }
+            else
+            {
+                byte[] pdfBytes = Convert.FromBase64String(contract.ContractUrl);
+                string filename = $"Contract_{contract.Id}_Signed.pdf";
+                string pdfPath = Path.Combine(_PDFFileDirectory, filename);
+                System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
+            }
+            contract.Progress = null;
+
+            unitOfWork.ContractRepository.Update(existingContract);
+            unitOfWork.Save();
+
+            return contractsView;
+        }
 
         public bool UploadContractProgress(int id, ContractsView contractView)
         {

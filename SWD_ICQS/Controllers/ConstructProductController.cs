@@ -57,7 +57,7 @@ namespace SWD_ICQS.Controllers
         [HttpPost("/api/constructProducts")]
         public IActionResult AddConstructProduct([FromBody] ConstructProductsView constructProductsView)
         {
-            if(constructProductsView.Quantity <= 1)
+            if(constructProductsView.Quantity < 1)
             {
                 return BadRequest("Quantity must larger than 1 unit");
             }

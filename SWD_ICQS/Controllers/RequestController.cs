@@ -97,9 +97,9 @@ namespace SWD_ICQS.Controllers
             {
                 foreach(var view in requestView.requestDetailViews)
                 {
-                    if(view.Quantity <= 1)
+                    if(view.Quantity < 1)
                     {
-                        return BadRequest("Quantity cannot <= 1");
+                        return BadRequest("Quantity cannot < 1");
                     }
                 }
             }

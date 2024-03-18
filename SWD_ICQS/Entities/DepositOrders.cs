@@ -16,6 +16,7 @@ namespace SWD_ICQS.Entities
         public enum DepositOrderStatusEnum
         {
             PENDING,
+            PROCESSING,
             COMPLETED,
             REJECTED,
             REFUNDED

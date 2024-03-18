@@ -70,12 +70,13 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.Al
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("ADMIN"));
-    options.AddPolicy("RequireContractorRole", policy => policy.RequireRole("CONTRACTOR"));
-    options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("CUSTOMER"));
-    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireRole("ADMIN", "CONTRACTOR"));
-    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireRole("ADMIN", "CUSTOMER"));
-    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireRole("CONTRACTOR", "CUSTOMER"));
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireClaim("Role", "ADMIN"));
+    options.AddPolicy("RequireContractorRole", policy => policy.RequireClaim("Role", "CONTRACTOR"));
+    options.AddPolicy("RequireCustomerRole", policy => policy.RequireClaim("Role", "CUSTOMER"));
+    options.AddPolicy("RequireAdminOrContractorRole", policy => policy.RequireClaim("Role", "ADMIN", "CONTRACTOR"));
+    options.AddPolicy("RequireAdminOrCustomerRole", policy => policy.RequireClaim("Role", "ADMIN", "CUSTOMER"));
+    options.AddPolicy("RequireContractorOrCustomerRole", policy => policy.RequireClaim("Role", "CONTRACTOR", "CUSTOMER"));
+    options.AddPolicy("RequireAllRoles", policy => policy.RequireClaim("Role", "ADMIN", "CONTRACTOR", "CUSTOMER"));
 });
 var app = builder.Build();
 

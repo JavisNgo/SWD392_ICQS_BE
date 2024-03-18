@@ -22,10 +22,12 @@ namespace SWD_ICQS.Controllers
     public class ContractorsController : ControllerBase
     {
         private readonly IContractorsService _contractorsService;
+        private readonly IAccountsService _accountsService;
 
-        public ContractorsController(IContractorsService contractorsService)
+        public ContractorsController(IContractorsService contractorsService, IAccountsService accountsService)
         {
             _contractorsService = contractorsService;
+            _accountsService = accountsService;
         }
 
         // GET: api/Contractors
@@ -106,6 +108,10 @@ namespace SWD_ICQS.Controllers
             {
                 return NotFound($"No account with username {username} found");
 
+            }
+            if (_accountsService.IsExistedEmail(contractorsView.Email))
+            {
+                return BadRequest("Email you entered has already existed");
             }
             var contractor = _contractorsService.GetContractorByAccount(account);
             if (contractor == null)

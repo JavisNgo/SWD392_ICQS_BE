@@ -12,6 +12,7 @@ namespace SWD_ICQS.Services.Interfaces
         Token? GetRefreshTokenByAccountId(int AccountId);
         (bool isValid, string username) ValidateRefreshToken(string refreshToken);
         Accounts GetAccountById(int AccountId);
+        bool IsExistedEmail (string email);
         Accounts? GetAccountByUsername(string username);
         bool CreateAccountCustomer (AccountsView newAccount);
         bool CreateAccountContractor(AccountsView newAccount);

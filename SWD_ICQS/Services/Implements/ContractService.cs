@@ -241,49 +241,38 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception($"Request with ID {contractsView.RequestId} not found.");
                 }
-                var checkingAppointment = unitOfWork.AppointmentRepository.Find(c => c.Id == contractsView.RequestId);
+                var checkingAppointment = unitOfWork.AppointmentRepository.Find(c => c.RequestId == contractsView.RequestId).ToList();
 
                 if (checkingAppointment == null)
                 {
                     throw new Exception("Appointment was not found");
                 }
-                string filename = $"Contract_{id}.pdf";
                 
-                var contract = new Contracts
-                {
-                    Id = id,
-                    ContractUrl = filename,
-                    RequestId = contractsView.RequestId,
-                    Status = 0,
-                    Progress = "Customer signed contract",
-                    UploadDate = DateTime.Now
-                };
-                
-                
-                if (existingContract.ContractUrl == null)
-                {
-                    byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
-                    
-                    string pdfPath = Path.Combine(_PDFFileDirectory, filename);
-                    System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
-                }
+                var contract = _mapper.Map(contractsView, existingContract);
+                contract.UploadDate = DateTime.Now;
+                byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
+                string filename = $"Contract_{existingContract.Id}.pdf";
+                contract.ContractUrl = filename;
+                string pdfPath = Path.Combine(_PDFFileDirectory, filename);
+                System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
+                contract.Progress = "Customer signed contract";
 
-                
-
-                unitOfWork.ContractRepository.Update(contract);
+                unitOfWork.ContractRepository.Update(existingContract);
                 unitOfWork.Save();
-                
-            }catch (Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
             
         }
 
-        public void UpdateContractContractorSecond(int id, ContractsView contractsView)
+        public bool UpdateContractContractorSecond(int id, ContractsView contractsView)
         {
             try
             {
+                bool status = false;
                 var existingContract = unitOfWork.ContractRepository.GetByID(id);
 
                 if (existingContract == null)
@@ -296,48 +285,54 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception($"Request with ID {contractsView.RequestId} not found.");
                 }
-                var checkingAppointmentId = unitOfWork.AppointmentRepository.GetByID(id);
+                var checkingAppointment = unitOfWork.AppointmentRepository.Find(c => c.RequestId == contractsView.RequestId).ToList();
 
-                if (checkingAppointmentId == null)
+                if (checkingAppointment == null)
                 {
-                    throw new Exception("AppointmentId was not found");
+                    throw new Exception("Appointment was not found");
                 }
 
-                if(existingContract.ContractUrl != null)
+                var appointment = new Appointments();
+                if (checkingAppointment.Count == 1)
+                {
+                    appointment = checkingAppointment[0];
+                }
+                else if (checkingAppointment.Count == 2)
+                {
+                    appointment = checkingAppointment[1];
+                }
+
+                var existingFilename = $"Contract_{existingContract.Id}.pdf";
+
+                if (existingContract.ContractUrl.Equals(existingFilename))
                 {
                     var contract = _mapper.Map(contractsView, existingContract);
-                    if (existingContract.UploadDate == null)
-                    {
-                        contract.UploadDate = DateTime.Now;
-                    }
-                    else
-                    {
-                        contract.EditDate = DateTime.Now;
-                    }
-                    if (existingContract.ContractUrl != null)
-                    {
-                        byte[] pdfBytes = Convert.FromBase64String(contract.ContractUrl);
-                        string filename = $"Contract_{contract.Id}_Signed.pdf";
-                        string pdfPath = Path.Combine(_PDFFileDirectory, filename);
-                        System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
-                    }
+                    contract.EditDate = DateTime.Now;
+
+                    byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
+                    string filename = $"Contract_{existingContract.Id}_Signed.pdf";
+                    contract.ContractUrl = filename;
+                    string pdfPath = Path.Combine(_PDFFileDirectory, filename);
+                    System.IO.File.WriteAllBytes(pdfPath, pdfBytes);
+
 
                     contract.Progress = "Contractor signed contract";
                     contract.Status = 1;
                     unitOfWork.ContractRepository.Update(existingContract);
                     checkingRequest.Status = Requests.RequestsStatusEnum.SIGNED;
                     unitOfWork.RequestRepository.Update(checkingRequest);
-                    checkingAppointmentId.Status = Appointments.AppointmentsStatusEnum.SIGNED;
-                    unitOfWork.AppointmentRepository.Update(checkingAppointmentId);
+                    appointment.Status = Appointments.AppointmentsStatusEnum.SIGNED;
+                    unitOfWork.AppointmentRepository.Update(appointment);
                     
                     unitOfWork.Save();
+                    status = true;
                 }
                 else
                 {
                     throw new Exception("Customer have not signed contract yet");
                 }
 
-                
+                return status;
             }catch (Exception ex)
             {
                 throw new Exception(ex.Message);

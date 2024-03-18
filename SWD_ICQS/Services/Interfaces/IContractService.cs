@@ -13,7 +13,7 @@ namespace SWD_ICQS.Services.Interfaces
         bool UploadContractProgress(int id, ContractsView contractView);
         void UpdateContractCustomerFirst(int id, ContractsView contractsView);
 
-        void UpdateContractContractorSecond(int id, ContractsView contractsView);
+        bool UpdateContractContractorSecond(int id, ContractsView contractsView);
 
     }
 }

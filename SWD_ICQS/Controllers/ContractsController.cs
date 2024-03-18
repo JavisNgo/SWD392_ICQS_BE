@@ -143,8 +143,15 @@ namespace SWD_ICQS.Controllers
         {
             try
             {
-                _contractService.UpdateContractContractorSecond(id, contractsView);
-                return Ok("Success");
+                bool IsUpload = _contractService.UpdateContractContractorSecond(id, contractsView);
+                if (IsUpload)
+                {
+                    return Ok("Success");
+                } else
+                {
+                    return BadRequest("Failed");
+                }
+                
             }
             catch (Exception ex)
             {

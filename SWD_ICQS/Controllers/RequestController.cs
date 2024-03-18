@@ -103,6 +103,10 @@ namespace SWD_ICQS.Controllers
                     }
                 }
             }
+            if (_requestService.IsOnGoingCustomerRequestExisted(requestView.CustomerId, requestView.ContractorId))
+            {
+                return BadRequest("You have already sent request to this contractor, please wait for processing");
+            }
             try
             {
             var request = _requestService.AddRequest(requestView);

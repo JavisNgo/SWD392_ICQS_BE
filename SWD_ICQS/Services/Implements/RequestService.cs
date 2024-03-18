@@ -588,5 +588,24 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception($"An error occurred while updating the constructProduct. Error message: {ex.Message}");
             }
         }
+
+        public bool IsOnGoingCustomerRequestExisted(int CustomerId, int ContractorId)
+        {
+            try
+            {
+                bool status = true;
+                var request = unitOfWork.RequestRepository.Find(r => r.CustomerId == CustomerId && r.ContractorId == ContractorId && (r.Status == Requests.RequestsStatusEnum.PENDING)).FirstOrDefault();
+                if (request == null)
+                {
+                    status = false;
+                }
+
+                return status;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
     }
 }

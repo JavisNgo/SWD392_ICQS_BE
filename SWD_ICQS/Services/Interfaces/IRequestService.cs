@@ -11,7 +11,7 @@ namespace SWD_ICQS.Services.Interfaces
 
         RequestViewForGet GetRequestView(int id);
         RequestView AddRequest(RequestView requestView);
-
+        bool IsOnGoingCustomerRequestExisted(int CustomerId, int ContractorId);
         IEnumerable<RequestViewForGet>? GetRequestsByContractorId(int contractorId);
         IEnumerable<RequestViewForGet>? GetRequestsByCustomerId(int customerId);
         RequestView UpdateRequest(int id, RequestView requestView);

@@ -1,4 +1,4 @@
-USE ICQS_Db
+﻿USE ICQS_Db
 GO
 
 -- Accounts
@@ -70,18 +70,32 @@ GO
 -- Products
 INSERT INTO Products (Code, ContractorId, Name, Description, Price, Status)
 VALUES
-    ('P_1_2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 1', 'Description of Product 1', 10.99, 1),
-    ('P_1_6435543132', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 2', 'Description of Product 2', 20.99, 1),
-    ('P_1_7354253654', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 3', 'Description of Product 3', 30.99, 1),
-    ('P_1_1545246355', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 4', 'Description of Product 4', 40.99, 1),
-    ('P_1_7542645441', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 5', 'Description of Product 5', 50.99, 1),
-    ('P_1_7532542435', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 6', 'Description of Product 6', 60.99, 1),
-    ('P_1_3754863221', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 7', 'Description of Product 7', 70.99, 1),
-    ('P_1_7633432662', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 8', 'Description of Product 8', 80.99, 1),
-    ('P_1_1752473554', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 9', 'Description of Product 9', 90.99, 1),
-    ('P_1_9746654622', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Product 10', 'Description of Product 10', 100.99, 1);
+--ContractorId 3
+    ('P_3_J50ICJLJBX', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Ghế CS1898 Foyer vải S8Q', 'Bảo hành một năm cho các trường hợp có lỗi về kỹ thuật trong quá trình sản xuất hay lắp đặt. Sau thời gian hết hạn bảo hành, nếu quý khách có bất kỳ yêu cầu hay thắc mắc thì vui lòng liên hệ với chúng tôi.', 19900000, 1),
+    ('P_3_KTCHM3ZQD4', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Sofa Rumba vải VACT 10784', 'Bảo hành một năm cho các trường hợp có lỗi về kỹ thuật trong quá trình sản xuất hay lắp đặt. Sau thời gian hết hạn bảo hành, nếu quý khách có bất kỳ yêu cầu hay thắc mắc thì vui lòng liên hệ với chúng tôi. Chúng tôi sẽ không bảo hành trong trường hợp sản phẩm được sử dụng không đúng quy cách của sổ bảo hành (được trao gửi khi quý khách mua sản phẩm) gây nên trầy xước, móp, dơ bẩn hay mất màu', 19900000, 1),
+    ('P_3_VJWSNKMXA3', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Bàn ăn Breeze mặt kính bronze/GM2', 'Bảo hành ba năm cho các trường hợp có lỗi về kỹ thuật trong quá trình sản xuất hay lắp đặt. Sau thời gian hết hạn bảo hành, nếu quý khách có bất kỳ yêu cầu hay thắc mắc thì vui lòng liên hệ với chúng tôi. Chúng tôi sẽ không bảo hành trong trường hợp sản phẩm bị biến dạng do môi trường bên ngoài bất bình thường (quá ẩm, quá khô, mối hay do tác động từ các thiết bị điện nước, các hóa chất hay dung môi khách hàng sử dụng không phù hợp)', 207900000, 1),
+    ('P_3_RPCZYF1PBM', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Giường Leman 1m8 vải VACT7459', 'Bảo hành hai năm cho các trường hợp có lỗi về kỹ thuật trong quá trình sản xuất hay lắp đặt. Sau thời gian hết hạn bảo hành, nếu quý khách có bất kỳ yêu cầu hay thắc mắc thì vui lòng liên hệ với chúng tôi. Chúng tôi sẽ không bảo hành trong trường hợp sản phẩm bị biến dạng do môi trường bên ngoài bất bình thường (quá ẩm, quá khô, mối hay do tác động từ các thiết bị điện nước, các hóa chất hay dung môi khách hàng sử dụng không phù hợp', 33650000, 1),
+    ('P_3_TNS1Q3MJJL', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Nệm Luxury Golden Black 1m8', 'Nệm Luxury Golden Black với cấu tạo hàng triệu hạt gel được thấm vào nệm, được thiết kế để làm giảm nhiệt và giúp bạn mát mẻ suốt đêm. Các hạt cũng làm tăng mật độ của bọt làm cho nó thêm bền. Các lợi ích bổ sung bao gồm phục hồi nhanh hơn sau mệt mỏi cũng như cải thiện năng lượng khi thức dậy. Nệm Colmol được nhập khẩu từ Bồ Đào Nha- là thương hiệu nệm nổi tiếng từ năm 1972. Hệ thống lò xo SSI là viết tắt của hệ thống SUSPENSION độc lập với cuộn dây bỏ túi. Colmol có thể cuộn bất kỳ loại nệm nào - bao gồm lò xo túi - để tối ưu hóa chi phí vận chuyển giao hàng. Sử dụng các vật liệu hữu cơ tốt nhất, được kiểm soát, xác minh, và tất cả các quá trình đều được kiểm tra trong hệ thống kiểm soát chất lượng.', 51840000, 1),
+    ('P_3_VWH1TRXJ0C', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), 'Bình Aila Turquoise', 'Handblown from turquoise glass and embellished with arc-shaped decorations, Vase Aila is a perfect fit for a coffee table, console or empty shelf in your home. With its interesting silhouette and vibrant colour, this artistic vase will instantly elevate the space.', 12420000, 1)
+	---------------------------------
 GO
+--Products Image
+INSERT INTO ProductImages (ProductId,ImageUrl)
+VALUES 
+	((SELECT Id FROM Products WHERE Name = 'Ghế CS1898 Foyer vải S8Q'),'ProductImage_1_xUNCQD00YhkmS7O.png'),
+	((SELECT Id FROM Products WHERE Name = 'Sofa Rumba vải VACT 10784'),'ProductImage_2_5h17YkHQvrV3IR7.png'),
+	((SELECT Id FROM Products WHERE Name = 'Sofa Rumba vải VACT 10784'),'ProductImage_2_KMkSNtFWtsJ6t3J.png'),
+	((SELECT Id FROM Products WHERE Name = 'Bàn ăn Breeze mặt kính bronze/GM2'),'ProductImage_3_hOisad1UFSzuyYm.png'),
+	((SELECT Id FROM Products WHERE Name = 'Bàn ăn Breeze mặt kính bronze/GM2'),'ProductImage_3_dGlAHRMKKoQdDhe.png'),
+	((SELECT Id FROM Products WHERE Name = 'Bàn ăn Breeze mặt kính bronze/GM2'),'ProductImage_3_aGfZjmDotmj7z3l.png'),
+	((SELECT Id FROM Products WHERE Name = 'Giường Leman 1m8 vải VACT7459'),'ProductImage_4_Sa2FaPG7BjeErPg.png'),
+	((SELECT Id FROM Products WHERE Name = 'Nệm Luxury Golden Black 1m8'),'ProductImage_5_oEUf6yXvhVfdLfy.png'),
+	((SELECT Id FROM Products WHERE Name = 'Nệm Luxury Golden Black 1m8'),'ProductImage_5_h8eD6Z9OHhpwCMa.png'),
+	((SELECT Id FROM Products WHERE Name = 'Nệm Luxury Golden Black 1m8'),'ProductImage_5_TZIGhTtjcThYhcf.png'),
+	((SELECT Id FROM Products WHERE Name = 'Bình Aila Turquoise'),'ProductImage_6_0oWrkwUHRWxY2Xl.png'),
+	((SELECT Id FROM Products WHERE Name = 'Bình Aila Turquoise'),'ProductImage_6_uLlOYZS3P8SyKzh.png')
 
+GO
 -- Categories
 INSERT INTO Categories (Name)
 VALUES ('Mid-century modern'),
@@ -104,16 +118,13 @@ INSERT INTO ConstructProducts (ConstructId, ProductId, Quantity)
 --FROM Constructs c
 --CROSS JOIN (SELECT TOP 3 Id FROM Products WHERE ContractorId = (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com') ORDER BY NEWID()) p;
 VALUES
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Product 1'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Product 2'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Product 3'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Product 4'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6875463452'), (SELECT Id FROM Products WHERE Name = 'Product 5'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6875463452'), (SELECT Id FROM Products WHERE Name = 'Product 6'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6875463452'), (SELECT Id FROM Products WHERE Name = 'Product 7'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6523454276'), (SELECT Id FROM Products WHERE Name = 'Product 8'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6523454276'), (SELECT Id FROM Products WHERE Name = 'Product 9'), 2),
-	((SELECT Id FROM Constructs Where Code = 'C_1_6523454276'), (SELECT Id FROM Products WHERE Name = 'Product 10'), 2)
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Ghế CS1898 Foyer vải S8Q'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Sofa Rumba vải VACT 10784'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Bàn ăn Breeze mặt kính bronze/GM2'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Giường Leman 1m8 vải VACT7459'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Nệm Luxury Golden Black 1m8'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Bình Aila Turquoise'), 1)
+
 GO
 
 -- Requests
@@ -127,15 +138,13 @@ GO
 -- RequestDetails
 INSERT INTO RequestDetails (RequestId, ProductId, Quantity)
 VALUES
-    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Product 1'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Product 2'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Product 3'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 2 note'), (SELECT Id FROM Products WHERE Name = 'Product 4'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 2 note'), (SELECT Id FROM Products WHERE Name = 'Product 5'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 2 note'), (SELECT Id FROM Products WHERE Name = 'Product 6'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 3 note'), (SELECT Id FROM Products WHERE Name = 'Product 7'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 3 note'), (SELECT Id FROM Products WHERE Name = 'Product 8'), 2),
-    ((SELECT Id FROM Requests WHERE Note = 'Request 3 note'), (SELECT Id FROM Products WHERE Name = 'Product 9'), 2);
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Ghế CS1898 Foyer vải S8Q'), 1),
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Sofa Rumba vải VACT 10784'), 1),
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Bàn ăn Breeze mặt kính bronze/GM2'), 1),
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Giường Leman 1m8 vải VACT7459'), 1),
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Nệm Luxury Golden Black 1m8'), 1),
+    ((SELECT Id FROM Requests WHERE Note = 'Request 1 note'), (SELECT Id FROM Products WHERE Name = 'Bình Aila Turquoise'), 1)
+    
 GO
 
 -- Appointments

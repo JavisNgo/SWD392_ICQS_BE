@@ -140,6 +140,10 @@ namespace SWD_ICQS.Controllers
             {
                 return BadRequest("Password must be at least 10 characters long and contain at least one uppercase letter, one lowercase letter, and one number");
             }
+            if(_accountsService.IsExistedEmail(newAccount.Email))
+            {
+                return BadRequest("Email you entered has already existed");
+            }
             var account = _accountsService.GetAccountByUsername(newAccount.Username);
             if(account == null)
             {
@@ -214,6 +218,10 @@ namespace SWD_ICQS.Controllers
             if (newAccount.Password.Length < 10 || !Regex.IsMatch(newAccount.Password, @"(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])"))
             {
                 return BadRequest("Password must be at least 10 characters long and contain at least one uppercase letter, one lowercase letter, and one number");
+            }
+            if (_accountsService.IsExistedEmail(newAccount.Email))
+            {
+                return BadRequest("Email you entered has already existed");
             }
             var account = _accountsService.GetAccountByUsername(newAccount.Username);
             if (account == null)

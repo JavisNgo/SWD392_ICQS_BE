@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -23,10 +24,12 @@ namespace SWD_ICQS.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ICustomersService _customersService;
+        private readonly IAccountsService _accountsService;
 
-        public CustomersController(ICustomersService customersService)
+        public CustomersController(ICustomersService customersService, IAccountsService accountsService)
         {
             _customersService = customersService;
+            _accountsService = accountsService;
         }
 
         // GET: api/Customers
@@ -101,6 +104,10 @@ namespace SWD_ICQS.Controllers
             if (!Regex.IsMatch(customersView.PhoneNumber, @"^[0-9]{10}$"))
             {
                 return BadRequest("Phone number must be exactly 10 digits");
+            }
+            if (_accountsService.IsExistedEmail(customersView.Email))
+            {
+                return BadRequest("Email you entered has already existed");
             }
             var account = _customersService.GetAccountByUsername(username);
             if (account == null)

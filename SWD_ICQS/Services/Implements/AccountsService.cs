@@ -384,5 +384,26 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
+        public bool IsExistedEmail(string email)
+        {
+            try
+            {
+                bool status = true;
+
+                var contractor = _unitOfWork.ContractorRepository.Find(c => c.Email == email).FirstOrDefault();
+
+                var customer = _unitOfWork.ContractorRepository.Find(c => c.Email == email).FirstOrDefault();
+
+                if(contractor == null && customer == null)
+                {
+                    status = false;
+                }
+
+                return status;
+            } catch (Exception ex)
+            {
+                throw new Exception($"{ex.Message}");
+            }
+        }
     }
 }

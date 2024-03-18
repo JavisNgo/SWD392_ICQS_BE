@@ -17,7 +17,8 @@ namespace SWD_ICQS.Entities
         {
             PENDING,
             COMPLETED,
-            REJECTED
+            REJECTED,
+            REFUNDED
         }
 
         public Requests? Request { get; set; }

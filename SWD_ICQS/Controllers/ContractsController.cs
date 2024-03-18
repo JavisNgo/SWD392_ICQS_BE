@@ -124,13 +124,27 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [HttpPut("/Contracts/{id}")]
-        public IActionResult UpdateContract(int id, [FromBody] ContractsView contractsView)
+        [HttpPut("/Contracts/customer/{id}")]
+        public IActionResult UpdateContractCustomerFirst(int id, [FromBody] ContractsView contractsView)
         {
             try
             {
-               var contract = _contractService.UpdateContract(id, contractsView);
-                return Ok(contract);
+                _contractService.UpdateContractCustomerFirst(id, contractsView);
+                return Ok("Success");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred while updating the contract. Error message: {ex.Message}");
+            }
+        }
+
+        [HttpPut("/Contracts/contractor/{id}")]
+        public IActionResult UpdateContractContractorSecond(int id, [FromBody] ContractsView contractsView)
+        {
+            try
+            {
+                _contractService.UpdateContractContractorSecond(id, contractsView);
+                return Ok("Success");
             }
             catch (Exception ex)
             {

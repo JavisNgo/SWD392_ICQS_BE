@@ -33,7 +33,7 @@ namespace SWD_ICQS.BackgroundServices
                 }
 
 
-                await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
             }
         }
     }

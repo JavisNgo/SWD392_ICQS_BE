@@ -11,7 +11,9 @@ namespace SWD_ICQS.Services.Interfaces
         IEnumerable<ContractViewForGet>? GetContractsByCustomerId(int customerId);
         ContractsView AddContract(ContractsView contractView);
         bool UploadContractProgress(int id, ContractsView contractView);
-        ContractsView UpdateContract(int id, ContractsView contractsView);
+        void UpdateContractCustomerFirst(int id, ContractsView contractsView);
+
+        void UpdateContractContractorSecond(int id, ContractsView contractsView);
 
     }
 }

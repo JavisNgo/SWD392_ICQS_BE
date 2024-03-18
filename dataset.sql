@@ -145,18 +145,49 @@ VALUES
 GO
 -- Categories
 INSERT INTO Categories (Name)
-VALUES ('Mid-century modern'),
-       ('Industrial'),
-	   ('Traditional'),
-       ('Modern');
+VALUES ('Luxurious French style'),
+       ('Traditional Vietnamese style'),
+	   ('Harmonious Japanese style');
 GO
 
 -- Constructs
 INSERT INTO Constructs (Code, ContractorId, CategoryId, Name, Description, EstimatedPrice, Status)
 VALUES
-    ('C_1_2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Mid-century modern'), 'Construct Name 2', 'Construct Description 2', 500.00, 1)
-    
+    ('C_1_2435476451', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Luxurious French style'), 'Bedroom', 'The bedroom is a place for relaxation and rest after a long day, featuring a comfortable and cozy space. It is equipped with essential amenities such as a bed, wardrobe, and desk. The color scheme and decor in the room typically create a warm and inviting ambiance, providing an ideal environment for resting and unwinding. With ample space and amenities, the bedroom serves as the perfect place to relax and ensure a good nights sleep.', 500000000, 1),
+    ('C_1_1231242141', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Luxurious French style'), 'Living room', 'The living room serves as the heart of the home, where individuals gather, socialize, and engage with one another. Featuring spacious and comfortable seating, the living room is typically equipped with sofas, coffee tables, and additional chairs. The color scheme and decor in the room often create a warm and inviting ambiance, facilitating communication and social interaction. With its open layout and amenities, the living room provides an ideal space for sharing moments of joy and creating cherished memories with family and friends.', 500000000, 1),
+	('C_1_1251251242', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Luxurious French style'), 'Dining room', 'The dining room is a space dedicated to sharing meals and creating lasting memories with loved ones. It is furnished with a dining table and chairs, providing a comfortable and inviting setting for gatherings. The decor and ambiance in the dining room are often designed to promote relaxation and enjoyment during meals. With its warm lighting and tasteful decorations, the dining room sets the stage for meaningful conversations and shared experiences. Whether hosting formal dinners or casual brunches, the dining room serves as a focal point for hospitality and togetherness in the home.', 500000000, 1),
+	('C_1_1351341412', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Luxurious French style'), 'Office', 'The office is a designated workspace tailored for productivity and professional tasks. It typically features a desk, ergonomic chair, and storage units for files and supplies. The decor in the office is often organized and functional, promoting efficiency and focus. With ample natural light and comfortable furnishings, the office provides a conducive environment for work-related activities such as writing, computing, and meetings. Whether used for remote work, business endeavors, or personal projects, the office serves as a dedicated space for concentration and achievement.', 500000000, 1),
+	('C_1_1616161616', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Traditional Vietnamese style'), 'Bedroom', 'The bedroom is a place for relaxation and rest after a long day, featuring a comfortable and cozy space. It is equipped with essential amenities such as a bed, wardrobe, and desk. The color scheme and decor in the room typically create a warm and inviting ambiance, providing an ideal environment for resting and unwinding. With ample space and amenities, the bedroom serves as the perfect place to relax and ensure a good nights sleep.', 500000000, 1),
+    ('C_1_1717171717', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Traditional Vietnamese style'), 'Living room', 'The living room serves as the heart of the home, where individuals gather, socialize, and engage with one another. Featuring spacious and comfortable seating, the living room is typically equipped with sofas, coffee tables, and additional chairs. The color scheme and decor in the room often create a warm and inviting ambiance, facilitating communication and social interaction. With its open layout and amenities, the living room provides an ideal space for sharing moments of joy and creating cherished memories with family and friends.', 500000000, 1),
+	('C_1_1818181818', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Traditional Vietnamese style'), 'Dining room', 'The dining room is a space dedicated to sharing meals and creating lasting memories with loved ones. It is furnished with a dining table and chairs, providing a comfortable and inviting setting for gatherings. The decor and ambiance in the dining room are often designed to promote relaxation and enjoyment during meals. With its warm lighting and tasteful decorations, the dining room sets the stage for meaningful conversations and shared experiences. Whether hosting formal dinners or casual brunches, the dining room serves as a focal point for hospitality and togetherness in the home.', 500000000, 1),
+	('C_1_1919191919', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Traditional Vietnamese style'), 'Office', 'The office is a designated workspace tailored for productivity and professional tasks. It typically features a desk, ergonomic chair, and storage units for files and supplies. The decor in the office is often organized and functional, promoting efficiency and focus. With ample natural light and comfortable furnishings, the office provides a conducive environment for work-related activities such as writing, computing, and meetings. Whether used for remote work, business endeavors, or personal projects, the office serves as a dedicated space for concentration and achievement.', 500000000, 1),
+	('C_1_2323232323', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Harmonious Japanese style'), 'Bedroom', 'The bedroom is a place for relaxation and rest after a long day, featuring a comfortable and cozy space. It is equipped with essential amenities such as a bed, wardrobe, and desk. The color scheme and decor in the room typically create a warm and inviting ambiance, providing an ideal environment for resting and unwinding. With ample space and amenities, the bedroom serves as the perfect place to relax and ensure a good nights sleep.', 500000000, 1),
+    ('C_1_2424242424', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Harmonious Japanese style'), 'Living room', 'The living room serves as the heart of the home, where individuals gather, socialize, and engage with one another. Featuring spacious and comfortable seating, the living room is typically equipped with sofas, coffee tables, and additional chairs. The color scheme and decor in the room often create a warm and inviting ambiance, facilitating communication and social interaction. With its open layout and amenities, the living room provides an ideal space for sharing moments of joy and creating cherished memories with family and friends.', 500000000, 1),
+	('C_1_2525252525', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Harmonious Japanese style'), 'Dining room', 'The dining room is a space dedicated to sharing meals and creating lasting memories with loved ones. It is furnished with a dining table and chairs, providing a comfortable and inviting setting for gatherings. The decor and ambiance in the dining room are often designed to promote relaxation and enjoyment during meals. With its warm lighting and tasteful decorations, the dining room sets the stage for meaningful conversations and shared experiences. Whether hosting formal dinners or casual brunches, the dining room serves as a focal point for hospitality and togetherness in the home.', 500000000, 1),
+	('C_1_2626262626', (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com'), (SELECT Id FROM Categories WHERE Name = 'Harmonious Japanese style'), 'Office', 'The office is a designated workspace tailored for productivity and professional tasks. It typically features a desk, ergonomic chair, and storage units for files and supplies. The decor in the office is often organized and functional, promoting efficiency and focus. With ample natural light and comfortable furnishings, the office provides a conducive environment for work-related activities such as writing, computing, and meetings. Whether used for remote work, business endeavors, or personal projects, the office serves as a dedicated space for concentration and achievement.', 500000000, 1)
 GO
+
+
+--ConstructImages
+INSERT INTO ConstructImages (ConstructId, ImageUrl )
+VALUES 
+--Luxurious French style
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_2435476451'),'ConstructImage_2_3Ex4EsqeNPQS52D.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1231242141'),'ConstructImage_3_fIgNXoczgnERwes.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1251251242'),'ConstructImage_4_k2DsDQUGxst11UA.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1351341412'),'ConstructImage_5_sDFdt8QmuNwzhRN.png'),
+--Traditional Vietnamese style	
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1616161616'),'ConstructImage_6_C8f9eulduk4zbd4.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1717171717'),'ConstructImage_7_MIRq7sXih2dccJ9.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1818181818'),'ConstructImage_8_nY3EoKGENVE8zct.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_1919191919'),'ConstructImage_9_fvoxbUrdzdg3xVt.png'),
+--Harmonious Japanese style
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_2323232323'),'ConstructImage_10_L9zVosszEInaMHc.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_2424242424'),'ConstructImage_11_moO5UASCNOwIqIc.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_2525252525'),'ConstructImage_12_HpB3MvkHxUv1wTP.png'),
+	((SELECT Id FROM Constructs WHERE Constructs.Code = 'C_1_2626262626'),'ConstructImage_13_l2MBP1GPAdxowOX.png');
+GO
+
 
 -- ConstructProducts
 INSERT INTO ConstructProducts (ConstructId, ProductId, Quantity)
@@ -164,36 +195,55 @@ INSERT INTO ConstructProducts (ConstructId, ProductId, Quantity)
 --FROM Constructs c
 --CROSS JOIN (SELECT TOP 3 Id FROM Products WHERE ContractorId = (SELECT Id FROM Contractors WHERE Email = 'contractor@example.com') ORDER BY NEWID()) p;
 VALUES
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'CS1898 Foyer Fabric S8Q Chair'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Rumba Fabric VACT 10784 Sofa'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Leman 1.8m Bed with VACT7459 Fabric'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Luxury Golden Black 1.8m Mattress'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Aila Turquoise Pitcher'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Jadora Swivel Armchair in Red Orange with Pattern, Includes Matching Pillow'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Hopper 38929P Work Desk'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Armchair Hung King'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Tita Gold Side Table'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Leman 1.8m Bed with VACT10370 Fabric'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Iris 1.6m Stone Drawer Bed'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Kilian 1.8m Brown Leather Bed L01'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Wynn 1.8m Mushroom Leather Bed'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Victoria 1.8m Wooden Bed'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Bui 1.6m Wooden Bed'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Pio 1.8m Fabric Upholstered Bed in VACT6090/VACT3399'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Wardrobe 02'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Acrylic Wardrobe'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Maxine Wardrobe'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Opal Right Corner Sofa - Gray Leather'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Limited Dura Left Corner Sofa with Brown Leather Pillow'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Bali 520 Right Corner Combo Leather Sofa'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Metro Next Modern Left Corner Sofa in Gray Leather L16'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Pio Left Corner Sofa in VACT6090/VACT3399 Fabric'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Modern Left Corner Milia Sofa'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Swivel Jadora Armchair in Brown Green Pattern, Includes Matching Pillow'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Rudo TV Cabinet'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Elegance Black TV Cabinet'), 1),
-	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Wooden Bridge TV Cabinet 1.8m - Natural Wood Color'), 1)
+---Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1251251242'), (SELECT Id FROM Products WHERE Name = 'CS1898 Foyer Fabric S8Q Chair'), 6), --Dining room, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1231242141'), (SELECT Id FROM Products WHERE Name = 'Rumba Fabric VACT 10784 Sofa'), 1), --Living room, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1231242141'), (SELECT Id FROM Products WHERE Name = 'Tita Gold Side Table'), 1),--Living room, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1251251242'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1), --Dining room, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Leman 1.8m Bed with VACT7459 Fabric'), 1), -- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Luxury Golden Black 1.8m Mattress'), 1),-- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Aila Turquoise Pitcher'), 1), -- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1351341412'), (SELECT Id FROM Products WHERE Name = 'Hopper 38929P Work Desk'), 1), --Office, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1351341412'), (SELECT Id FROM Products WHERE Name = 'Armchair Hung King'), 1),--Office, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Tita Gold Side Table'), 1),-- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1351341412'), (SELECT Id FROM Products WHERE Name = 'Wardrobe 02'), 1), --Office, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Acrylic Wardrobe'), 1),-- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1251251242'), (SELECT Id FROM Products WHERE Name = 'Maxine Wardrobe'), 1), --Dining room, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2435476451'), (SELECT Id FROM Products WHERE Name = 'Limited Dura Left Corner Sofa with Brown Leather Pillow'), 1), -- Bedroom, Luxurious French style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1231242141'), (SELECT Id FROM Products WHERE Name = 'Wooden Bridge TV Cabinet 1.8m - Natural Wood Color'), 1),--Living room, Luxurious French style
+---Traditional Vietnamese style
+	((SELECT Id FROM Constructs Where Code = 'C_1_1616161616'), (SELECT Id FROM Products WHERE Name = 'Pio 1.8m Fabric Upholstered Bed in VACT6090/VACT3399'), 1), --Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_1616161616'), (SELECT Id FROM Products WHERE Name = 'Jadora Swivel Armchair in Red Orange with Pattern, Includes Matching Pillow'), 1), --Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_1616161616'), (SELECT Id FROM Products WHERE Name = 'Wardrobe 02'), 1), --Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_1616161616'), (SELECT Id FROM Products WHERE Name = 'Rudo TV Cabinet'), 1), --Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_1717171717'), (SELECT Id FROM Products WHERE Name = 'Modern Left Corner Milia Sofa'), 1), --Living room
+	((SELECT Id FROM Constructs Where Code = 'C_1_1717171717'), (SELECT Id FROM Products WHERE Name = 'Wooden Bridge TV Cabinet 1.8m - Natural Wood Color'), 1), --Living room
+	((SELECT Id FROM Constructs Where Code = 'C_1_1717171717'), (SELECT Id FROM Products WHERE Name = 'Aila Turquoise Pitcher'), 1), --Living room
+	((SELECT Id FROM Constructs Where Code = 'C_1_1818181818'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1), --Dining room
+	((SELECT Id FROM Constructs Where Code = 'C_1_1818181818'), (SELECT Id FROM Products WHERE Name = 'Armchair Hung King'), 6), --Dining room
+	((SELECT Id FROM Constructs Where Code = 'C_1_1919191919'), (SELECT Id FROM Products WHERE Name = 'Hopper 38929P Work Desk'), 1), --Office
+	((SELECT Id FROM Constructs Where Code = 'C_1_1919191919'), (SELECT Id FROM Products WHERE Name = 'Armchair Hung King'), 1), --Office
+	((SELECT Id FROM Constructs Where Code = 'C_1_1919191919'), (SELECT Id FROM Products WHERE Name = 'Wardrobe 02'), 1), --Office
+	((SELECT Id FROM Constructs Where Code = 'C_1_1919191919'), (SELECT Id FROM Products WHERE Name = 'Bali 520 Right Corner Combo Leather Sofa'), 1), --Office
+---Harmonious Japanese style
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Luxury Golden Black 1.8m Mattress'), 1), --Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Bui 1.6m Wooden Bed'), 1),--Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Acrylic Wardrobe'), 1),--Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Opal Right Corner Sofa - Gray Leather'), 1),--Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Swivel Jadora Armchair in Brown Green Pattern, Includes Matching Pillow'), 1),--Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2323232323'), (SELECT Id FROM Products WHERE Name = 'Elegance Black TV Cabinet'), 1),--Bedroom
+	((SELECT Id FROM Constructs Where Code = 'C_1_2424242424'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1), --Living
+	((SELECT Id FROM Constructs Where Code = 'C_1_2424242424'), (SELECT Id FROM Products WHERE Name = 'Jadora Swivel Armchair in Red Orange with Pattern, Includes Matching Pillow'), 1),--Living
+	((SELECT Id FROM Constructs Where Code = 'C_1_2424242424'), (SELECT Id FROM Products WHERE Name = 'Pio Left Corner Sofa in VACT6090/VACT3399 Fabric'), 1),--Living
+	((SELECT Id FROM Constructs Where Code = 'C_1_2424242424'), (SELECT Id FROM Products WHERE Name = 'Wooden Bridge TV Cabinet 1.8m - Natural Wood Color'), 1),--Living
+	((SELECT Id FROM Constructs Where Code = 'C_1_2525252525'), (SELECT Id FROM Products WHERE Name = 'Armchair Hung King'), 6), --Dining
+	((SELECT Id FROM Constructs Where Code = 'C_1_2525252525'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1), --Dining
+	((SELECT Id FROM Constructs Where Code = 'C_1_2525252525'), (SELECT Id FROM Products WHERE Name = 'Maxine Wardrobe'), 1),--Dining
+	((SELECT Id FROM Constructs Where Code = 'C_1_2626262626'), (SELECT Id FROM Products WHERE Name = 'Breeze Dining Table with Bronze Glass Top/GM2'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2626262626'), (SELECT Id FROM Products WHERE Name = 'Hopper 38929P Work Desk'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2626262626'), (SELECT Id FROM Products WHERE Name = 'Acrylic Wardrobe'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2626262626'), (SELECT Id FROM Products WHERE Name = 'Limited Dura Left Corner Sofa with Brown Leather Pillow'), 1),
+	((SELECT Id FROM Constructs Where Code = 'C_1_2626262626'), (SELECT Id FROM Products WHERE Name = 'Swivel Jadora Armchair in Brown Green Pattern, Includes Matching Pillow'), 1)
 
 GO
 

@@ -166,18 +166,39 @@ namespace SWD_ICQS.Services.Implements
                 existingRequest.Status = Requests.RequestsStatusEnum.ACCEPTED;
                 existingRequest.TimeOut = DateTime.Now.AddDays(14);
                 unitOfWork.RequestRepository.Update(existingRequest);
-                unitOfWork.Save();
-
-                var appointment = new Appointments
+                //unitOfWork.Save();
+                if (existingRequest != null)
                 {
-                    CustomerId = existingRequest.CustomerId,
-                    ContractorId = existingRequest.ContractorId,
-                    RequestId = existingRequest.Id,
-                    MeetingDate = DateTime.Now.AddDays(7),
-                    Status = Appointments.AppointmentsStatusEnum.PENDING
-                };
-                unitOfWork.AppointmentRepository.Insert(appointment);
-                unitOfWork.Save();
+                    var appointment = new Appointments
+                    {
+                        CustomerId = existingRequest.CustomerId,
+                        ContractorId = existingRequest.ContractorId,
+                        RequestId = existingRequest.Id,
+                        MeetingDate = DateTime.Now.AddDays(7),
+                        Status = Appointments.AppointmentsStatusEnum.PENDING
+                    };
+                    unitOfWork.AppointmentRepository.Insert(appointment);
+                    unitOfWork.Save();
+                    var existingCustomer = unitOfWork.CustomerRepository.GetByID(existingRequest.CustomerId);
+
+                    if (existingCustomer != null)
+                    {
+
+                        EmailDto email = new EmailDto()
+                        {
+
+                            To = existingCustomer.Email,
+                            Subject = "Contractor accept your request",
+                            Body = emailBodyForAccpept(existingCustomer, existingRequest, appointment)
+
+                        };
+
+                        SendMail(email);
+
+                    }
+                }
+                
+                
 
                 return true;
             }
@@ -185,6 +206,53 @@ namespace SWD_ICQS.Services.Implements
             {
                  throw new Exception($"An error occurred while accepting the request. Error message: {ex.Message}");
             }
+        }
+        public string emailBodyForAccpept(Customers customer, Requests request, Appointments appointment)
+        {
+            return $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Email Notification</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }}
+        h1 {{
+            color: #333;
+        }}
+        p {{
+            color: #666;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>Contractor accept your request</h1>
+        <p>Dear {customer.Name},</p>
+        <p>Contractor have been accepted your request</p>        
+        <p>Note: {request.Note}</p>
+        <p>Total price: {request.TotalPrice}</p>
+        <p>Created date: {request.TimeIn}</p>        
+        <p>Expired date: {request.TimeOut}</p>
+
+        <p>Please check the appointment and meeting before expired appointment date.</p></br></br>
+        <p>Expired appointment date: {appointment.MeetingDate}</p>
+        <p>Best regards,<br/>[Admin from ICQS]</p>
+    </div>
+</body>
+</html>
+";
         }
 
         public bool MarkMeetingAsCompleted(int id)
@@ -230,6 +298,23 @@ namespace SWD_ICQS.Services.Implements
                         };
                         unitOfWork.DepositOrdersRepository.Insert(newDeposit);
                         unitOfWork.Save();
+                        var existingCustomer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                        if (existingCustomer != null)
+                        {
+
+                            EmailDto email = new EmailDto()
+                            {
+
+                                To = existingCustomer.Email,
+                                Subject = "The appoinment completed",
+                                Body = emailBodyForCompleteAppoinment(existingCustomer, request)
+
+                            };
+
+                            SendMail(email);
+
+                        }
                         return true;
                     }
                     
@@ -242,8 +327,52 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception($"An error occurred while marking meeting as completed. Error message: {ex.Message}");
             }
         }
-
+        public string emailBodyForCompleteAppoinment(Customers customer, Requests request)
+        {
+            return $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Email Notification</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }}
+        h1 {{
+            color: #333;
+        }}
+        p {{
+            color: #666;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>The appointment completed</h1>
+        <p>Dear {customer.Name},</p>
+        <p>Contractor have been marked your appointment status as completed</p>        
         
+
+        <p>Please check the deposit order and paying before expired date.</p></br></br>
+        <p>Expired deposit order date: {request.TimeOut}</p>
+        <p>Best regards,<br/>[Admin from ICQS]</p>
+    </div>
+</body>
+</html>
+";
+        }
+
+
 
         public RequestView AddRequest(RequestView requestView)
         {
@@ -257,7 +386,7 @@ namespace SWD_ICQS.Services.Implements
                     throw new Exception("ContractorID or CustomerID not found");
                 }
 
-                if (requestView.TotalPrice < 0)
+                if (requestView.TotalPrice <= 0)
                 {
                     throw new Exception("Price must be larger than 0");
                 }
@@ -303,31 +432,32 @@ namespace SWD_ICQS.Services.Implements
                                 };
                                 unitOfWork.RequestDetailRepository.Insert(requestDetails);
                                 unitOfWork.Save();
+                                var existingContractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                                if (existingContractor != null)
+                                {
+
+                                    EmailDto email = new EmailDto()
+                                    {
+
+                                        To = existingContractor.Email,
+                                        Subject = "New request from customer",
+                                        Body = emailBodyForRequest(existingContractor, createdRequest)
+
+                                    };
+
+                                    SendMail(email);
+                                    return requestView;
+                                }
                             }
                         }
                     }
                 }
-                var existingContractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+
+                return null;
+
                 
-                if (existingContractor != null)
-                {
-                    
-                        EmailDto email = new EmailDto()
-                        {
-                            
-                            To = existingContractor.Email,
-                            Subject = "New request from customer",
-                            Body = emailBody(existingContractor, request)
-                            
-                        };
-
-                        SendMail(email);
-                    
-                }
-
-
-
-                return requestView;
             }
             catch (Exception ex)
             {
@@ -335,7 +465,7 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
-        public string emailBody(Contractors contractor, Requests request)
+        public string emailBodyForRequest(Contractors contractor, Requests request)
         {
             return $@"
 <!DOCTYPE html>
@@ -382,25 +512,7 @@ namespace SWD_ICQS.Services.Implements
 </html>
 ";
         }
-        //public void SendEmail(EmailDto request)
-        //{
-        //    try
-        //    {
-        //        var email = new MimeMessage();
-        //        email.From.Add(MailboxAddress.Parse(request.From));
-        //        email.To.Add(MailboxAddress.Parse(request.To));
-        //        email.Subject = request.Subject;
-        //        email.Body = new TextPart(TextFormat.Text) { Text = request.Body };
-
-        //        using var smtp = new SmtpClient();
-        //        smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-        //        smtp.Authenticate(request.To, _config.GetSection("EmailPassword").Value);
-        //        smtp.Send(email);
-        //        smtp.Disconnect(true);
-        //    }catch
-        //    {
-        //        throw new Exception("Error while send email");
-        //    }
+        
 
         public void SendMail(EmailDto request)
         {
@@ -412,7 +524,7 @@ namespace SWD_ICQS.Services.Implements
                 MailMessage message = new MailMessage();
                 message.From = new MailAddress(fromMail);
                 message.Subject = request.Subject;
-                message.To.Add(new MailAddress("louisnamu02@gmail.com"));
+                message.To.Add(new MailAddress(_config.GetSection("EmailUsername").Value));
                 message.Body = request.Body;
                 message.IsBodyHtml = true;
 

@@ -106,6 +106,10 @@ namespace SWD_ICQS.Controllers
             try
             {
             var request = _requestService.AddRequest(requestView);
+            if(request == null)
+            {
+                 return BadRequest("Error while add request");
+            }
             return Ok(request);
             }catch (Exception ex)
             {

@@ -27,7 +27,7 @@ namespace SWD_ICQS.Services.Implements
             }
             if(requestDetailView.Quantity <= 0)
             {
-                throw new Exception("Quantity must be larger than 0");
+                throw new Exception("Quantity must be greater than 0");
             }
             RequestDetails requestDetail = _mapper.Map<RequestDetails>(requestDetailView);
             unitOfWork.RequestDetailRepository.Insert(requestDetail);
@@ -79,7 +79,7 @@ namespace SWD_ICQS.Services.Implements
 
             if (requestDetailView.Quantity <= 0)
             {
-                requestDetailView.Quantity = Math.Max(requestDetailView.Quantity, 1);
+                throw new Exception("Quantity must be greater than 0");
             }
 
             _mapper.Map(requestDetailView, existingRequestDetail);

@@ -85,6 +85,21 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet("/api/v1/contracts/request/{requestId}")]
+        public ActionResult<IEnumerable<ContractViewForGet>> GetContractsByRequestId(int requestId)
+        {
+            try
+            {
+                var contract = _contractService.GetContractByRequestId(requestId);
+                return Ok(contract);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
 
         [AllowAnonymous]

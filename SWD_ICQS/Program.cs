@@ -123,6 +123,13 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/img/productImage"
 });
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "pdf", "contracts")),
+    RequestPath = "/pdf/contracts"
+});
+
 app.UseCors();
 
 app.UseHttpsRedirection();

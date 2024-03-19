@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
 using SWD_ICQS.Services.Interfaces;
 using System.Diagnostics.Contracts;
+using System.Security.Policy;
 
 namespace SWD_ICQS.Services.Implements
 {
@@ -85,143 +87,175 @@ namespace SWD_ICQS.Services.Implements
             }
             return contractView;
         }
-            public IEnumerable<ContractViewForGet> GetAllContract()
+        public IEnumerable<ContractViewForGet>? GetAllContract()
         {
-            var contracts = unitOfWork.ContractRepository.Get().ToList();
-            var contractsViews = new List<ContractViewForGet>();
-
-            foreach (var contract in contracts)
+            try
             {
-                // Lấy thông tin Request
+                var contracts = unitOfWork.ContractRepository.Get().ToList();
+                var contractsViews = new List<ContractViewForGet>();
+
+                foreach (var contract in contracts)
+                {
+                    // Lấy thông tin Request
+                    var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
+
+                    if (request == null)
+                    {
+                        // Nếu không thấy cút đi tiếp
+                        continue;
+                    }
+
+                    // Lấy thông tin của Customer từ Request
+                    var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                    // Lấy thông tin của Contractor từ Request
+                    var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    if (customer == null || contractor == null)
+                    {
+                        //Nếu k thấy đi tiếp
+                        continue;
+                    }
+
+                    var contractView = _mapper.Map<ContractViewForGet>(contract);
+
+                    // Gán tên của Customer và Contractor vào ContractView
+                    contractView.CustomerName = customer.Name;
+                    contractView.ContractorName = contractor.Name;
+
+                    string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
+                    contractView.ContractUrl = url;
+
+
+                    contractsViews.Add(contractView);
+                }
+                return contractsViews;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public ContractViewForGet? GetContractById(int contractId)
+        {
+            try
+            {
+                // Lấy thông tin hợp đồng theo contractId
+                var contract = unitOfWork.ContractRepository.GetByID(contractId);
+
+                if (contract == null)
+                {
+                    throw new Exception($"Contract with ID {contractId} not found.");
+                }
+
+                // Lấy thông tin request của hợp đồng
                 var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
 
                 if (request == null)
                 {
-                    // Nếu không thấy cút đi tiếp
-                    continue;
+                    throw new Exception($"Request related to Contract with ID {contractId} not found.");
                 }
 
-                // Lấy thông tin của Customer từ Request
+                // Lấy thông tin của Customer từ request
                 var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
 
-                // Lấy thông tin của Contractor từ Request
+                // Lấy thông tin của Contractor từ request
                 var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
-
-                if (customer == null || contractor == null)
-                {
-                    //Nếu k thấy đi tiếp
-                    continue;
-                }
 
                 var contractView = _mapper.Map<ContractViewForGet>(contract);
 
-                // Gán tên của Customer và Contractor vào ContractView
-                contractView.CustomerName = customer.Name;
-                contractView.ContractorName = contractor.Name;
+                // Gán tên của Customer và Contractor vào ContractViewForGet
+                contractView.CustomerName = customer != null ? customer.Name : null;
+                contractView.ContractorName = contractor != null ? contractor.Name : null;
 
-                contractsViews.Add(contractView);
+                return contractView;
+            } catch (Exception ex )
+            {
+                throw new Exception(ex.Message);
             }
-            return contractsViews;
         }
-            public ContractViewForGet GetContractById(int contractId)
-            {
-            // Lấy thông tin hợp đồng theo contractId
-            var contract = unitOfWork.ContractRepository.GetByID(contractId);
-
-            if (contract == null)
-            {
-                throw new Exception($"Contract with ID {contractId} not found.");
-            }
-
-            // Lấy thông tin request của hợp đồng
-            var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
-
-            if (request == null)
-            {
-                throw new Exception($"Request related to Contract with ID {contractId} not found.");
-            }
-
-            // Lấy thông tin của Customer từ request
-            var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
-
-            // Lấy thông tin của Contractor từ request
-            var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
-
-            var contractView = _mapper.Map<ContractViewForGet>(contract);
-
-            // Gán tên của Customer và Contractor vào ContractViewForGet
-            contractView.CustomerName = customer != null ? customer.Name : null;
-            contractView.ContractorName = contractor != null ? contractor.Name : null;
-
-            return contractView;
-            }
 
         public IEnumerable<ContractViewForGet>? GetContractsByContractorId(int contractorId)
         {
-            // Lấy tất cả các hợp đồng có liên quan đến nhà thầu có contractorId cung cấp
-            var contracts = unitOfWork.ContractRepository.Get(filter: c => c.Request.ContractorId == contractorId).ToList();
-            var contractsViews = new List<ContractViewForGet>();
-
-            foreach (var contract in contracts)
+            try
             {
-                var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
+                // Lấy tất cả các hợp đồng có liên quan đến nhà thầu có contractorId cung cấp
+                var contracts = unitOfWork.ContractRepository.Get(filter: c => c.Request.ContractorId == contractorId).ToList();
+                var contractsViews = new List<ContractViewForGet>();
 
-                if (request == null)
+                foreach (var contract in contracts)
                 {
-                    continue;
+                    var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
+
+                    if (request == null)
+                    {
+                        continue;
+                    }
+
+                    var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    if (contractor == null)
+                    {
+                        continue;
+                    }
+
+                    var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                    var contractView = _mapper.Map<ContractViewForGet>(contract);
+
+                    contractView.ContractorName = contractor.Name;
+                    contractView.CustomerName = customer != null ? customer.Name : null;
+                    string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
+                    contractView.ContractUrl = url;
+
+                    contractsViews.Add(contractView);
                 }
 
-                var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
-
-                if (contractor == null)
-                {
-                    continue;
-                }
-
-                var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
-
-                var contractView = _mapper.Map<ContractViewForGet>(contract);
-
-                contractView.ContractorName = contractor.Name;
-                contractView.CustomerName = customer != null ? customer.Name : null;
-
-                contractsViews.Add(contractView);
+                return contractsViews;
+            } catch (Exception ex) {
+                throw new Exception(ex.Message);
             }
-
-            return contractsViews;
         }
 
         public IEnumerable<ContractViewForGet>? GetContractsByCustomerId(int customerId)
         {
-            var contracts = unitOfWork.ContractRepository.Get(filter: c => c.Request.CustomerId == customerId).ToList();
-            var contractsViews = new List<ContractViewForGet>();
-
-            foreach (var contract in contracts)
+            try
             {
-                var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
+                var contracts = unitOfWork.ContractRepository.Get(filter: c => c.Request.CustomerId == customerId).ToList();
+                var contractsViews = new List<ContractViewForGet>();
 
-                if (request == null)
+                foreach (var contract in contracts)
                 {
-                    continue;
+                    var request = unitOfWork.RequestRepository.GetByID(contract.RequestId);
+
+                    if (request == null)
+                    {
+                        continue;
+                    }
+
+                    var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                    if (customer == null)
+                    {
+                        continue;
+                    }
+
+                    var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    var contractView = _mapper.Map<ContractViewForGet>(contract);
+
+                    contractView.CustomerName = customer.Name;
+                    contractView.ContractorName = contractor != null ? contractor.Name : null;
+                    string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
+                    contractView.ContractUrl = url;
+
+                    contractsViews.Add(contractView);
                 }
-
-                var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
-
-                if (customer == null)
-                {
-                    continue;
-                }
-
-                var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
-
-                var contractView = _mapper.Map<ContractViewForGet>(contract);
-
-                contractView.CustomerName = customer.Name;
-                contractView.ContractorName = contractor != null ? contractor.Name : null;
-
-                contractsViews.Add(contractView);
+                return contractsViews;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
-            return contractsViews;
         }
 
         public void UpdateContractCustomerFirst(int id, ContractsView contractsView)
@@ -348,14 +382,19 @@ namespace SWD_ICQS.Services.Implements
             {
                 return false; 
             }
-
-            existingContract.Progress = contractView.Progress;
-
             try
             {
-                unitOfWork.ContractRepository.Update(existingContract);
-                unitOfWork.Save();
-                return true; 
+                if(existingContract.Status == 1)
+                {
+                    existingContract.Progress = contractView.Progress;
+                    existingContract.EditDate = DateTime.Now;
+                    unitOfWork.ContractRepository.Update(existingContract);
+                    unitOfWork.Save();
+                    return true;
+                } else
+                {
+                    throw new Exception("Contract has not been signed yet");
+                }
             }
             catch (Exception ex)
             {
@@ -364,5 +403,30 @@ namespace SWD_ICQS.Services.Implements
             }
         }
 
+        public ContractViewForGet? GetContractByRequestId(int requestId)
+        {
+            try
+            {
+                var contract = unitOfWork.ContractRepository.Find(c => c.RequestId == requestId).FirstOrDefault();
+                var request = unitOfWork.RequestRepository.GetByID(requestId);
+
+                var customer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                var contractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                var contractView = _mapper.Map<ContractViewForGet>(contract);
+
+                contractView.CustomerName = customer.Name;
+                contractView.ContractorName = contractor != null ? contractor.Name : null;
+                string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
+                contractView.ContractUrl = url;
+
+                return contractView;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

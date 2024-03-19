@@ -284,7 +284,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [Authorize(Policy = "RequireAllRoles")]
+        [AllowAnonymous]
         [HttpGet("/api/v1/admin/stats")]
         public IActionResult GetPlatfromStatistics()
         {

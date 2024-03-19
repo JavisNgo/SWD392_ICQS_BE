@@ -9,6 +9,7 @@ namespace SWD_ICQS.Services.Interfaces
         DepositOrders? GetDepositOrdersById(int id);
         DepositOrders? GetDepositOrdersByRequestId(int RequestsId);
         IEnumerable<DepositOrders>? GetDepositOrdersByCustomerId(int CustomerId);
+        IEnumerable<DepositOrders>? GetDepositOrdersByContractorId(int ContractorId);
 
         bool UpdateTransactionCode(int id, string transactionCode);
 

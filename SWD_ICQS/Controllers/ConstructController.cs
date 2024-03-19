@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
@@ -21,6 +22,7 @@ namespace SWD_ICQS.Controllers
             _constructService = constructService;
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/constructs/get")]
         public async Task<IActionResult> GetAllConstruct()
         {
@@ -28,6 +30,7 @@ namespace SWD_ICQS.Controllers
             return Ok(constructsViews);
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/constructs/get/contractorid={contractorid}")]
         public async Task<IActionResult> GetAllConstructByContractorId(int contractorid)
         {
@@ -36,6 +39,7 @@ namespace SWD_ICQS.Controllers
             return Ok(constructsViewList);
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/constructs/get/id={id}")]
         public IActionResult GetConstructByID(int id)
         {
@@ -48,6 +52,7 @@ namespace SWD_ICQS.Controllers
             return Ok(constructsView);
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPost("/api/v1/constructs/post")]
         public IActionResult AddConstruct([FromBody] ConstructsView constructsView)
         {
@@ -83,8 +88,8 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/v1/constructs/put")]
         public IActionResult UpdateConstruct([FromBody] ConstructsView constructsView)
         {
@@ -126,6 +131,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpPut("/api/v1/constructs/put/status/id={id}")]
         public IActionResult SetStatusConstruct(int id)
         {
@@ -144,6 +150,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpDelete("/api/v1/constructs/delete/id={id}")]
         public IActionResult DeleteConstructById(int id)
         {

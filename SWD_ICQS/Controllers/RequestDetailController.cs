@@ -18,7 +18,7 @@ namespace SWD_ICQS.Controllers
             _requestDetailService = requestDetailService;
         }
 
-        [AllowAnonymous]
+        [Authorize("RequireAllRoles")]
         [HttpGet("/RequestDetails")]
         public async Task<IActionResult> getAllRequestDetails()
         {
@@ -33,6 +33,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize("RequireAllRoles")]
         [AllowAnonymous]
         [HttpGet("/RequestDetails/{id}")]
         public IActionResult GetRequestDetailsById(int id)
@@ -49,6 +50,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize("RequireCustomerRole")]
         [AllowAnonymous]
         [HttpPost("/RequestDetails")]
         public IActionResult AddRequestDetail([FromBody] RequestDetailView requestDetailView)
@@ -64,50 +66,50 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpPut("/RequestDetails/{id}")]
-        public IActionResult UpdateRequestDetail(int id, [FromBody] RequestDetailView requestDetailView)
-        {
-            try
-            {
-                var success = _requestDetailService.UpdateRequestDetail(id, requestDetailView);
-                if (success)
-                {
-                    return Ok("RequestDetail updated successfully.");
-                }
-                else
-                {
-                    return BadRequest("Failed to update RequestDetail.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while updating the RequestDetail. Error message: {ex.Message}");
-            }
-        }
+        //[AllowAnonymous]
+        //[HttpPut("/RequestDetails/{id}")]
+        //public IActionResult UpdateRequestDetail(int id, [FromBody] RequestDetailView requestDetailView)
+        //{
+        //    try
+        //    {
+        //        var success = _requestDetailService.UpdateRequestDetail(id, requestDetailView);
+        //        if (success)
+        //        {
+        //            return Ok("RequestDetail updated successfully.");
+        //        }
+        //        else
+        //        {
+        //            return BadRequest("Failed to update RequestDetail.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while updating the RequestDetail. Error message: {ex.Message}");
+        //    }
+        //}
 
 
-        [AllowAnonymous]
-        [HttpDelete("/RequestDetails/{id}")]
-        public IActionResult DeleteRequestDetails(int id)
-        {
-            try
-            {
-                bool isDeleted = _requestDetailService.DeleteRequestDetail(id);
-                if (isDeleted)
-                {
-                    return Ok($"Request Detail with ID: {id} has been successfully deleted.");
-                }
-                else
-                {
-                    return NotFound($"Request Detail with ID: {id} not found.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while deleting the Request Detail. Error message: {ex.Message}");
-            }
-        }
+        //[AllowAnonymous]
+        //[HttpDelete("/RequestDetails/{id}")]
+        //public IActionResult DeleteRequestDetails(int id)
+        //{
+        //    try
+        //    {
+        //        bool isDeleted = _requestDetailService.DeleteRequestDetail(id);
+        //        if (isDeleted)
+        //        {
+        //            return Ok($"Request Detail with ID: {id} has been successfully deleted.");
+        //        }
+        //        else
+        //        {
+        //            return NotFound($"Request Detail with ID: {id} not found.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while deleting the Request Detail. Error message: {ex.Message}");
+        //    }
+        //}
 
     }
 }

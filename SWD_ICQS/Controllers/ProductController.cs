@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
@@ -23,6 +24,7 @@ namespace SWD_ICQS.Controllers
             _productService = productService;
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/products/get")]
         public async Task<IActionResult> getAllProducts()
         {
@@ -39,6 +41,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/products/get/contractorid={contractorid}")]
         public async Task<IActionResult> getAllProductsByContractorId(int contractorid)
         {
@@ -60,6 +63,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/v1/products/get/id={id}")]
         public IActionResult getProductByID(int id)
         {
@@ -81,6 +85,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPost("/api/v1/products/post")]
         public IActionResult AddProduct([FromBody] ProductsView productsView)
         {
@@ -109,8 +114,8 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/v1/products/put")]
         public IActionResult UpdateProduct([FromBody] ProductsView productsView)
         {
@@ -140,6 +145,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpPut("/api/v1/products/put/status/id={id}")]
         public IActionResult ChangeStatusProduct(int id)
         {

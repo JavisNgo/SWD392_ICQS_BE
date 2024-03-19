@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
@@ -22,6 +23,7 @@ namespace SWD_ICQS.Controllers
             _constructProductService = constructProductService;
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/constructProducts")]
         public async Task<IActionResult> GetAllConstructProducts()
         {
@@ -36,6 +38,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("/api/constructProducts/{id}")]
         public IActionResult GetConstructProductByID(int id)
         {
@@ -54,6 +57,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPost("/api/constructProducts")]
         public IActionResult AddConstructProduct([FromBody] ConstructProductsView constructProductsView)
         {
@@ -73,6 +77,8 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while adding the constructProduct. Error message: {ex.Message}");
             }
         }
+
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/constructProducts/{id}")]
         public IActionResult UpdateConstructProduct(int id, [FromBody] ConstructProductsView constructProductsView)
         {
@@ -91,6 +97,8 @@ namespace SWD_ICQS.Controllers
                 return BadRequest($"An error occurred while updating the constructProduct. Error message: {ex.Message}");
             }
         }
+
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpDelete("/api/constructProducts/{id}")]
         public IActionResult DeleteConstructProduct(int id)
         {

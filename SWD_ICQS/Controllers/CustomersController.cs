@@ -33,7 +33,7 @@ namespace SWD_ICQS.Controllers
         }
 
         // GET: api/Customers
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("/api/v1/customers")]
         public async Task<ActionResult<IEnumerable<Customers>>> GetCustomers()
         {
@@ -46,7 +46,7 @@ namespace SWD_ICQS.Controllers
             return Ok(customersViews);
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminOrCustomerRole")]
         [HttpGet("/api/v1/customers/id={id}")]
         public ActionResult<CustomersView> GetCustomer(int id)
         {
@@ -66,7 +66,7 @@ namespace SWD_ICQS.Controllers
 
         // PUT: api/Contractors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireCustomerRole")]
         [HttpPut("/api/v1/customers/username={username}")]
         public IActionResult UpdateCustomer(string username, CustomersView customersView)
         {
@@ -144,7 +144,7 @@ namespace SWD_ICQS.Controllers
         }
 
         // DELETE: api/Contractors/5
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPut("/api/v1/customers/status/id={id}")]
         public async Task<IActionResult> SetStatusCustomer(int id)
         {

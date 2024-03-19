@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
@@ -18,6 +19,7 @@ namespace SWD_ICQS.Controllers
             _depositOrdersService = depositOrdersService;
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("/api/v1/depositOrders/get")]
         public async Task<IActionResult> GetAllDepositOrders()
         {
@@ -42,6 +44,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrCustomerRole")]
         [HttpGet("/api/v1/depositOrders/get/customerid={customerid}")]
         public async Task<IActionResult> GetAllDepositOrdersByCustomerId(int customerid)
         {
@@ -66,6 +69,32 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
+        [HttpGet("/api/v1/depositOrders/get/contractorid={contractorid}")]
+        public async Task<IActionResult> GetAllDepositOrdersByContractorId(int contractorid)
+        {
+            try
+            {
+
+                var depositOrders = _depositOrdersService.GetDepositOrdersByContractorId(contractorid);
+                if (depositOrders == null)
+                {
+                    return BadRequest("Cannot get orders");
+                }
+                if (!depositOrders.Any())
+                {
+                    return NotFound($"No order of contractor with id {contractorid} found in platform");
+                }
+
+                return Ok(depositOrders);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while get.ErrorMessage:{ex}");
+            }
+        }
+
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/depositOrders/get/requestid={requestid}")]
         public async Task<IActionResult> GetDepositOrderByRequestId(int requestid)
         {
@@ -86,6 +115,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/depositOrders/get/id={id}")]
         public async Task<IActionResult> GetDepositOrderById(int id)
         {
@@ -106,6 +136,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireCustomerRole")]
         [HttpPut("/api/v1/depositOrders/update/{id}")]
         public async Task<IActionResult> UpdateTransactionCode(int id, string transactionCode)
         {
@@ -123,6 +154,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/v1/depositOrders/updateStatus/{id}")]
         public async Task<IActionResult> UpdateStatus(int id)
         {

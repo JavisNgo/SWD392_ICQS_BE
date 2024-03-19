@@ -58,7 +58,7 @@ namespace SWD_ICQS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPost("/api/v1/categories/post")]
         public IActionResult AddCategory([FromBody] CategoriesView categoryView)
         {
@@ -87,7 +87,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPut("/api/v1/categories/put/id={id}")]
         public IActionResult UpdateCategory(int id, [FromBody] CategoriesView updatedCategoryView)
         {
@@ -120,7 +120,7 @@ namespace SWD_ICQS.Controllers
         }
 
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpDelete("/api/v1/categories/delete/id={id}")]
         public IActionResult DeleteCategory(int id)
         {

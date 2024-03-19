@@ -22,7 +22,7 @@ namespace SWD_ICQS.Controllers
             _contractService = contractService;
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/contracts")]
         public ActionResult<IEnumerable<ContractViewForGet>> GetContracts()
         {
@@ -37,7 +37,8 @@ namespace SWD_ICQS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [AllowAnonymous]
+
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/contracts/{contractId}")]
         public ActionResult<ContractViewForGet> GetContractById(int contractId)
         {
@@ -53,7 +54,7 @@ namespace SWD_ICQS.Controllers
         }
 
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpGet("/api/v1/contracts/contractor/{contractorId}")]
         public ActionResult<IEnumerable<ContractViewForGet>> GetContractsByContractorId(int contractorId)
         {
@@ -70,7 +71,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminOrCustomerRole")]
         [HttpGet("/api/v1/contracts/customer/{customerId}")]
         public ActionResult<IEnumerable<ContractViewForGet>> GetContractsByCustomerId(int customerId)
         {
@@ -85,7 +86,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/contracts/request/{requestId}")]
         public ActionResult<IEnumerable<ContractViewForGet>> GetContractsByRequestId(int requestId)
         {
@@ -102,22 +103,22 @@ namespace SWD_ICQS.Controllers
 
 
 
-        [AllowAnonymous]
-        [HttpPost("/Contracts")]
-        public IActionResult AddContract([FromBody] ContractsView contractView)
-        {
-            try
-            {
-                var contract = _contractService.AddContract(contractView);
-                return Ok(contract);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"An error occurred while adding the contract. Error message: {ex.Message}");
-            }
-        }
+        //[AllowAnonymous]
+        //[HttpPost("/Contracts")]
+        //public IActionResult AddContract([FromBody] ContractsView contractView)
+        //{
+        //    try
+        //    {
+        //        var contract = _contractService.AddContract(contractView);
+        //        return Ok(contract);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"An error occurred while adding the contract. Error message: {ex.Message}");
+        //    }
+        //}
 
-
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("UpdateProgress/{id}")]
         public IActionResult UploadContractProgress(int id, [FromBody] ContractsView contractsView)
         {
@@ -139,6 +140,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireCustomerRole")]
         [HttpPut("/Contracts/customer/{id}")]
         public IActionResult UpdateContractCustomerFirst(int id, [FromBody] ContractsView contractsView)
         {
@@ -153,6 +155,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/Contracts/contractor/{id}")]
         public IActionResult UpdateContractContractorSecond(int id, [FromBody] ContractsView contractsView)
         {

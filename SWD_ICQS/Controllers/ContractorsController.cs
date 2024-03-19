@@ -64,7 +64,7 @@ namespace SWD_ICQS.Controllers
 
         // PUT: api/Contractors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/v1/contractors/username={username}")]
         public IActionResult UpdateContractor(string username, ContractorsView contractorsView)
         {
@@ -141,6 +141,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
         // DELETE: api/Contractors/5
         [AllowAnonymous]
         [HttpPut("/api/v1/contractors/status/id={id}")]

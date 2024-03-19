@@ -83,7 +83,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPost("/api/v1/blogs/post")]
         public IActionResult AddBlog([FromBody] BlogsView blogView)
         {
@@ -116,7 +116,7 @@ namespace SWD_ICQS.Controllers
         
 
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/api/v1/blogs/put")]
         public IActionResult UpdateBlog([FromBody] BlogsView blogView)
         {
@@ -146,7 +146,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [HttpPut("/api/v1/blogs/put/status/code={code}")]
         public IActionResult ChangeStatusBlog(string? code)
         {
@@ -175,7 +175,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpDelete("/api/v1/blogs/delete/code={code}")]
         public IActionResult DeleteBlog(string? code)
         {

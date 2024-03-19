@@ -162,7 +162,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpPost("/api/v1/accounts/register/contractor")]
         public IActionResult RegisterContractor([FromBody] AccountsView newAccount)
         {
@@ -243,7 +243,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAllRoles")]
         [HttpGet("/api/v1/accounts/get/username={username}")]
         public ActionResult GetAccountInfo(string username)
         {
@@ -285,7 +285,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("/api/v1/admin/stats")]
         public IActionResult GetPlatfromStatistics()
         {
@@ -306,7 +306,7 @@ namespace SWD_ICQS.Controllers
             });
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpGet("{contractorId}/stats")]
         public IActionResult GetContractorStats(int contractorId)
         {

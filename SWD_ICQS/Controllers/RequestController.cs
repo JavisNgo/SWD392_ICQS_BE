@@ -21,7 +21,7 @@ namespace SWD_ICQS.Controllers
             _requestService = requestService;
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("/Requests")]
         public async Task<IActionResult> getAllRequests()
         {
@@ -36,6 +36,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAllRoles")]
         [AllowAnonymous]
         [HttpGet("/Requests/{id}")]
         public IActionResult GetRequestById(int id)
@@ -52,6 +53,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdminOrContractorRole")]
         [AllowAnonymous]
         [HttpGet("/api/v1/requests/contractor/{contractorId}")]
         public ActionResult<IEnumerable<RequestViewForGet>> GetRequestByContractorId(int contractorId)
@@ -68,7 +70,7 @@ namespace SWD_ICQS.Controllers
         }
 
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdminOrCustomerRole")]
         [HttpGet("/api/v1/requests/customer/{customerId}")]
         public ActionResult<IEnumerable<RequestViewForGet>> GetRequestByCustomerId(int customerId)
         {
@@ -82,7 +84,8 @@ namespace SWD_ICQS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [AllowAnonymous]
+
+        [Authorize(Policy = "RequireCustomerRole")]
         [HttpPost("/Requests")]
         public async Task<IActionResult> AddRequest([FromBody] RequestView requestView)
         {
@@ -122,30 +125,31 @@ namespace SWD_ICQS.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpPut("/Requests/{id}")]
-        public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestView requestView)
-        {
-            if(requestView.requestDetailViews == null)
-            {
-                return BadRequest("Request must contain at least 1 product");
-            }
-            if (!requestView.requestDetailViews.Any())
-            {
-                return BadRequest("Request must contain at least 1 product");
-            }
-            try
-            {
-                var result = _requestService.UpdateRequest(id, requestView);
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+        //[AllowAnonymous]
+        //[HttpPut("/Requests/{id}")]
+        //public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestView requestView)
+        //{
+        //    if(requestView.requestDetailViews == null)
+        //    {
+        //        return BadRequest("Request must contain at least 1 product");
+        //    }
+        //    if (!requestView.requestDetailViews.Any())
+        //    {
+        //        return BadRequest("Request must contain at least 1 product");
+        //    }
+        //    try
+        //    {
+        //        var result = _requestService.UpdateRequest(id, requestView);
+        //        return Ok(result);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
 
-        }
+        //}
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/RequestAccepted/{id}")]
         public IActionResult AcceptRequest(int id)
         {
@@ -164,6 +168,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpPut("/IsMeeting/{id}/")]
         public IActionResult IsMeeting(int id)
         {

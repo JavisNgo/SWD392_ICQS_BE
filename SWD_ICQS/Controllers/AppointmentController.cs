@@ -17,7 +17,7 @@ namespace SWD_ICQS.Controllers
             _appointmentService = appointmentService;
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorOrCustomerRole")]
         [HttpGet("/Appointments")]
         public async Task<IActionResult> GetAllAppointments()
         {
@@ -32,7 +32,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireContractorRole")]
         [HttpGet("/api/v1/appointments/contractor/{contractorId}")]
         public ActionResult<IEnumerable<AppointmentView>> GetAppointmentByContractorId(int contractorId)
         {
@@ -46,7 +46,7 @@ namespace SWD_ICQS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireCustomerRole")]
         [HttpGet("/api/v1/appointments/customer/{customerId}")]
         public ActionResult<IEnumerable<AppointmentView>> GetAppointmentByCustomerId(int customerId)
         {

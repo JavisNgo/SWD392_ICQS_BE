@@ -316,5 +316,33 @@ namespace SWD_ICQS.Services.Implements
             }
             
         }
+
+        public IEnumerable<DepositOrders>? GetDepositOrdersByContractorId(int ContractorId)
+        {
+            try
+            {
+                List<DepositOrders> depositOrders = new List<DepositOrders>();
+                var Requests = _unitOfWork.RequestRepository.Find(r => r.ContractorId == ContractorId).ToList();
+                if (Requests != null)
+                {
+                    if (Requests.Any())
+                    {
+                        foreach (var Request in Requests)
+                        {
+                            var depositOrder = _unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == Request.Id).FirstOrDefault();
+                            if (depositOrder != null)
+                            {
+                                depositOrders.Add(depositOrder);
+                            }
+                        }
+                    }
+                }
+                return depositOrders;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

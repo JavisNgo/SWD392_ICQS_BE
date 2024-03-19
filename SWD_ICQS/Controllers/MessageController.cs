@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD_ICQS.Entities;
@@ -34,6 +35,7 @@ namespace SWD_ICQS.Controllers
         //    }
         //}
 
+        [Authorize(Policy = "RequireContractorOrCustomerRole")]
         [HttpGet("/api/v1/messages/CustomerId={CustomerId}&ContractorId={ContractorId}")]
         public IActionResult getMesssageById(int CustomerId, int ContractorId)
         {
@@ -53,6 +55,7 @@ namespace SWD_ICQS.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireContractorOrCustomerRole")]
         [HttpPost("/api/v1/messages/send")]
         public IActionResult AddMessage([FromBody] MessagesView messagesView)
         {

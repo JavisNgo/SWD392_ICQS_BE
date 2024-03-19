@@ -243,7 +243,7 @@ namespace SWD_ICQS.Services.Implements
         <p>Dear {customer.Name},</p>
         <p>Contractor have been accepted your request</p>        
         <p>Note: {request.Note}</p>
-        <p>Total price: {request.TotalPrice}</p>
+        <p>Total price: {request.TotalPrice} VNĐ</p>
         <p>Created date: {request.TimeIn}</p>        
         <p>Expired date: {request.TimeOut}</p>
 
@@ -520,7 +520,7 @@ namespace SWD_ICQS.Services.Implements
         <p>Dear {contractor.Name},</p>
         <p>You have a new request from customer</p>        
         <p>Note: {request.Note}</p>
-        <p>Total price: {request.TotalPrice}</p>
+        <p>Total price: {request.TotalPrice} VNĐ</p>
         <p>Created date: {request.TimeIn}</p>        
         <p>Expired date: {request.TimeOut}</p>
 

@@ -473,5 +473,30 @@ namespace SWD_ICQS.Services.Implements
                 throw new Exception(ex.Message);
             }
         }
+
+        public (double? TotalRevenue, int TotalRequests, int TotalSignedRequests, int TotalOnGoingRequests, int TotalRejectedRequests, int TotalConstructs, int TotalProducts) GetContractorStats(int contractorId)
+        {
+            try
+            {
+                var contractorRequests = _unitOfWork.RequestRepository.Get().Where(r => r.ContractorId == contractorId).ToList();
+                var contractorSignedRequests = contractorRequests.Where(r => r.Status == Requests.RequestsStatusEnum.SIGNED).ToList();
+                var contractorOnGoingRequests = contractorRequests.Where(r => r.Status == Requests.RequestsStatusEnum.PENDING || r.Status == Requests.RequestsStatusEnum.ACCEPTED || r.Status == Requests.RequestsStatusEnum.COMPLETED).ToList();
+                var contractorRejectedRequests = contractorRequests.Where(r => r.Status == Requests.RequestsStatusEnum.REJECTED).ToList();
+
+                var totalRevenue = contractorSignedRequests.Sum(r => r.TotalPrice);
+                var totalRequests = contractorRequests.Count;
+                var totalSignedRequests = contractorSignedRequests.Count;
+                var totalOnGoingRequests = contractorOnGoingRequests.Count;
+                var totalRejectedRequests = contractorRejectedRequests.Count;
+                var totalConstructs = _unitOfWork.ConstructRepository.Get().Count(c => c.ContractorId == contractorId);
+                var totalProducts = _unitOfWork.ProductRepository.Get().Count(p => p.ContractorId == contractorId);
+
+                return (totalRevenue, totalRequests, totalSignedRequests, totalOnGoingRequests, totalRejectedRequests, totalConstructs, totalProducts);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

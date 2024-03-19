@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using SWD_ICQS.Entities;
 using SWD_ICQS.ModelsView;
 using SWD_ICQS.Repository.Interfaces;
+using SWD_ICQS.Services.Implements;
 using SWD_ICQS.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -305,6 +306,29 @@ namespace SWD_ICQS.Controllers
             });
         }
 
+        [AllowAnonymous]
+        [HttpGet("{contractorId}/stats")]
+        public IActionResult GetContractorStats(int contractorId)
+        {
+            try
+            {
+                var stats = _accountsService.GetContractorStats(contractorId);
+                return Ok(new
+                {
+                    TotalRevenue = stats.TotalRevenue,
+                    TotalRequests = stats.TotalRequests,
+                    TotalSignedRequests = stats.TotalSignedRequests,
+                    TotalOnGoingRequests = stats.TotalOnGoingRequests,
+                    TotalRejectedRequests = stats.TotalRejectedRequests,
+                    TotalConstructs = stats.TotalConstructs,
+                    TotalProducts = stats.TotalProducts
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         private bool IsValidEmail(string email)
         {
             try

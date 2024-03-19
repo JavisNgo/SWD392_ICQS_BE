@@ -289,6 +289,7 @@ namespace SWD_ICQS.Services.Implements
                 }
                 
                 var contract = _mapper.Map(contractsView, existingContract);
+                contract.Id = id;
                 contract.UploadDate = DateTime.Now;
                 byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
                 string filename = $"Contract_{existingContract.Id}.pdf";
@@ -410,6 +411,7 @@ namespace SWD_ICQS.Services.Implements
                 if (existingContract.ContractUrl.Equals(existingFilename))
                 {
                     var contract = _mapper.Map(contractsView, existingContract);
+                    contract.Id = id;
                     contract.EditDate = DateTime.Now;
 
                     byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);

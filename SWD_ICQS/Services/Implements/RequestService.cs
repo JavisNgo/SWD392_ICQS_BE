@@ -299,6 +299,12 @@ namespace SWD_ICQS.Services.Implements
 
                                 };
                                 unitOfWork.DepositOrdersRepository.Insert(newDeposit);
+                                var newContract = new Contracts
+                                {
+                                    RequestId = request.Id,
+                                    Status = 0
+                                };
+                                unitOfWork.ContractRepository.Insert(newContract);
                                 unitOfWork.Save();
                                 var existingCustomer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
 
@@ -393,7 +399,16 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception("Price must be larger than 0");
                 }
-                
+                foreach (var requestDetail in requestView.requestDetailViews)
+                {
+                    var product = unitOfWork.ProductRepository.Find(p => p.Id == requestDetail.ProductId && p.ContractorId == requestView.ContractorId).FirstOrDefault();
+
+                    if (product == null)
+                    {
+                        throw new Exception($"Product with ID {requestDetail.ProductId} does not belong to contractor with ID {requestView.ContractorId}");
+                    }
+                }
+
                 var request = _mapper.Map<Requests>(requestView);
                 string code = $"P_{requestView.CustomerId}_{requestView.ContractorId}_{GenerateRandomCode(10)}";
                 bool checking = true;

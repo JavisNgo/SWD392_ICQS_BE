@@ -115,8 +115,19 @@ namespace SWD_ICQS.Services.Implements
                 var depositOrder = _unitOfWork.DepositOrdersRepository.GetByID(id);
                 if(depositOrder != null)
                 {
-                    if(depositOrder.TransactionCode == null)
+                    var checkContract = _unitOfWork.ContractRepository.Find(c => c.RequestId == depositOrder.RequestId).FirstOrDefault();
+                    if(checkContract == null) {
+                        return false;
+                    }
+                    var checkRequest = _unitOfWork.RequestRepository.Find(r => r.Id == depositOrder.RequestId).FirstOrDefault();
+                    if(checkRequest == null)
                     {
+                        return false;
+                    }
+                    if(depositOrder.TransactionCode == null && checkContract.Status == 1 && checkRequest.Status == Requests.RequestsStatusEnum.SIGNED)
+                    {
+                        checkRequest.Status = Requests.RequestsStatusEnum.DEPOSITED;
+                        _unitOfWork.RequestRepository.Update(checkRequest);
                         depositOrder.DepositDate = DateTime.Now;
                         depositOrder.TransactionCode = transactionCode;
                         depositOrder.Status = DepositOrders.DepositOrderStatusEnum.PROCESSING;

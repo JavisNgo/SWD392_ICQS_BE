@@ -162,42 +162,43 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception($"Request with ID : {id} not found");
                 }
-
-                existingRequest.Status = Requests.RequestsStatusEnum.ACCEPTED;
-                existingRequest.TimeOut = DateTime.Now.AddDays(14);
-                unitOfWork.RequestRepository.Update(existingRequest);
-                //unitOfWork.Save();
-                if (existingRequest != null)
+                if (existingRequest.Status == Requests.RequestsStatusEnum.PENDING)
                 {
-                    var appointment = new Appointments
+                    existingRequest.Status = Requests.RequestsStatusEnum.ACCEPTED;
+                    existingRequest.TimeOut = DateTime.Now.AddDays(14);
+                    unitOfWork.RequestRepository.Update(existingRequest);
+                    //unitOfWork.Save();
+                    if (existingRequest != null)
                     {
-                        CustomerId = existingRequest.CustomerId,
-                        ContractorId = existingRequest.ContractorId,
-                        RequestId = existingRequest.Id,
-                        MeetingDate = DateTime.Now.AddDays(7),
-                        Status = Appointments.AppointmentsStatusEnum.PENDING
-                    };
-                    unitOfWork.AppointmentRepository.Insert(appointment);
-                    unitOfWork.Save();
-                    var existingCustomer = unitOfWork.CustomerRepository.GetByID(existingRequest.CustomerId);
+                        var appointment = new Appointments
+                        {
+                            CustomerId = existingRequest.CustomerId,
+                            ContractorId = existingRequest.ContractorId,
+                            RequestId = existingRequest.Id,
+                            MeetingDate = DateTime.Now.AddDays(7),
+                            Status = Appointments.AppointmentsStatusEnum.PENDING
+                        };
+                        unitOfWork.AppointmentRepository.Insert(appointment);
+                        unitOfWork.Save();
+                        var existingCustomer = unitOfWork.CustomerRepository.GetByID(existingRequest.CustomerId);
 
-                    if (existingCustomer != null)
-                    {
-
-                        EmailDto email = new EmailDto()
+                        if (existingCustomer != null)
                         {
 
-                            To = existingCustomer.Email,
-                            Subject = "Contractor accept your request",
-                            Body = emailBodyForAccpept(existingCustomer, existingRequest, appointment)
+                            EmailDto email = new EmailDto()
+                            {
 
-                        };
+                                To = existingCustomer.Email,
+                                Subject = "Contractor accept your request",
+                                Body = emailBodyForAccpept(existingCustomer, existingRequest, appointment)
 
-                        SendMail(email);
-                        return true;
+                            };
+
+                            SendMail(email);
+                            return true;
+                        }
                     }
                 }
-
 
                 return false;
                 
@@ -264,60 +265,62 @@ namespace SWD_ICQS.Services.Implements
                 {
                     throw new Exception($"Appointment with ID : {id} not found");
                 }
-
-                existingAppointment.Status = Appointments.AppointmentsStatusEnum.COMPLETED;
-                unitOfWork.AppointmentRepository.Update(existingAppointment);
-                
-                var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
-                if (request == null)
+                if (existingAppointment.Status == Appointments.AppointmentsStatusEnum.PENDING)
                 {
-                    throw new Exception("Request not found");
-                }
+                    existingAppointment.Status = Appointments.AppointmentsStatusEnum.COMPLETED;
+                    unitOfWork.AppointmentRepository.Update(existingAppointment);
 
-                request.TimeOut = DateTime.Now.AddDays(14);
-                request.Status = Requests.RequestsStatusEnum.COMPLETED;
-                unitOfWork.RequestRepository.Update(request);
-                
-
-                var deposit = unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == request.Id).FirstOrDefault();
-                if (deposit != null)
-                {
-                    throw new Exception("Deposit has been created");
-                }
-                if (request.Status == Requests.RequestsStatusEnum.COMPLETED &&
-                    existingAppointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
-                {
-                    if(request.TotalPrice.HasValue && request.TotalPrice > 0)
+                    var request = unitOfWork.RequestRepository.GetByID(existingAppointment.RequestId);
+                    if (request == null)
                     {
-                        var newDeposit = new DepositOrders
-                        {
-                            RequestId = request.Id,
-                            DepositPrice = (request.TotalPrice.Value * 2/10),
-                            Status = DepositOrders.DepositOrderStatusEnum.PENDING
-
-                        };
-                        unitOfWork.DepositOrdersRepository.Insert(newDeposit);
-                        unitOfWork.Save();
-                        var existingCustomer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
-
-                        if (existingCustomer != null)
-                        {
-
-                            EmailDto email = new EmailDto()
-                            {
-
-                                To = existingCustomer.Email,
-                                Subject = "The appoinment completed",
-                                Body = emailBodyForCompleteAppoinment(existingCustomer, request)
-
-                            };
-
-                            SendMail(email);
-                            return true;
-                        }
-                        
+                        throw new Exception("Request not found");
                     }
-                    
+                    if(request.Status == Requests.RequestsStatusEnum.ACCEPTED) { 
+                    request.TimeOut = DateTime.Now.AddDays(14);
+                    request.Status = Requests.RequestsStatusEnum.COMPLETED;
+                    unitOfWork.RequestRepository.Update(request);
+
+
+                    var deposit = unitOfWork.DepositOrdersRepository.Find(d => d.RequestId == request.Id).FirstOrDefault();
+                    if (deposit != null)
+                    {
+                        throw new Exception("Deposit has been created");
+                    }
+                        if (request.Status == Requests.RequestsStatusEnum.COMPLETED &&
+                            existingAppointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED)
+                        {
+                            if (request.TotalPrice.HasValue && request.TotalPrice > 0)
+                            {
+                                var newDeposit = new DepositOrders
+                                {
+                                    RequestId = request.Id,
+                                    DepositPrice = (request.TotalPrice.Value * 2 / 10),
+                                    Status = DepositOrders.DepositOrderStatusEnum.PENDING
+
+                                };
+                                unitOfWork.DepositOrdersRepository.Insert(newDeposit);
+                                unitOfWork.Save();
+                                var existingCustomer = unitOfWork.CustomerRepository.GetByID(request.CustomerId);
+
+                                if (existingCustomer != null)
+                                {
+
+                                    EmailDto email = new EmailDto()
+                                    {
+
+                                        To = existingCustomer.Email,
+                                        Subject = "The appoinment completed",
+                                        Body = emailBodyForCompleteAppoinment(existingCustomer, request)
+
+                                    };
+
+                                    SendMail(email);
+                                    return true;
+                                }
+
+                            }
+                        }
+                    }
                 }
                 return false;
                 

@@ -116,7 +116,7 @@ namespace SWD_ICQS.Controllers
                 {
                     return Ok();
                 }
-                return BadRequest("Error!");
+                return BadRequest("Error, contract not uploaded and signed or contract not found or request not found!");
             }catch(Exception ex)
             {
                 throw new Exception($"An error occurred while update.ErrorMessage:{ex}");

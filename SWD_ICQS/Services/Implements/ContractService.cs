@@ -48,7 +48,7 @@ namespace SWD_ICQS.Services.Implements
             // Kiểm tra xem trạng thái của yêu cầu và cuộc hẹn có đúng không
             if (checkingRequest.Status == Requests.RequestsStatusEnum.COMPLETED &&
                 appointment.Status == Appointments.AppointmentsStatusEnum.COMPLETED && 
-                checkingDeposit.Status == DepositOrders.DepositOrderStatusEnum.COMPLETED)
+                checkingDeposit.Status == DepositOrders.DepositOrderStatusEnum.PENDING)
             {
                 // Kiểm tra xem thời hạn Timeout của yêu cầu còn hay không
                 if (checkingRequest.TimeOut.HasValue && checkingRequest.TimeOut > DateTime.Now)

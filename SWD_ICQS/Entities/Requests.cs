@@ -23,6 +23,7 @@ namespace SWD_ICQS.Entities
             ACCEPTED,
             COMPLETED,
             SIGNED,
+            DEPOSITED,
             REJECTED,
 
         }

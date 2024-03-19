@@ -435,26 +435,28 @@ namespace SWD_ICQS.Services.Implements
                                 };
                                 unitOfWork.RequestDetailRepository.Insert(requestDetails);
                                 unitOfWork.Save();
-                                var existingContractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
-
-                                if (existingContractor != null)
-                                {
-
-                                    EmailDto email = new EmailDto()
-                                    {
-
-                                        To = existingContractor.Email,
-                                        Subject = "New request from customer",
-                                        Body = emailBodyForRequest(existingContractor, createdRequest)
-
-                                    };
-
-                                    SendMail(email);
-                                    return requestView;
-                                }
+                                
                             }
                         }
                     }
+                    var existingContractor = unitOfWork.ContractorRepository.GetByID(request.ContractorId);
+
+                    if (existingContractor != null)
+                    {
+
+                        EmailDto email = new EmailDto()
+                        {
+
+                            To = existingContractor.Email,
+                            Subject = "New request from customer",
+                            Body = emailBodyForRequest(existingContractor, createdRequest)
+
+                        };
+
+                        SendMail(email);
+
+                    }
+                    return requestView;
                 }
 
 
@@ -527,7 +529,7 @@ namespace SWD_ICQS.Services.Implements
                 MailMessage message = new MailMessage();
                 message.From = new MailAddress(fromMail);
                 message.Subject = request.Subject;
-                message.To.Add(new MailAddress(_config.GetSection("EmailUsername").Value));
+                message.To.Add(new MailAddress(request.To));
                 message.Body = request.Body;
                 message.IsBodyHtml = true;
 

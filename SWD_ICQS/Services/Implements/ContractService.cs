@@ -130,7 +130,11 @@ namespace SWD_ICQS.Services.Implements
                     contractView.ContractorName = contractor.Name;
 
                     string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
-                    contractView.ContractUrl = url;
+                    if (!string.IsNullOrEmpty(contractView.ContractUrl))
+                    {
+                        contractView.ContractUrl = url;
+                    }
+                    
 
 
                     contractsViews.Add(contractView);
@@ -174,6 +178,12 @@ namespace SWD_ICQS.Services.Implements
                 contractView.CustomerName = customer != null ? customer.Name : null;
                 contractView.ContractorName = contractor != null ? contractor.Name : null;
 
+                string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
+                if (!string.IsNullOrEmpty(contractView.ContractUrl))
+                {
+                    contractView.ContractUrl = url;
+                }
+
                 return contractView;
             } catch (Exception ex )
             {
@@ -212,7 +222,10 @@ namespace SWD_ICQS.Services.Implements
                     contractView.ContractorName = contractor.Name;
                     contractView.CustomerName = customer != null ? customer.Name : null;
                     string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
-                    contractView.ContractUrl = url;
+                    if (!string.IsNullOrEmpty(contractView.ContractUrl))
+                    {
+                        contractView.ContractUrl = url;
+                    }
 
                     contractsViews.Add(contractView);
                 }
@@ -253,7 +266,10 @@ namespace SWD_ICQS.Services.Implements
                     contractView.CustomerName = customer.Name;
                     contractView.ContractorName = contractor != null ? contractor.Name : null;
                     string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
-                    contractView.ContractUrl = url;
+                    if (!string.IsNullOrEmpty(contractView.ContractUrl))
+                    {
+                        contractView.ContractUrl = url;
+                    }
 
                     contractsViews.Add(contractView);
                 }
@@ -289,7 +305,6 @@ namespace SWD_ICQS.Services.Implements
                 }
                 
                 var contract = _mapper.Map(contractsView, existingContract);
-                contract.Id = id;
                 contract.UploadDate = DateTime.Now;
                 byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
                 string filename = $"Contract_{existingContract.Id}.pdf";
@@ -411,7 +426,6 @@ namespace SWD_ICQS.Services.Implements
                 if (existingContract.ContractUrl.Equals(existingFilename))
                 {
                     var contract = _mapper.Map(contractsView, existingContract);
-                    contract.Id = id;
                     contract.EditDate = DateTime.Now;
 
                     byte[] pdfBytes = Convert.FromBase64String(contractsView.ContractUrl);
@@ -584,7 +598,10 @@ namespace SWD_ICQS.Services.Implements
                 contractView.CustomerName = customer.Name;
                 contractView.ContractorName = contractor != null ? contractor.Name : null;
                 string url = $"https://localhost:7233/pdf/contracts/{contract.ContractUrl}";
-                contractView.ContractUrl = url;
+                if (!string.IsNullOrEmpty(contractView.ContractUrl))
+                {
+                    contractView.ContractUrl = url;
+                }
 
                 return contractView;
             }
